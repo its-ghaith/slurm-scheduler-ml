@@ -1,0 +1,62 @@
+services:
+  slurmctld:
+    build:
+      context: .
+      dockerfile: Dockerfile.slurm
+    container_name: slurmctld
+    hostname: slurmctld
+    command: ["controller"]
+    volumes:
+      - ./:/workspace
+      - slurmctld-state:/var/spool/slurmctld
+    networks:
+      - slurm-net
+
+  slurmd:
+    build:
+      context: .
+      dockerfile: Dockerfile.slurm
+    container_name: slurmd
+    hostname: slurmd
+    command: ["worker"]
+    privileged: true
+    gpus: all
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+    depends_on:
+      - slurmctld
+    volumes:
+      - ./:/workspace
+      - slurmd-state:/var/spool/slurmd
+    networks:
+      - slurm-net
+
+  mlflow:
+    build:
+      context: .
+      dockerfile: Dockerfile.mlflow
+    container_name: mlflow-local
+    hostname: mlflow-local
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./mlflow_data:/mlflow_data
+      - ./mlruns:/mlruns
+    command: >
+      mlflow server
+      --host 0.0.0.0
+      --port 5000
+      --backend-store-uri sqlite:////mlflow_data/mlflow.db
+      --default-artifact-root /mlruns
+    networks:
+      - slurm-net
+
+networks:
+  slurm-net:
+    name: slurm-net
+    driver: bridge
+
+volumes:
+  slurmctld-state:
+  slurmd-state:
