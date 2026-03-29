@@ -1,0 +1,11 @@
+apiVersion: 1
+
+providers:
+  - name: "SLURM Energy Dashboards"
+    orgId: 1
+    folder: "SLURM Energy"
+    type: file
+    disableDeletion: false
+    editable: true
+    options:
+      path: /var/lib/grafana/dashboards

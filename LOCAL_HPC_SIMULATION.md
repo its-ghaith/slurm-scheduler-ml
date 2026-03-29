@@ -5,7 +5,7 @@ Damit simulierst du einen kleinen HPC-Cluster lokal und nutzt spaeter auf echtem
 ## 1) Cluster lokal starten
 
 ```powershell
-docker compose -f docker-compose.slurm.yml up -d --build
+docker compose up -d --build
 ```
 
 Pruefen:
@@ -58,7 +58,33 @@ Optionales Logging der Job-Energie nach MLflow:
 - Aktiv: `MLFLOW_LOG_JOB_ENERGY=1` (Default)
 - Experiment: `slurm-job-energy` (anpassbar via `MLFLOW_JOB_ENERGY_EXPERIMENT`)
 
-## 4) Auf echtes HPC migrieren
+## 4) Prometheus + Grafana + node-exporter
+
+Monitoring-Stack starten:
+
+```powershell
+docker compose up -d
+```
+
+UIs:
+
+- Prometheus: [http://localhost:9090](http://localhost:9090)
+- Grafana: [http://localhost:3000](http://localhost:3000) (Login: `admin` / `admin`)
+
+Das Dashboard `SLURM Energy Overview` wird automatisch provisioniert.
+
+Pro Job entstehen Prometheus-Metriken als Textfiles in:
+
+- `/workspace/energy_metrics/node_exporter/job_<JOBID>.prom`
+- `/workspace/energy_metrics/node_exporter/aggregate.prom` (gesamt ueber alle Jobs)
+
+Falls bereits alte `gpu_summary_job_*.json` existieren, kannst du die Metriken einmalig erzeugen:
+
+```powershell
+docker exec -it slurmctld bash -lc "for f in /workspace/energy_metrics/gpu_summary_job_*.json; do [ -e \"$f\" ] || continue; python /workspace/slurm/export_job_metrics_prom.py --summary-json \"$f\" --output-dir /workspace/energy_metrics/node_exporter --aggregate-dir /workspace/energy_metrics; done"
+```
+
+## 5) Auf echtes HPC migrieren
 
 1. Nutze `slurm/train_mlflow_job.slurm` (statt `train_mlflow_local.slurm`).
 2. Passe `#SBATCH` Werte an (`partition`, `gres`, `time`, `mem`, `cpus-per-task`).

@@ -37,6 +37,8 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=admin
     volumes:
       - grafana-data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
     depends_on:
       - prometheus
     networks:
@@ -51,9 +53,11 @@ services:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
       - /:/rootfs:ro
+      - ./energy_metrics/node_exporter:/textfile_collector:ro
     command:
       - '--path.procfs=/host/proc'
       - '--path.sysfs=/host/sys'
+      - '--collector.textfile.directory=/textfile_collector'
     networks:
       - monitoring
 
@@ -93,6 +97,39 @@ services:
     networks:
       - monitoring
 
+  slurmctld:
+    build:
+      context: .
+      dockerfile: Dockerfile.slurm
+    container_name: slurmctld
+    hostname: slurmctld
+    command: ["controller"]
+    volumes:
+      - ./:/workspace
+      - slurmctld-state:/var/spool/slurmctld
+    networks:
+      - monitoring
+
+  slurmd:
+    build:
+      context: .
+      dockerfile: Dockerfile.slurm
+    container_name: slurmd
+    hostname: slurmd
+    command: ["worker"]
+    privileged: true
+    gpus: all
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+    depends_on:
+      - slurmctld
+    volumes:
+      - ./:/workspace
+      - slurmd-state:/var/spool/slurmd
+    networks:
+      - monitoring
+
 networks:
   monitoring:
     name: monitoring
@@ -101,3 +138,5 @@ networks:
 volumes:
   prometheus-data:
   grafana-data:
+  slurmctld-state:
+  slurmd-state:

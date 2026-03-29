@@ -60,6 +60,8 @@ bash slurm/submit_batch_sweep.sh
 - MLflow UI: `http://<mlflow-hostname>:5000` (oder via SSH-Tunnel lokal)
 - Job-Energie-CSV: `energy_metrics/gpu_metrics_job_<jobid>.csv`
 - Job-Energie-JSON: `energy_metrics/gpu_summary_job_<jobid>.json`
+- Prometheus Textfile-Metriken: `energy_metrics/node_exporter/job_<jobid>.prom`
+- Aggregierte Metriken: `energy_metrics/node_exporter/aggregate.prom`
 
 ## 5) Cluster-Anpassungen
 

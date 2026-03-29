@@ -29,6 +29,7 @@ export ELECTRICITY_PRICE_EUR_PER_KWH="${ELECTRICITY_PRICE_EUR_PER_KWH:-0.30}"
 export GRID_CO2_KG_PER_KWH="${GRID_CO2_KG_PER_KWH:-0.4}"
 export PUE_FACTOR="${PUE_FACTOR:-1.0}"
 export GPU_METRICS_DIR="${GPU_METRICS_DIR:-${SLURM_SUBMIT_DIR}/energy_metrics}"
+export PROM_TEXTFILE_DIR="${PROM_TEXTFILE_DIR:-${GPU_METRICS_DIR}/node_exporter}"
 export MLFLOW_LOG_JOB_ENERGY="${MLFLOW_LOG_JOB_ENERGY:-1}"
 export MLFLOW_JOB_ENERGY_EXPERIMENT="${MLFLOW_JOB_ENERGY_EXPERIMENT:-slurm-job-energy}"
 export TRAIN_CMD="${TRAIN_CMD:-python train_with_energy_tracking_mlflow.py}"
@@ -39,6 +40,7 @@ echo "MLFLOW_TRACKING_URI=${MLFLOW_TRACKING_URI}"
 echo "TRAIN_CMD=${TRAIN_CMD}"
 
 mkdir -p "${GPU_METRICS_DIR}"
+mkdir -p "${PROM_TEXTFILE_DIR}"
 JOB_ID="${SLURM_JOB_ID:-local}"
 GPU_CSV="${GPU_METRICS_DIR}/gpu_metrics_job_${JOB_ID}.csv"
 GPU_SUMMARY_JSON="${GPU_METRICS_DIR}/gpu_summary_job_${JOB_ID}.json"
@@ -69,6 +71,11 @@ if [ "${MLFLOW_LOG_JOB_ENERGY}" = "1" ]; then
     --experiment "${MLFLOW_JOB_ENERGY_EXPERIMENT}" \
     --run-name "job-energy-${JOB_ID}" || true
 fi
+
+python slurm/export_job_metrics_prom.py \
+  --summary-json "${GPU_SUMMARY_JSON}" \
+  --output-dir "${PROM_TEXTFILE_DIR}" \
+  --aggregate-dir "${GPU_METRICS_DIR}"
 
 echo "GPU summary written to: ${GPU_SUMMARY_JSON}"
 exit "${TRAIN_EXIT}"
