@@ -1,1 +1,9 @@
 rotationally-invariant-cnns/
+.venv/
+__pycache__/
+.env
+
+# Rancher / kubeconfig secrets
+rancherConfigs/main.yaml
+rancherConfigs/*.local.yaml
+rancherConfigs/*.secret.yaml
