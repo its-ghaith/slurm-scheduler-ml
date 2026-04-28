@@ -3,10 +3,11 @@
 ## Dokumentation
 
 - Lokales Docker-Setup: diese README
-- Rancher/Kubernetes Runbook: `docs/K8S_RANCHER_RUNBOOK.md`
 - Word/PDF:
   - `SLURM_Prometheus_Grafana_Dokumentation.docx`
   - `SLURM_Prometheus_Grafana_Dokumentation.pdf`
+
+Hinweis: Die Rancher/Kubernetes-Implementierung liegt im Branch `Rancher-sulrm`.
 
 Dieses Projekt zeigt ein lokales **All-in-One Setup** fuer SLURM-basiertes Training mit:
 

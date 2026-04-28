@@ -7,6 +7,20 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+function Import-DotEnv {
+    param([string]$Path = ".env")
+    if (-not (Test-Path $Path)) { return }
+    Get-Content $Path | ForEach-Object {
+        $line = $_.Trim()
+        if (-not $line -or $line.StartsWith("#")) { return }
+        $eq = $line.IndexOf("=")
+        if ($eq -lt 1) { return }
+        $name = $line.Substring(0, $eq).Trim()
+        $value = $line.Substring($eq + 1).Trim().Trim("'`"")
+        Set-Item -Path "Env:$name" -Value $value
+    }
+}
+
 function Write-Header {
     Write-Host "============================================================" -ForegroundColor Cyan
     Write-Host "   ML Energy PoC Setup (SLURM + Prometheus + Grafana)" -ForegroundColor Cyan
@@ -96,6 +110,14 @@ function Open-UIs {
 }
 
 Write-Header
+Import-DotEnv
+
+if ($PSBoundParameters.ContainsKey("TrainCmd") -eq $false -and $env:TRAIN_CMD) {
+    $TrainCmd = $env:TRAIN_CMD
+}
+if ($PSBoundParameters.ContainsKey("BatchSize") -eq $false -and $env:BATCH_SIZE) {
+    $BatchSize = [int]$env:BATCH_SIZE
+}
 Ensure-Folders
 
 switch ($Action) {
