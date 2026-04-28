@@ -22,4 +22,8 @@ RUN chmod 400 /etc/munge/munge.key \
 
 WORKDIR /workspace
 
+COPY train.py /workspace/train.py
+COPY train_with_energy_tracking_mlflow.py /workspace/train_with_energy_tracking_mlflow.py
+COPY slurm /workspace/slurm
+
 ENTRYPOINT ["/entrypoint.sh"]
