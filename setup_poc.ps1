@@ -2,7 +2,14 @@ param(
     [ValidateSet("all", "services", "submit", "status", "logs", "test", "open")]
     [string]$Action = "all",
     [string]$TrainCmd = "python train_with_energy_tracking_mlflow.py",
-    [int]$BatchSize = 32
+    [int]$BatchSize = 32,
+    [string]$MlflowTrackingUri = "",
+    [string]$GpuSampleIntervalSec = "",
+    [string]$ElectricityPriceEurPerKwh = "",
+    [string]$GridCo2KgPerKwh = "",
+    [string]$PueFactor = "",
+    [string]$MlflowLogJobEnergy = "",
+    [string]$MlflowJobEnergyExperiment = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -52,7 +59,18 @@ function Start-Services {
 function Submit-Job {
     Assert-ContainerRunning -Name "slurmctld"
     Write-Host "[2/4] Submitting SLURM job..." -ForegroundColor Yellow
-    $cmd = "BATCH_SIZE=$BatchSize TRAIN_CMD='$TrainCmd' sbatch /workspace/slurm/train_mlflow_local.slurm"
+    $pairs = @(
+        "BATCH_SIZE=$BatchSize",
+        "TRAIN_CMD='$TrainCmd'"
+    )
+    if ($MlflowTrackingUri) { $pairs += "MLFLOW_TRACKING_URI='$MlflowTrackingUri'" }
+    if ($GpuSampleIntervalSec) { $pairs += "GPU_SAMPLE_INTERVAL_SEC='$GpuSampleIntervalSec'" }
+    if ($ElectricityPriceEurPerKwh) { $pairs += "ELECTRICITY_PRICE_EUR_PER_KWH='$ElectricityPriceEurPerKwh'" }
+    if ($GridCo2KgPerKwh) { $pairs += "GRID_CO2_KG_PER_KWH='$GridCo2KgPerKwh'" }
+    if ($PueFactor) { $pairs += "PUE_FACTOR='$PueFactor'" }
+    if ($MlflowLogJobEnergy) { $pairs += "MLFLOW_LOG_JOB_ENERGY='$MlflowLogJobEnergy'" }
+    if ($MlflowJobEnergyExperiment) { $pairs += "MLFLOW_JOB_ENERGY_EXPERIMENT='$MlflowJobEnergyExperiment'" }
+    $cmd = ($pairs -join " ") + " sbatch /workspace/slurm/train_mlflow_local.slurm"
     $output = docker exec -i slurmctld bash -lc $cmd
     if ($LASTEXITCODE -ne 0) {
         throw "sbatch command failed"
@@ -117,6 +135,27 @@ if ($PSBoundParameters.ContainsKey("TrainCmd") -eq $false -and $env:TRAIN_CMD) {
 }
 if ($PSBoundParameters.ContainsKey("BatchSize") -eq $false -and $env:BATCH_SIZE) {
     $BatchSize = [int]$env:BATCH_SIZE
+}
+if ($PSBoundParameters.ContainsKey("MlflowTrackingUri") -eq $false -and $env:MLFLOW_TRACKING_URI) {
+    $MlflowTrackingUri = $env:MLFLOW_TRACKING_URI
+}
+if ($PSBoundParameters.ContainsKey("GpuSampleIntervalSec") -eq $false -and $env:GPU_SAMPLE_INTERVAL_SEC) {
+    $GpuSampleIntervalSec = $env:GPU_SAMPLE_INTERVAL_SEC
+}
+if ($PSBoundParameters.ContainsKey("ElectricityPriceEurPerKwh") -eq $false -and $env:ELECTRICITY_PRICE_EUR_PER_KWH) {
+    $ElectricityPriceEurPerKwh = $env:ELECTRICITY_PRICE_EUR_PER_KWH
+}
+if ($PSBoundParameters.ContainsKey("GridCo2KgPerKwh") -eq $false -and $env:GRID_CO2_KG_PER_KWH) {
+    $GridCo2KgPerKwh = $env:GRID_CO2_KG_PER_KWH
+}
+if ($PSBoundParameters.ContainsKey("PueFactor") -eq $false -and $env:PUE_FACTOR) {
+    $PueFactor = $env:PUE_FACTOR
+}
+if ($PSBoundParameters.ContainsKey("MlflowLogJobEnergy") -eq $false -and $env:MLFLOW_LOG_JOB_ENERGY) {
+    $MlflowLogJobEnergy = $env:MLFLOW_LOG_JOB_ENERGY
+}
+if ($PSBoundParameters.ContainsKey("MlflowJobEnergyExperiment") -eq $false -and $env:MLFLOW_JOB_ENERGY_EXPERIMENT) {
+    $MlflowJobEnergyExperiment = $env:MLFLOW_JOB_ENERGY_EXPERIMENT
 }
 Ensure-Folders
 

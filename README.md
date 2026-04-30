@@ -66,6 +66,14 @@ Der Stack laeuft ueber eine gemeinsame `docker-compose.yml`:
 
 ## Start & Betrieb
 
+### 0) Umgebungsparameter
+
+```powershell
+copy .env.example .env
+```
+
+Alle uebergebbaren Job-Parameter fuer `setup_poc.ps1` sind in `.env(.example)` gepflegt.
+
 ### 1) Stack starten
 
 ```powershell
