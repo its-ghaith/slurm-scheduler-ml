@@ -22,7 +22,8 @@ export PUE_FACTOR="${PUE_FACTOR:-1.0}"
 export GPU_METRICS_DIR="${GPU_METRICS_DIR:-/workspace/energy_metrics}"
 export PROM_TEXTFILE_DIR="${PROM_TEXTFILE_DIR:-${GPU_METRICS_DIR}/node_exporter}"
 export MLFLOW_LOG_JOB_ENERGY="${MLFLOW_LOG_JOB_ENERGY:-1}"
-export MLFLOW_JOB_ENERGY_EXPERIMENT="${MLFLOW_JOB_ENERGY_EXPERIMENT:-slurm-job-energy}"
+export MLFLOW_JOB_ENERGY_EXPERIMENT="${MLFLOW_JOB_ENERGY_EXPERIMENT:-ml-energy-poc}"
+export MLFLOW_EXPERIMENT_NAME="${MLFLOW_EXPERIMENT_NAME:-ml-energy-poc}"
 export TRAIN_CMD="${TRAIN_CMD:-python train_with_energy_tracking_mlflow.py}"
 
 echo "Running local SLURM simulation on: $(hostname)"
@@ -39,6 +40,9 @@ mkdir -p "${PROM_TEXTFILE_DIR}"
 JOB_ID="${SLURM_JOB_ID:-local}"
 GPU_CSV="${GPU_METRICS_DIR}/gpu_metrics_job_${JOB_ID}.csv"
 GPU_SUMMARY_JSON="${GPU_METRICS_DIR}/gpu_summary_job_${JOB_ID}.json"
+MLFLOW_RUN_ID_FILE="${GPU_METRICS_DIR}/mlflow_run_id_job_${JOB_ID}.txt"
+export MLFLOW_RUN_NAME="job-energy-${JOB_ID}"
+export MLFLOW_RUN_ID_FILE
 
 bash slurm/gpu_monitor.sh "${GPU_CSV}" "${GPU_SAMPLE_INTERVAL_SEC}" &
 MONITOR_PID=$!
@@ -59,12 +63,17 @@ python slurm/summarize_gpu_metrics.py \
   --co2-kg-kwh "${GRID_CO2_KG_PER_KWH}" \
   --pue "${PUE_FACTOR}"
 
-if [ "${MLFLOW_LOG_JOB_ENERGY}" = "1" ]; then
+if [ "${MLFLOW_LOG_JOB_ENERGY}" = "1" ] || [ "${MLFLOW_LOG_JOB_ENERGY,,}" = "true" ] || [ "${MLFLOW_LOG_JOB_ENERGY,,}" = "yes" ]; then
+  RUN_ID=""
+  if [ -f "${MLFLOW_RUN_ID_FILE}" ]; then
+    RUN_ID="$(cat "${MLFLOW_RUN_ID_FILE}" 2>/dev/null || true)"
+  fi
   python slurm/log_job_energy_mlflow.py \
     --summary-json "${GPU_SUMMARY_JSON}" \
     --tracking-uri "${MLFLOW_TRACKING_URI}" \
     --experiment "${MLFLOW_JOB_ENERGY_EXPERIMENT}" \
-    --run-name "job-energy-${JOB_ID}" || true
+    --run-name "job-energy-${JOB_ID}" \
+    ${RUN_ID:+--run-id "${RUN_ID}"} || true
 fi
 
 python slurm/export_job_metrics_prom.py \

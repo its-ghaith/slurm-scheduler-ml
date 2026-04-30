@@ -55,9 +55,17 @@ def main():
     print(f"MLflow URI: {mlflow_uri}")
 
     mlflow.set_tracking_uri(mlflow_uri)
-    mlflow.set_experiment("ml-energy-poc")
+    experiment_name = os.environ.get("MLFLOW_EXPERIMENT_NAME", "ml-energy-poc")
+    run_name = os.environ.get("MLFLOW_RUN_NAME")
+    run_id_file = os.environ.get("MLFLOW_RUN_ID_FILE")
+    mlflow.set_experiment(experiment_name)
 
-    with mlflow.start_run():
+    with mlflow.start_run(run_name=run_name):
+        run_id = mlflow.active_run().info.run_id
+        if run_id_file:
+            with open(run_id_file, "w", encoding="utf-8") as f:
+                f.write(run_id)
+        print(f"MLflow Run ID: {run_id}")
         mlflow.log_param("batch_size", batch_size)
         mlflow.log_param("epochs", epochs)
         mlflow.log_param("device", str(device))
