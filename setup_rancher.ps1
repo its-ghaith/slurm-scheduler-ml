@@ -17,6 +17,17 @@
 
 $ErrorActionPreference = "Stop"
 
+function Invoke-Kubectl {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string[]]$Args
+    )
+    & kubectl @Args
+    if ($LASTEXITCODE -ne 0) {
+        throw "kubectl failed: kubectl $($Args -join ' ')"
+    }
+}
+
 function Import-DotEnv {
     param([string]$Path = ".env")
     if (-not (Test-Path $Path)) { return }
@@ -26,15 +37,18 @@ function Import-DotEnv {
         $eq = $line.IndexOf("=")
         if ($eq -lt 1) { return }
         $name = $line.Substring(0, $eq).Trim()
-        $value = $line.Substring($eq + 1).Trim().Trim("'`\"")
+        $value = $line.Substring($eq + 1).Trim().Trim("'`"")
         Set-Item -Path "Env:$name" -Value $value
     }
 }
 
 function Ensure-Namespace {
-    $ns = kubectl --kubeconfig $Kubeconfig get ns $Namespace --ignore-not-found -o name
+    $ns = & kubectl --kubeconfig $Kubeconfig get ns $Namespace --ignore-not-found -o name
+    if ($LASTEXITCODE -ne 0) {
+        throw "kubectl failed while checking namespace '$Namespace' using kubeconfig '$Kubeconfig'"
+    }
     if (-not $ns) {
-        kubectl --kubeconfig $Kubeconfig create namespace $Namespace | Out-Null
+        Invoke-Kubectl -Args @("--kubeconfig", $Kubeconfig, "create", "namespace", $Namespace)
     }
 }
 
@@ -42,22 +56,19 @@ function Ensure-GhcrSecret {
     if (-not $env:CR_PAT) {
         throw "CR_PAT missing. Put CR_PAT in .env or env var."
     }
-    kubectl --kubeconfig $Kubeconfig -n $Namespace delete secret ghcr-pull-secret --ignore-not-found | Out-Null
-    kubectl --kubeconfig $Kubeconfig -n $Namespace create secret docker-registry ghcr-pull-secret `
-      --docker-server=ghcr.io `
-      --docker-username=its-ghaith `
-      --docker-password=$env:CR_PAT | Out-Null
+    Invoke-Kubectl -Args @("--kubeconfig", $Kubeconfig, "-n", $Namespace, "delete", "secret", "ghcr-pull-secret", "--ignore-not-found")
+    Invoke-Kubectl -Args @("--kubeconfig", $Kubeconfig, "-n", $Namespace, "create", "secret", "docker-registry", "ghcr-pull-secret", "--docker-server=ghcr.io", "--docker-username=its-ghaith", "--docker-password=$env:CR_PAT")
 }
 
 function Apply-Stack {
-    kubectl --kubeconfig $Kubeconfig apply -f $Manifest | Out-Null
+    Invoke-Kubectl -Args @("--kubeconfig", $Kubeconfig, "apply", "-f", $Manifest)
 }
 
 function Restart-And-Wait {
-    kubectl --kubeconfig $Kubeconfig -n $Namespace rollout restart deploy/mlflow deploy/slurmctld deploy/slurmd | Out-Null
-    kubectl --kubeconfig $Kubeconfig -n $Namespace rollout status deploy/mlflow --timeout=300s
-    kubectl --kubeconfig $Kubeconfig -n $Namespace rollout status deploy/slurmctld --timeout=300s
-    kubectl --kubeconfig $Kubeconfig -n $Namespace rollout status deploy/slurmd --timeout=300s
+    Invoke-Kubectl -Args @("--kubeconfig", $Kubeconfig, "-n", $Namespace, "rollout", "restart", "deploy/mlflow", "deploy/slurmctld", "deploy/slurmd")
+    Invoke-Kubectl -Args @("--kubeconfig", $Kubeconfig, "-n", $Namespace, "rollout", "status", "deploy/mlflow", "--timeout=300s")
+    Invoke-Kubectl -Args @("--kubeconfig", $Kubeconfig, "-n", $Namespace, "rollout", "status", "deploy/slurmctld", "--timeout=300s")
+    Invoke-Kubectl -Args @("--kubeconfig", $Kubeconfig, "-n", $Namespace, "rollout", "status", "deploy/slurmd", "--timeout=300s")
 }
 
 function Submit-Job {
@@ -71,13 +82,13 @@ function Submit-Job {
     if ($MlflowLogJobEnergy) { $pairs += "MLFLOW_LOG_JOB_ENERGY='$MlflowLogJobEnergy'" }
     if ($MlflowJobEnergyExperiment) { $pairs += "MLFLOW_JOB_ENERGY_EXPERIMENT='$MlflowJobEnergyExperiment'" }
     $cmd = ($pairs -join " ") + " sbatch /workspace/slurm/train_mlflow_local.slurm"
-    kubectl --kubeconfig $Kubeconfig -n $Namespace exec deploy/slurmctld -- bash -lc $cmd
+    Invoke-Kubectl -Args @("--kubeconfig", $Kubeconfig, "-n", $Namespace, "exec", "deploy/slurmctld", "--", "bash", "-lc", $cmd)
 }
 
 function Run-Test {
-    kubectl --kubeconfig $Kubeconfig -n $Namespace get pods -o wide
-    kubectl --kubeconfig $Kubeconfig -n $Namespace exec deploy/slurmctld -- bash -lc "scontrol ping && sinfo -N -l"
-    kubectl --kubeconfig $Kubeconfig -n $Namespace exec deploy/prometheus -- sh -lc "wget -qO- 'http://localhost:9090/api/v1/query?query=slurm_job_training_energy_kwh'"
+    Invoke-Kubectl -Args @("--kubeconfig", $Kubeconfig, "-n", $Namespace, "get", "pods", "-o", "wide")
+    Invoke-Kubectl -Args @("--kubeconfig", $Kubeconfig, "-n", $Namespace, "exec", "deploy/slurmctld", "--", "bash", "-lc", "scontrol ping && sinfo -N -l")
+    Invoke-Kubectl -Args @("--kubeconfig", $Kubeconfig, "-n", $Namespace, "exec", "deploy/prometheus", "--", "sh", "-lc", "wget -qO- 'http://localhost:9090/api/v1/query?query=slurm_job_training_energy_kwh'")
 }
 
 function Show-PortForward {
