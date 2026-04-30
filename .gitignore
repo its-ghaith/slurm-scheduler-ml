@@ -3,6 +3,14 @@ rotationally-invariant-cnns/
 __pycache__/
 .env
 
+# Generated runtime artifacts
+logs/*.out
+logs/*.err
+energy_metrics/gpu_metrics_job_*.csv
+energy_metrics/gpu_summary_job_*.json
+energy_metrics/node_exporter/*.prom
+mlflow_data/*.db
+
 # Rancher / kubeconfig secrets
 rancherConfigs/main.yaml
 rancherConfigs/*.local.yaml

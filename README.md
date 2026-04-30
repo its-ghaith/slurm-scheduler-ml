@@ -28,6 +28,7 @@ CR_PAT=ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 `CR_PAT` is used by `setup_rancher.ps1` to create `ghcr-pull-secret`.
+All runtime and submit parameters are available in `.env.example` and can be overridden in `.env`.
 
 ## 2) Bootstrap stack
 

@@ -4,7 +4,15 @@
     [string]$Kubeconfig = "rancherConfigs/main.yaml",
     [string]$Namespace = "mlops-energy",
     [string]$Manifest = "rancherConfigs/slurm-stack.yaml",
-    [string]$TrainCmd = "python train_with_energy_tracking_mlflow.py"
+    [string]$TrainCmd = "python train_with_energy_tracking_mlflow.py",
+    [string]$BatchSize = "",
+    [string]$MlflowTrackingUri = "",
+    [string]$GpuSampleIntervalSec = "",
+    [string]$ElectricityPriceEurPerKwh = "",
+    [string]$GridCo2KgPerKwh = "",
+    [string]$PueFactor = "",
+    [string]$MlflowLogJobEnergy = "",
+    [string]$MlflowJobEnergyExperiment = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -53,7 +61,17 @@ function Restart-And-Wait {
 }
 
 function Submit-Job {
-    kubectl --kubeconfig $Kubeconfig -n $Namespace exec deploy/slurmctld -- bash -lc "TRAIN_CMD='$TrainCmd' sbatch /workspace/slurm/train_mlflow_local.slurm"
+    $pairs = @("TRAIN_CMD='$TrainCmd'")
+    if ($BatchSize) { $pairs += "BATCH_SIZE='$BatchSize'" }
+    if ($MlflowTrackingUri) { $pairs += "MLFLOW_TRACKING_URI='$MlflowTrackingUri'" }
+    if ($GpuSampleIntervalSec) { $pairs += "GPU_SAMPLE_INTERVAL_SEC='$GpuSampleIntervalSec'" }
+    if ($ElectricityPriceEurPerKwh) { $pairs += "ELECTRICITY_PRICE_EUR_PER_KWH='$ElectricityPriceEurPerKwh'" }
+    if ($GridCo2KgPerKwh) { $pairs += "GRID_CO2_KG_PER_KWH='$GridCo2KgPerKwh'" }
+    if ($PueFactor) { $pairs += "PUE_FACTOR='$PueFactor'" }
+    if ($MlflowLogJobEnergy) { $pairs += "MLFLOW_LOG_JOB_ENERGY='$MlflowLogJobEnergy'" }
+    if ($MlflowJobEnergyExperiment) { $pairs += "MLFLOW_JOB_ENERGY_EXPERIMENT='$MlflowJobEnergyExperiment'" }
+    $cmd = ($pairs -join " ") + " sbatch /workspace/slurm/train_mlflow_local.slurm"
+    kubectl --kubeconfig $Kubeconfig -n $Namespace exec deploy/slurmctld -- bash -lc $cmd
 }
 
 function Run-Test {
@@ -70,6 +88,20 @@ function Show-PortForward {
 }
 
 Import-DotEnv
+
+if ($PSBoundParameters.ContainsKey("Action") -eq $false -and $env:ACTION) { $Action = $env:ACTION }
+if ($PSBoundParameters.ContainsKey("Kubeconfig") -eq $false -and $env:KUBECONFIG_PATH) { $Kubeconfig = $env:KUBECONFIG_PATH }
+if ($PSBoundParameters.ContainsKey("Namespace") -eq $false -and $env:K8S_NAMESPACE) { $Namespace = $env:K8S_NAMESPACE }
+if ($PSBoundParameters.ContainsKey("Manifest") -eq $false -and $env:K8S_MANIFEST) { $Manifest = $env:K8S_MANIFEST }
+if ($PSBoundParameters.ContainsKey("TrainCmd") -eq $false -and $env:TRAIN_CMD) { $TrainCmd = $env:TRAIN_CMD }
+if ($PSBoundParameters.ContainsKey("BatchSize") -eq $false -and $env:BATCH_SIZE) { $BatchSize = $env:BATCH_SIZE }
+if ($PSBoundParameters.ContainsKey("MlflowTrackingUri") -eq $false -and $env:MLFLOW_TRACKING_URI) { $MlflowTrackingUri = $env:MLFLOW_TRACKING_URI }
+if ($PSBoundParameters.ContainsKey("GpuSampleIntervalSec") -eq $false -and $env:GPU_SAMPLE_INTERVAL_SEC) { $GpuSampleIntervalSec = $env:GPU_SAMPLE_INTERVAL_SEC }
+if ($PSBoundParameters.ContainsKey("ElectricityPriceEurPerKwh") -eq $false -and $env:ELECTRICITY_PRICE_EUR_PER_KWH) { $ElectricityPriceEurPerKwh = $env:ELECTRICITY_PRICE_EUR_PER_KWH }
+if ($PSBoundParameters.ContainsKey("GridCo2KgPerKwh") -eq $false -and $env:GRID_CO2_KG_PER_KWH) { $GridCo2KgPerKwh = $env:GRID_CO2_KG_PER_KWH }
+if ($PSBoundParameters.ContainsKey("PueFactor") -eq $false -and $env:PUE_FACTOR) { $PueFactor = $env:PUE_FACTOR }
+if ($PSBoundParameters.ContainsKey("MlflowLogJobEnergy") -eq $false -and $env:MLFLOW_LOG_JOB_ENERGY) { $MlflowLogJobEnergy = $env:MLFLOW_LOG_JOB_ENERGY }
+if ($PSBoundParameters.ContainsKey("MlflowJobEnergyExperiment") -eq $false -and $env:MLFLOW_JOB_ENERGY_EXPERIMENT) { $MlflowJobEnergyExperiment = $env:MLFLOW_JOB_ENERGY_EXPERIMENT }
 
 switch ($Action) {
     "bootstrap" {
