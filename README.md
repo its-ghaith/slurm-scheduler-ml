@@ -1,179 +1,167 @@
-# SLURM + Prometheus + Grafana + node-exporter PoC
+# Local Branch: SLURM + MLflow + Prometheus + Grafana (Docker Compose)
 
-## Dokumentation
+Dieser Branch (`local-sulrm`) enthaelt nur die lokale Umgebung. Ziel ist ein reproduzierbarer End-to-End-Workflow:
 
-- Lokales Docker-Setup: diese README
-- Word/PDF:
-  - `SLURM_Prometheus_Grafana_Dokumentation.docx`
-  - `SLURM_Prometheus_Grafana_Dokumentation.pdf`
+1. Training wird ueber SLURM gestartet.
+2. GPU-/Energie-Metriken werden pro Job gesammelt.
+3. Job-Metriken landen in Prometheus/Grafana.
+4. Trainingsmetriken und Artefakte landen in MLflow.
 
-Hinweis: Die Rancher/Kubernetes-Implementierung liegt im Branch `Rancher-sulrm`.
+## Architektur und Zielbild
 
-Dieses Projekt zeigt ein lokales **All-in-One Setup** fuer SLURM-basiertes Training mit:
-
-- MLflow fuer Experiment-Tracking
-- GPU-/Energie-Messung pro Job
-- Export in Prometheus-Metriken
-- Visualisierung in Grafana
-
-Die Dokumentation entspricht inhaltlich der Word-Datei `SLURM_Prometheus_Grafana_Dokumentation.docx`.
-
-## Ziel
-
-Ziel ist ein reproduzierbarer Workflow, in dem SLURM-Jobs gestartet werden und deren Energie-, Kosten- und CO2-Kennzahlen automatisch in Grafana erscheinen.
-
-## Architektur-Ueberblick
-
-Der Stack laeuft ueber eine gemeinsame `docker-compose.yml`:
-
-- `slurmctld` (SLURM Controller)
-- `slurmd` (SLURM Worker mit GPU)
-- `mlflow` (Tracking Server)
-- `node-exporter` (Textfile Collector)
-- `prometheus` (Scrape + Storage)
+Komponenten im lokalen Stack:
+- `slurmctld` (Controller)
+- `slurmd` (Worker mit GPU)
+- `mlflow` (Tracking)
+- `node-exporter` (textfile collector)
+- `prometheus` (Scrape + Query)
 - `grafana` (Dashboard)
-- `cadvisor` + `nvidia-dcgm-exporter` (System-/GPU-Metriken)
+- `cadvisor` und `nvidia-dcgm-exporter` (Host-/GPU-Telemetrie)
 
-## Workflow (Visualisierung)
+Visualisierung:
 
-![Workflow](docs_assets/workflow.png)
+![Workflow](/D:/OLD/Sync/Projekte/Masterarbeit/Project/PoC4/docs_assets/workflow.png)
 
-## Datenfluss (Visualisierung)
+![Datenfluss](/D:/OLD/Sync/Projekte/Masterarbeit/Project/PoC4/docs_assets/dataflow.png)
 
-![Datenfluss](docs_assets/dataflow.png)
+## Entwicklungsstand und wichtige Entscheidungen
 
-## End-to-End Datenfluss
-
-1. Jobstart via SLURM (`sbatch`)
-2. GPU-Monitoring schreibt CSV (`gpu_metrics_job_<id>.csv`)
-3. Zusammenfassung schreibt JSON (`gpu_summary_job_<id>.json`)
-4. Export erzeugt Prometheus-Textfiles (`job_<id>.prom`, `aggregate.prom`)
-5. `node-exporter` liest Textfiles
-6. Prometheus scraped die Metriken
-7. Grafana visualisiert im Dashboard `SLURM Energy Overview`
+- Lokale Ausfuehrung erfolgt zentral ueber `docker-compose.yml`.
+- Training wird ueber `slurm/train_mlflow_local.slurm` gestartet.
+- Energie-Metriken werden aus Job-Outputs erzeugt und als `.prom` exportiert.
+- Dashboard-Provisioning erfolgt automatisch ueber `grafana/provisioning/*`.
+- Alle uebergebbaren Laufzeitparameter liegen in `.env` / `.env.example`.
 
 ## Relevante Dateien
 
 - `docker-compose.yml`
-- `prometheus/prometheus.yml`
+- `setup_poc.ps1`
+- `.env.example`
 - `slurm/train_mlflow_local.slurm`
 - `slurm/train_mlflow_job.slurm`
+- `slurm/gpu_monitor.sh`
+- `slurm/summarize_gpu_metrics.py`
 - `slurm/export_job_metrics_prom.py`
+- `slurm/log_job_energy_mlflow.py`
 - `grafana/dashboards/slurm-energy-overview.json`
-- `grafana/provisioning/datasources/datasource.yml`
-- `grafana/provisioning/dashboards/dashboards.yml`
-- `setup_poc.ps1`
+- `prometheus/prometheus.yml`
 
-## Start & Betrieb
+## Konfiguration
 
-### 0) Umgebungsparameter
+### 1) `.env` erstellen
 
 ```powershell
-copy .env.example .env
+Copy-Item .env.example .env
 ```
 
-Alle uebergebbaren Job-Parameter fuer `setup_poc.ps1` sind in `.env(.example)` gepflegt.
+`.env` wird nicht committed (`.gitignore`).
 
-### 1) Stack starten
+Beispielparameter:
+
+```env
+TRAIN_CMD=python train_with_energy_tracking_mlflow.py
+BATCH_SIZE=32
+MLFLOW_TRACKING_URI=http://mlflow:5000
+GPU_SAMPLE_INTERVAL_SEC=0.2
+ELECTRICITY_PRICE_EUR_PER_KWH=0.30
+GRID_CO2_KG_PER_KWH=0.4
+PUE_FACTOR=1.0
+MLFLOW_LOG_JOB_ENERGY=1
+MLFLOW_JOB_ENERGY_EXPERIMENT=slurm-job-energy
+```
+
+## Betrieb (End-to-End)
+
+### 2) Stack starten
 
 ```powershell
 docker compose up -d --build
 ```
 
-### 2) Job submitten
+### 3) Training ueber SLURM starten
 
 ```powershell
-docker exec -it slurmctld bash -lc "TRAIN_CMD='python train.py' sbatch /workspace/slurm/train_mlflow_local.slurm"
+docker exec -i slurmctld bash -lc "TRAIN_CMD='python train.py' sbatch /workspace/slurm/train_mlflow_local.slurm"
 ```
 
-### 3) Wichtige UIs
-
-- Grafana: <http://localhost:3000>
-- Prometheus: <http://localhost:9090>
-- MLflow: <http://localhost:5000>
-
-Direktlink Dashboard:
-
-- <http://localhost:3000/d/slurm-energy-overview/slurm-energy-overview?orgId=1&from=now-30d&to=now>
-
-## Test-Checkliste
-
-### A) Container laufen
+Optional mit `setup_poc.ps1`:
 
 ```powershell
-docker ps
+./setup_poc.ps1 -Action all
 ```
 
-Erwartet: `slurmctld`, `slurmd`, `prometheus`, `grafana`, `node-exporter`, `mlflow`.
-
-### B) SLURM Jobstatus
+### 4) Status pruefen
 
 ```powershell
-docker exec -it slurmctld squeue
-docker exec -it slurmctld scontrol show job <JOBID>
+docker exec -i slurmctld squeue
+docker exec -i slurmctld scontrol show job <JOBID>
 ```
 
-Erwartet: Jobstate `COMPLETED`.
+### 5) UIs aufrufen
 
-### C) Dateien je Job
+- Grafana: [http://localhost:3000](http://localhost:3000)
+- Prometheus: [http://localhost:9090](http://localhost:9090)
+- MLflow: [http://localhost:5000](http://localhost:5000)
+
+Grafana Dashboard:
+- [http://localhost:3000/d/slurm-energy-overview/slurm-energy-overview?orgId=1&from=now-30d&to=now](http://localhost:3000/d/slurm-energy-overview/slurm-energy-overview?orgId=1&from=now-30d&to=now)
+
+## Was pro Job erzeugt wird
 
 - `energy_metrics/gpu_metrics_job_<JOBID>.csv`
 - `energy_metrics/gpu_summary_job_<JOBID>.json`
 - `energy_metrics/node_exporter/job_<JOBID>.prom`
 - `energy_metrics/node_exporter/aggregate.prom`
+- `logs/ml-energy-local-<JOBID>.out`
+- `logs/ml-energy-local-<JOBID>.err`
 
-### D) node-exporter
+## E2E-Testcheckliste
 
+1. Container laufen:
+```powershell
+docker ps
+```
+
+2. SLURM Health:
+```powershell
+docker exec -i slurmctld sinfo
+docker exec -i slurmctld squeue
+```
+
+3. Prometheus Query:
+```powershell
+curl http://localhost:9090/api/v1/query?query=slurm_jobs_total
+curl http://localhost:9090/api/v1/query?query=slurm_job_training_energy_kwh
+```
+
+4. node-exporter:
 ```powershell
 curl http://localhost:9100/metrics
 ```
+Erwartet: `node_textfile_scrape_error 0` und `slurm_job_*` Metriken.
 
-Erwartet:
+5. Grafana:
+- Dashboard `SLURM Energy Overview` zeigt KPI-Karten und Job-Zeitreihen.
 
-- `node_textfile_scrape_error 0`
-- `slurm_job_*` und `slurm_jobs_*` vorhanden
+## Troubleshooting
 
-### E) Prometheus Queries
+### Grafana zeigt "No data"
+- Prometheus-Query direkt testen (`slurm_jobs_total`).
+- Zeitbereich in Grafana vergroessern (`Last 30 days`).
+- Dashboard-URL mit `orgId=1` verwenden.
 
-Beispiele:
+### `sbatch` Fehler mit DOS line breaks
+- SLURM-Skripte mit Unix-LF speichern.
 
-- `slurm_jobs_total`
-- `slurm_job_training_energy_kwh`
-- `slurm_job_estimated_electricity_cost_eur`
+### `node_textfile_scrape_error = 1`
+- Sicherstellen, dass `.prom` Dateien gueltig sind und lesbar (`0644`).
 
-### F) Grafana
+### Job startet, aber keine GPU-Werte
+- In `slurmd` pruefen, ob GPU sichtbar ist (`nvidia-smi`).
+- `nvidia-dcgm-exporter` und GPU Runtime in Docker pruefen.
 
-Dashboard `SLURM Energy Overview` zeigt:
+## Hinweise fuer spaetere HPC/Rancher-Migration
 
-- KPI-Karten (Jobs total, Energy, Cost, CO2)
-- Zeitreihen pro Job
-
-## Typische Fehler & Loesungen
-
-### 1) Grafana zeigt "No data"
-
-- Prometheus-Query direkt pruefen (`slurm_jobs_total`).
-- Zeitbereich im Dashboard passend setzen (`Last 30 days`).
-- Richtige Org/Dashboard-URL verwenden (`orgId=1`).
-
-### 2) `node_textfile_scrape_error = 1`
-
-- `.prom` mit Linux-Zeilenende (`LF`) schreiben.
-- Dateirechte lesbar setzen (`0644`).
-
-### 3) SLURM Container starten nicht mit
-
-- Nur die zentrale `docker-compose.yml` verwenden.
-
-## Schneller Demo-Ablauf
-
-1. `docker compose up -d --build`
-2. Dashboard in Grafana oeffnen
-3. Job via `sbatch` starten
-4. Job-Completion zeigen
-5. Neue Job-ID in Grafana-Metriken zeigen
-
-## Dokumente
-
-- Word: `SLURM_Prometheus_Grafana_Dokumentation.docx`
-- PDF: `SLURM_Prometheus_Grafana_Dokumentation.pdf`
+- Rancher/Kubernetes ist absichtlich getrennt im Branch `Rancher-sulrm`.
+- Dieser Local-Branch enthaelt keine Rancher-spezifische Anleitung.
+- Fuer Clusterbetrieb denselben Trainingsfluss mit cluster-spezifischem `sbatch` verwenden.
