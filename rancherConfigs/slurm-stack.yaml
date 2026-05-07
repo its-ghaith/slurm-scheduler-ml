@@ -304,7 +304,21 @@ spec:
         - name: logs
           emptyDir: {}
         - name: energy-metrics
-          emptyDir: {}
+          persistentVolumeClaim:
+            claimName: slurm-energy-metrics-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: slurm-energy-metrics-pvc
+  namespace: mlops-energy
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: longhorn
 ---
 apiVersion: v1
 kind: Service
