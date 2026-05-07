@@ -213,3 +213,116 @@ Fuer dauerhafte Wirkung:
 - Local-Docker-Setup liegt in `local-sulrm`.
 - `.env` nie committen, nur `.env.example`.
 - `rancherConfigs/main.yaml` bleibt lokal/ignoriert.
+
+## Reproduzierbares Retraining von `rotationally-invariant-cnns` mit Phasen-Energie-Tracking
+
+Ohne Aenderungen im Originalordner `rotationally-invariant-cnns`:
+- Runner: `rotationally-invariant-cnns-changes/train_repro_phase_tracked.py`
+- SLURM Job: `slurm/train_repro_rotacnn_job.slurm`
+- Phase-Summary: `slurm/summarize_gpu_metrics_phases.py`
+- Prometheus Export (Phasen): `slurm/export_job_phase_metrics_prom.py`
+
+### Submit Beispiel
+
+```powershell
+kubectl --kubeconfig rancherConfigs/main.yaml -n mlops-energy exec deploy/slurmctld -- bash -lc "REPRO_DATASET=foci REPRO_MODEL=yolov8 REPRO_OVERRIDES='experiment=repro_foci_y8;dataset.train_size=158;model.epochs=100;model.patience=8;model.batch_size=8;dataset.img_size=660' sbatch /workspace/slurm/train_repro_rotacnn_job.slurm"
+```
+
+`REPRO_OVERRIDES` Format:
+- Semikolon-getrennt: `key=value;key2=value2`
+- Beispiel: `dataset.path=/workspace/rotationally-invariant-cnns/data/uc_cells`
+
+### Neue Metriken
+
+Im erweiterten Summary (`gpu_summary_job_<id>_phases.json`):
+- `phase_metrics.<phase>.gpu_energy_kwh`
+- `phase_metrics.<phase>.total_energy_kwh`
+- `phase_metrics.<phase>.codecarbon_energy_kwh`
+- `codecarbon_vs_slurm.training_abs_diff_kwh`
+- `codecarbon_vs_slurm.training_rel_diff_pct`
+
+In Prometheus (zusaeztlich):
+- `slurm_job_phase_energy_kwh{job_id,phase}`
+- `slurm_job_phase_gpu_energy_kwh{job_id,phase}`
+- `slurm_job_phase_codecarbon_energy_kwh{job_id,phase}`
+- `slurm_job_training_energy_compare_abs_diff_kwh{job_id}`
+- `slurm_job_training_energy_compare_rel_diff_pct{job_id}`
+
+## Lessons Learned und Uebergabe (ab "okay dann mache den Plan")
+
+Dieser Abschnitt dokumentiert, was konkret umgesetzt wurde, welche Probleme auftraten und wie der finale stabile Zustand aussieht.
+
+### 1) Umgesetzter Plan
+
+1. Reproduzierbaren Retrain-Workflow fuer `rotationally-invariant-cnns` aufgebaut, ohne den Originalordner zu aendern.
+2. Tracking entlang des gesamten Flows integriert: SLURM Job -> GPU/Energie-Summaries -> Prometheus -> Grafana sowie MLflow-Runs.
+3. Energieverbrauch in Phasen getrennt erfasst (Training vs. Preprocessing) und Vergleich CodeCarbon vs. SLURM ermoeglicht.
+4. Wiederholbare "Reset auf Null"-Schritte fuer MLflow, Grafana und Energy-Metrics eingefuehrt.
+
+### 2) Was technisch gemacht wurde
+
+- Repro-Runner und SLURM-Job fuer den getrennten Stage-Ansatz verwendet:
+  - `_stage_rotacnn/`
+  - `slurm/train_repro_rotacnn_job.slurm`
+- Phasenbasierte Auswertung/Export umgesetzt:
+  - `slurm/summarize_gpu_metrics_phases.py`
+  - `slurm/export_job_phase_metrics_prom.py`
+- Dashboarding fuer neue Phasenmetriken erweitert:
+  - `grafana/dashboards/slurm-energy-overview.json`
+- Zusaetzliches Dashboard erstellt, das bei Inaktivitaet auf 0 faellt:
+  - `grafana/dashboards/slurm-energy-overview-zero-on-idle.json`
+
+### 3) Wichtige aufgetretene Probleme (Root Causes)
+
+1. Falscher Kubernetes-Context:
+   - Lokal war teils `docker-desktop` aktiv statt Rancher-Kubeconfig (`rancherConfigs/main.yaml`).
+   - Effekt: "No data", obwohl im richtigen Cluster Daten vorhanden waren.
+2. Pod-Restarts und fluechtige Workspaces:
+   - Nach Neustarts fehlten teils Skripte/Abhaengigkeiten im Runtime-Pod.
+3. Abhaengigkeiten/Import-Themen:
+   - `opencv-python` vs. `opencv-python-headless`, fehlende Python-Pakete, fehlende Module im Pod.
+4. Dashboard-Provisioning-Inkonsistenzen:
+   - Unterschiedliche ConfigMap-Staende/Versionen fuehrten zu alten Queries trotz vermeintlicher Updates.
+5. Fragile Query-Variante in Grafana:
+   - Komplexe `label_replace + group_left`-Konstruktionen erzeugten in bestimmten Situationen `No data`.
+
+### 4) Finale Dashboard-Strategie
+
+Es gibt jetzt zwei getrennte Dashboards mit klar unterschiedlichem Zweck:
+
+1. `SLURM Energy Overview` (`uid=slurm-energy-overview`)
+   - Beibehalten fuer "klassische" Anzeige und bestehende Ergebnisse.
+2. `SLURM Energy Overview (Zero on Idle)` (`uid=slurm-energy-overview-zero-on-idle`)
+   - Speziell fuer das Verhalten "nach Job-Ende gegen 0".
+   - Nutzt robuste Zero-on-Idle-Queries mit Aktivitaetsmaske + `vector(0)`-Fallback.
+
+Hinweis zur Bedienung:
+- URL-Parameter wie `var-stale_window_sec=120` koennen Darstellung ueberschreiben.
+- Fuer Historie immer groesseres Zeitfenster verwenden (z. B. `Last 30 days`).
+
+### 5) Team-Runbook (Kurzfassung)
+
+1. Immer mit korrekter Kubeconfig arbeiten:
+```powershell
+kubectl --kubeconfig rancherConfigs/main.yaml -n mlops-energy get pods
+```
+
+2. Verfuegbarkeit der Metriken zuerst in Prometheus pruefen:
+```powershell
+kubectl --kubeconfig rancherConfigs/main.yaml -n mlops-energy exec deploy/prometheus -- sh -lc "wget -qO- 'http://localhost:9090/api/v1/query?query=slurm_job_training_energy_kwh'"
+kubectl --kubeconfig rancherConfigs/main.yaml -n mlops-energy exec deploy/prometheus -- sh -lc "wget -qO- 'http://localhost:9090/api/v1/query?query=slurm_job_phase_energy_kwh'"
+```
+
+3. Erst dann Grafana beurteilen:
+- Falls `No data`: Zeitfenster, URL-Variablen, und aktives Dashboard (normal vs. zero-on-idle) pruefen.
+
+4. Fuer sauberen Neustart:
+- MLflow/Grafana/Prometheus-Daten und Energy-Textfiles resetten.
+- Deployments neu starten.
+- Testlauf mit `model.epochs=3` als Smoke-Test.
+
+### 6) Ergebnis fuer Wissenstransfer
+
+- Reproduzierbarer Trainingsflow mit phasengetrenntem Energie-Tracking ist etabliert.
+- CodeCarbon-vs-SLURM-Vergleich fuer Training ist messbar und in Grafana sichtbar.
+- Ein separates Zero-on-Idle-Dashboard ist vorhanden, ohne bestehende Dashboard-Ergebnisse zu verfaelschen.

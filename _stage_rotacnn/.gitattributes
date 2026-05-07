@@ -1,0 +1,6 @@
+*.TIF filter=lfs diff=lfs merge=lfs -text
+*.pth filter=lfs diff=lfs merge=lfs -text
+data/uc_cells/raw/labels_xywh/*.txt filter=lfs diff=lfs merge=lfs -text
+*.png filter=lfs diff=lfs merge=lfs -text
+data/carpk/labels/test/*.txt filter=lfs diff=lfs merge=lfs -text
+mlruns_shared_no_artifacts/** filter=lfs diff=lfs merge=lfs -text

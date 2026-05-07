@@ -1,0 +1,14 @@
+- vorbeheben dass abweischung bei Windows setup in readme
+
+- Windows Setup in WiKi:
+* Nennen dass zwei gruppen GPU und CPU bei uv synchronisieren sonst:
+ncompatible constraints in requirements of countcv (0.1.0): torch (==2.7.1+cpu) torch (==2.7.1+cu126)
+* Navigierung zu Token: Account(oben rechts) -> Preferences -> Access -> Personal access token -> welche Rolle o. Berichtung soll man auswählen
+* Nutzung der uv anstatt direkt mlflow:
+uv run mlflow artifacts download -u "models:/SAUnet/1.1.0" -d checkpoints/cnn-base 
+* anstatt das zu schreiben: {Bilder ablegen an einem Ort. Nennen wir ihn {images}}
+ wär es einfach powershell anweisung um einen Ordner zu erstellen.
+
+ 
+
+

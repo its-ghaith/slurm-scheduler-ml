@@ -1,0 +1,16 @@
+model_name: cnn_base
+version: SAUnet # Any of fcrn-base, fcrn-skip, SAUnet, Unet
+approach: densitymap
+epochs: 100
+eval_every_n: 1
+max_patience: 15
+batch_size: 4
+quantiles: false
+
+flip_rotate: true
+infer_normalisation: false
+lambda_count: 0.001
+sigma: 2
+tilesize: null
+
+stop_at_mae: null

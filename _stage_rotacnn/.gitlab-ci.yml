@@ -1,0 +1,50 @@
+variables:
+  IMAGE_NAME: "$CI_REGISTRY_IMAGE"
+
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+
+stages:
+  - build
+  - docker
+  - test
+
+check_lfs_pointers:
+  image: alpine:latest
+  stage: build
+  before_script:
+    - apk add --no-cache git git-lfs bash coreutils
+    - git lfs install
+  script:
+    - bash ci/scripts/check_lfs_pointers.sh
+
+make_docker_with_data:
+  stage: docker
+  image: docker:latest
+  variables:
+    DOCKER_HOST: "tcp://10.2.10.3:2375"
+    GIT_LFS_SKIP_SMUDGE: 1
+  before_script:
+    - apk add --no-cache git git-lfs bash coreutils python3
+  script:
+    - docker version
+    - bash ci/scripts/prepare_data.sh
+  rules:
+    - changes:
+        - uv.lock
+        - Dockerfile
+        - ci/scripts/prepare_data.sh
+        - ci/scripts/sample_data.py
+
+testing:
+  image: $IMAGE_NAME:latest
+  stage: test
+  script:
+    - echo "This is the test stage"
+    - rm -rf ./data
+    - cp -r /app/data ./data
+    - export PYTHONPATH=src
+    - python -m countcv.effcv.run_experiment --multirun +model=cnn_base model.version=SAUnet +dataset=synthcells ++model.epochs=2 ++dataset.train_size=5
+    - python -m countcv.effcv.run_experiment --multirun +model=yolov8 +dataset=carpk ++model.epochs=1 ++dataset.train_size=5
+    - python -m countcv.effcv.run_experiment --multirun +dataset=foci +model=yolov8,yolov11,cnn_base ++model.epochs=1 ++dataset.img_size=216 ++dataset.train_size=5

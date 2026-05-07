@@ -1,0 +1,7 @@
+dataset_name: carpk
+path: ./data/carpk
+train_size: False # absolute number of images to use for training
+data_yaml: ./data/carpk/data.yaml
+img_size: # size used for training (only in ultralytics?)
+  - 1280
+  - 720

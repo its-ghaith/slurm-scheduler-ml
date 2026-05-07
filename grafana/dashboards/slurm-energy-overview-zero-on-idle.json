@@ -338,7 +338,7 @@
       },
       "targets": [
         {
-          "expr": "slurm_job_training_energy_kwh",
+          "expr": "((slurm_job_training_energy_kwh) * ((time() - max(node_textfile_mtime_seconds{file=~\".*/job_[0-9]+(_phases)?\\\\.prom\"})) < bool ${stale_window_sec})) or on() vector(0)",
           "legendFormat": "job {{job_id}}",
           "refId": "A",
           "datasource": {
@@ -420,7 +420,7 @@
       },
       "targets": [
         {
-          "expr": "slurm_job_estimated_electricity_cost_eur",
+          "expr": "((slurm_job_estimated_electricity_cost_eur) * ((time() - max(node_textfile_mtime_seconds{file=~\".*/job_[0-9]+(_phases)?\\\\.prom\"})) < bool ${stale_window_sec})) or on() vector(0)",
           "legendFormat": "job {{job_id}}",
           "refId": "A",
           "datasource": {
@@ -502,7 +502,7 @@
       },
       "targets": [
         {
-          "expr": "slurm_job_gpu_util_avg_pct",
+          "expr": "((slurm_job_gpu_util_avg_pct) * ((time() - max(node_textfile_mtime_seconds{file=~\".*/job_[0-9]+(_phases)?\\\\.prom\"})) < bool ${stale_window_sec})) or on() vector(0)",
           "legendFormat": "job {{job_id}}",
           "refId": "A",
           "datasource": {
@@ -584,7 +584,7 @@
       },
       "targets": [
         {
-          "expr": "slurm_job_duration_seconds",
+          "expr": "((slurm_job_duration_seconds) * ((time() - max(node_textfile_mtime_seconds{file=~\".*/job_[0-9]+(_phases)?\\\\.prom\"})) < bool ${stale_window_sec})) or on() vector(0)",
           "legendFormat": "job {{job_id}}",
           "refId": "A",
           "datasource": {
@@ -677,7 +677,7 @@
             "uid": "prometheus"
           },
           "range": true,
-          "expr": "slurm_job_phase_energy_kwh{phase=\"training\"}"
+          "expr": "((slurm_job_phase_energy_kwh{phase=\"training\"}) * ((time() - max(node_textfile_mtime_seconds{file=~\".*/job_[0-9]+(_phases)?\\\\.prom\"})) < bool ${stale_window_sec})) or on() vector(0)"
         }
       ],
       "title": "Training Phase Energy (kWh)",
@@ -759,7 +759,7 @@
             "uid": "prometheus"
           },
           "range": true,
-          "expr": "slurm_job_phase_energy_kwh{phase=~\"preprocessing.*\"}"
+          "expr": "((slurm_job_phase_energy_kwh{phase=~\"preprocessing.*\"}) * ((time() - max(node_textfile_mtime_seconds{file=~\".*/job_[0-9]+(_phases)?\\\\.prom\"})) < bool ${stale_window_sec})) or on() vector(0)"
         }
       ],
       "title": "Preprocessing Phase Energy (kWh)",
@@ -841,7 +841,7 @@
             "uid": "prometheus"
           },
           "range": true,
-          "expr": "slurm_job_phase_codecarbon_energy_kwh"
+          "expr": "((slurm_job_phase_codecarbon_energy_kwh) * ((time() - max(node_textfile_mtime_seconds{file=~\".*/job_[0-9]+(_phases)?\\\\.prom\"})) < bool ${stale_window_sec})) or on() vector(0)"
         }
       ],
       "title": "CodeCarbon Phase Energy (kWh)",
@@ -923,7 +923,7 @@
             "uid": "prometheus"
           },
           "range": true,
-          "expr": "slurm_job_training_energy_compare_rel_diff_pct"
+          "expr": "((slurm_job_training_energy_compare_rel_diff_pct) * ((time() - max(node_textfile_mtime_seconds{file=~\".*/job_[0-9]+(_phases)?\\\\.prom\"})) < bool ${stale_window_sec})) or on() vector(0)"
         }
       ],
       "title": "Training Energy Diff % (CodeCarbon vs SLURM)",
@@ -984,7 +984,7 @@
           "refId": "A",
           "format": "time_series",
           "instant": true,
-          "expr": "slurm_job_training_energy_compare_abs_diff_kwh",
+          "expr": "((slurm_job_training_energy_compare_abs_diff_kwh) * ((time() - max(node_textfile_mtime_seconds{file=~\".*/job_[0-9]+(_phases)?\\\\.prom\"})) < bool ${stale_window_sec})) or on() vector(0)",
           "range": false,
           "editorMode": "code"
         }
@@ -1047,7 +1047,7 @@
           "refId": "A",
           "format": "time_series",
           "instant": true,
-          "expr": "slurm_job_training_energy_compare_rel_diff_pct",
+          "expr": "((slurm_job_training_energy_compare_rel_diff_pct) * ((time() - max(node_textfile_mtime_seconds{file=~\".*/job_[0-9]+(_phases)?\\\\.prom\"})) < bool ${stale_window_sec})) or on() vector(0)",
           "range": false,
           "editorMode": "code"
         }
@@ -1110,7 +1110,7 @@
           "refId": "A",
           "format": "time_series",
           "instant": true,
-          "expr": "slurm_job_phase_energy_kwh{phase=\"training\"}",
+          "expr": "((slurm_job_phase_energy_kwh{phase=\"training\"}) * ((time() - max(node_textfile_mtime_seconds{file=~\".*/job_[0-9]+(_phases)?\\\\.prom\"})) < bool ${stale_window_sec})) or on() vector(0)",
           "range": false,
           "editorMode": "code"
         }
@@ -1149,8 +1149,8 @@
   },
   "timepicker": {},
   "timezone": "browser",
-  "title": "SLURM Energy Overview",
-  "uid": "slurm-energy-overview",
-  "version": 51,
+  "title": "SLURM Energy Overview (Zero on Idle)",
+  "uid": "slurm-energy-overview-zero-on-idle",
+  "version": 3,
   "weekStart": ""
 }

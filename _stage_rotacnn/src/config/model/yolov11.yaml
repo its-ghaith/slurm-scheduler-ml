@@ -1,0 +1,8 @@
+model_name: YOLOv11
+version: yolo11n.pt
+approach: objectdetection
+epochs: 100
+freeze: 0
+patience: 4
+batch_size: 8
+pretrained: true

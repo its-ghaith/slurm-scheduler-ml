@@ -1,0 +1,5 @@
+dataset_name: foci
+path: ./data/uc_cells
+train_size: 100 # absolute number of images to use for training
+data_yaml: ./data/uc_cells/data.yaml
+img_size: 224 # only for density map, real size is 220

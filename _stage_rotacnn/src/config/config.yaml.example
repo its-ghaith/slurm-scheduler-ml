@@ -1,0 +1,2 @@
+client_id: "" # Include mlflow application ID, see https://gitlab.ai-env.de/oauth/applications 
+oidc_url: "https://gitlab.ai-env.de/oauth/"

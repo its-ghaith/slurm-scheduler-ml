@@ -1,0 +1,90 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+
+# Distribution / packaging
+.Python
+lib/
+lib64/
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Logger outputs
+*.log
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# Sphinx documentation
+docs/build/
+_autosummary/
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+strahlenexposition_venv/
+
+# database
+database/*
+*.db
+
+# VSCode
+.vscode/
+
+# Data
+# Ignore everything in data
+data/*/**
+# Except the raw folders and their content
+!data/**/raw
+!data/**/raw/**
+# ... and the data.yaml files
+!data/**/data.yaml
+
+# ultralytics creates cache files
+*.cache
+
+checkpoints/
+
+# config file
+config.yaml
+optuna_opt
+
+# mlflow local
+mlruns/
+
+# ultralytics runs and models
+runs/
+*.pt
+
+#codecarbon energy tracking
+energy_logs/
+
+# Non-TIF images
+*.jpg
+
+plots/
+
+# user specific data in gui
+src/countcv/focidet/gui/foci_counter_settings.json
