@@ -248,7 +248,7 @@ In Prometheus (zusaeztlich):
 - `slurm_job_training_energy_compare_abs_diff_kwh{job_id}`
 - `slurm_job_training_energy_compare_rel_diff_pct{job_id}`
 
-## Lessons Learned und Uebergabe (ab "okay dann mache den Plan")
+##
 
 Dieser Abschnitt dokumentiert, was konkret umgesetzt wurde, welche Probleme auftraten und wie der finale stabile Zustand aussieht.
 
