@@ -1,0 +1,141 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fake-slurm-scripts
+  namespace: mlops-energy
+data:
+  sbatch: |
+    #!/usr/bin/env bash
+    set -euo pipefail
+    mkdir -p /home/slurm/fake-slurm/jobs
+    job_id_file="/home/slurm/fake-slurm/last_job_id"
+    if [ ! -f "${job_id_file}" ]; then
+      echo 1000 > "${job_id_file}"
+    fi
+    job_id="$(cat "${job_id_file}")"
+    next_id="$((job_id + 1))"
+    echo "${next_id}" > "${job_id_file}"
+
+    script="${1:-}"
+    ts="$(date -Iseconds)"
+    {
+      echo "job_id=${job_id}"
+      echo "submitted_at=${ts}"
+      echo "script=${script}"
+      echo "mlflow_tracking_uri=${MLFLOW_TRACKING_URI:-}"
+      echo "batch_size=${BATCH_SIZE:-}"
+    } > "/home/slurm/fake-slurm/jobs/${job_id}.txt"
+
+    echo "Submitted batch job ${job_id}"
+  sinfo: |
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cat <<'EOF'
+    NODELIST NODES PARTITION STATE CPUS S:C:T MEMORY TMP_DISK WEIGHT AVAIL_FE REASON
+    fake-gpu-01 1 debug up 16 1:8:2 64000 0 1 (null) none
+    EOF
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fake-slurm-bootstrap
+  namespace: mlops-energy
+data:
+  90-fake-slurm-bootstrap.sh: |
+    #!/usr/bin/env bash
+    set -euo pipefail
+    install -d -m 0755 /usr/local/bin
+    cp /fake-slurm-bin/sbatch /usr/local/bin/sbatch
+    cp /fake-slurm-bin/sinfo /usr/local/bin/sinfo
+    chmod +x /usr/local/bin/sbatch /usr/local/bin/sinfo
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: fake-slurm-auth
+  namespace: mlops-energy
+type: Opaque
+stringData:
+  user: slurm
+  password: devslurm123
+  public_key: ""
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fake-slurm-dev
+  namespace: mlops-energy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fake-slurm-dev
+  template:
+    metadata:
+      labels:
+        app: fake-slurm-dev
+    spec:
+      containers:
+        - name: sshd
+          image: lscr.io/linuxserver/openssh-server:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            - name: TZ
+              value: "Europe/Berlin"
+            - name: SUDO_ACCESS
+              value: "true"
+            - name: PASSWORD_ACCESS
+              value: "true"
+            - name: USER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: fake-slurm-auth
+                  key: password
+            - name: USER_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: fake-slurm-auth
+                  key: user
+            - name: PUBLIC_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: fake-slurm-auth
+                  key: public_key
+          ports:
+            - containerPort: 2222
+          volumeMounts:
+            - name: fake-slurm-state
+              mountPath: /home/slurm/fake-slurm
+            - name: fake-slurm-bin
+              mountPath: /fake-slurm-bin
+            - name: fake-slurm-bootstrap
+              mountPath: /custom-cont-init.d/90-fake-slurm-bootstrap.sh
+              subPath: 90-fake-slurm-bootstrap.sh
+      volumes:
+        - name: fake-slurm-state
+          emptyDir: {}
+        - name: fake-slurm-bin
+          configMap:
+            name: fake-slurm-scripts
+            defaultMode: 0755
+        - name: fake-slurm-bootstrap
+          configMap:
+            name: fake-slurm-bootstrap
+            defaultMode: 0755
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fake-slurm-dev
+  namespace: mlops-energy
+spec:
+  selector:
+    app: fake-slurm-dev
+  ports:
+    - name: ssh
+      port: 2222
+      targetPort: 2222

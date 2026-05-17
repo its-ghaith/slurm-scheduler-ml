@@ -1,0 +1,1661 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: slurm-connector-config
+  namespace: mlops-energy
+data:
+  REMOTE_PROJECT_DIR: /home/slurm/mlops-project
+  REMOTE_SLURM_SCRIPT: slurm/train_distributed_mlflow_job.slurm
+  REMOTE_MLFLOW_TRACKING_URI: http://mlflow.mlops-energy.svc.cluster.local:5000
+  ENABLE_REVERSE_TUNNEL: "0"
+  REVERSE_TUNNEL_BIND: 5000:mlflow.mlops-energy.svc.cluster.local:5000
+  SSH_STRICT_HOST_KEY_CHECKING: "yes"
+  PROM_PUSHGATEWAY_URL: http://pushgateway:9091
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: slurm-connector
+  namespace: mlops-energy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: slurm-connector
+  template:
+    metadata:
+      labels:
+        app: slurm-connector
+    spec:
+      containers:
+        - name: connector
+          image: alpine:3.20
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/sh", "-lc"]
+          args:
+            - |
+              apk add --no-cache bash openssh-client sshpass && \
+              tail -f /dev/null
+          env:
+            - name: SLURM_SSH_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: slurm-connector-target
+                  key: host
+            - name: SLURM_SSH_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: slurm-connector-target
+                  key: port
+            - name: SLURM_SSH_USER
+              valueFrom:
+                secretKeyRef:
+                  name: slurm-connector-target
+                  key: user
+            - name: SLURM_SSH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: slurm-connector-target
+                  key: password
+                  optional: true
+            - name: REMOTE_PROJECT_DIR
+              valueFrom:
+                configMapKeyRef:
+                  name: slurm-connector-config
+                  key: REMOTE_PROJECT_DIR
+            - name: REMOTE_SLURM_SCRIPT
+              valueFrom:
+                configMapKeyRef:
+                  name: slurm-connector-config
+                  key: REMOTE_SLURM_SCRIPT
+            - name: REMOTE_MLFLOW_TRACKING_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: slurm-connector-config
+                  key: REMOTE_MLFLOW_TRACKING_URI
+            - name: ENABLE_REVERSE_TUNNEL
+              valueFrom:
+                configMapKeyRef:
+                  name: slurm-connector-config
+                  key: ENABLE_REVERSE_TUNNEL
+            - name: REVERSE_TUNNEL_BIND
+              valueFrom:
+                configMapKeyRef:
+                  name: slurm-connector-config
+                  key: REVERSE_TUNNEL_BIND
+            - name: SSH_STRICT_HOST_KEY_CHECKING
+              valueFrom:
+                configMapKeyRef:
+                  name: slurm-connector-config
+                  key: SSH_STRICT_HOST_KEY_CHECKING
+            - name: PROM_PUSHGATEWAY_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: slurm-connector-config
+                  key: PROM_PUSHGATEWAY_URL
+          volumeMounts:
+            - name: connector-ssh
+              mountPath: /etc/slurm-connector/ssh
+              readOnly: true
+            - name: connector-script
+              mountPath: /opt/slurm-connector
+              readOnly: true
+      volumes:
+        - name: connector-ssh
+          secret:
+            secretName: slurm-connector-ssh
+            defaultMode: 0400
+        - name: connector-script
+          configMap:
+            name: slurm-connector-script
+            defaultMode: 0555
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: slurm-connector-script
+  namespace: mlops-energy
+data:
+  submit_remote_slurm.sh: |
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    required_vars=(
+      SLURM_SSH_HOST
+      SLURM_SSH_PORT
+      SLURM_SSH_USER
+      REMOTE_PROJECT_DIR
+      REMOTE_SLURM_SCRIPT
+      REMOTE_MLFLOW_TRACKING_URI
+    )
+    for v in "${required_vars[@]}"; do
+      if [ -z "${!v:-}" ]; then
+        echo "Missing required variable: ${v}" >&2
+        exit 2
+      fi
+    done
+
+    BATCH_SIZE="${BATCH_SIZE:-64}"
+    GPU_SAMPLE_INTERVAL_SEC="${GPU_SAMPLE_INTERVAL_SEC:-1}"
+    ELECTRICITY_PRICE_EUR_PER_KWH="${ELECTRICITY_PRICE_EUR_PER_KWH:-0.30}"
+    GRID_CO2_KG_PER_KWH="${GRID_CO2_KG_PER_KWH:-0.40}"
+    PUE_FACTOR="${PUE_FACTOR:-1.0}"
+    MLFLOW_LOG_JOB_ENERGY="${MLFLOW_LOG_JOB_ENERGY:-1}"
+    MLFLOW_JOB_ENERGY_EXPERIMENT="${MLFLOW_JOB_ENERGY_EXPERIMENT:-ml-energy-poc}"
+    PROM_PUSHGATEWAY_URL="$(echo "${PROM_PUSHGATEWAY_URL:-http://pushgateway:9091}" | tr -d '\r')"
+
+    strict_mode="${SSH_STRICT_HOST_KEY_CHECKING:-yes}"
+    if [ -n "${SLURM_SSH_PASSWORD:-}" ]; then
+      strict_mode="no"
+    fi
+    known_hosts_file="/etc/slurm-connector/ssh/known_hosts"
+    if [ "${strict_mode}" = "no" ]; then
+      known_hosts_file="/dev/null"
+    fi
+
+    SSH_BASE=(
+      ssh
+      -o UserKnownHostsFile="${known_hosts_file}"
+      -o StrictHostKeyChecking="${strict_mode}"
+      -p "${SLURM_SSH_PORT}"
+      "${SLURM_SSH_USER}@${SLURM_SSH_HOST}"
+    )
+    if [ -n "${SLURM_SSH_PASSWORD:-}" ]; then
+      SSH_BASE=(sshpass -p "${SLURM_SSH_PASSWORD}" ssh -o PreferredAuthentications=password -o PubkeyAuthentication=no -o UserKnownHostsFile="${known_hosts_file}" -o StrictHostKeyChecking="${strict_mode}" -p "${SLURM_SSH_PORT}" "${SLURM_SSH_USER}@${SLURM_SSH_HOST}")
+    else
+      SSH_BASE=(ssh -i /etc/slurm-connector/ssh/id_ed25519 -o UserKnownHostsFile="${known_hosts_file}" -o StrictHostKeyChecking="${strict_mode}" -p "${SLURM_SSH_PORT}" "${SLURM_SSH_USER}@${SLURM_SSH_HOST}")
+    fi
+
+    if [ "${ENABLE_REVERSE_TUNNEL:-0}" = "1" ]; then
+      "${SSH_BASE[@]}" -N -f -R "${REVERSE_TUNNEL_BIND}" || true
+    fi
+
+    REMOTE_ENV="BATCH_SIZE='${BATCH_SIZE}' MLFLOW_TRACKING_URI='${REMOTE_MLFLOW_TRACKING_URI}' GPU_SAMPLE_INTERVAL_SEC='${GPU_SAMPLE_INTERVAL_SEC}' ELECTRICITY_PRICE_EUR_PER_KWH='${ELECTRICITY_PRICE_EUR_PER_KWH}' GRID_CO2_KG_PER_KWH='${GRID_CO2_KG_PER_KWH}' PUE_FACTOR='${PUE_FACTOR}' MLFLOW_LOG_JOB_ENERGY='${MLFLOW_LOG_JOB_ENERGY}' MLFLOW_JOB_ENERGY_EXPERIMENT='${MLFLOW_JOB_ENERGY_EXPERIMENT}'"
+
+    REMOTE_CMD="set -euo pipefail; cd '${REMOTE_PROJECT_DIR}'; ${REMOTE_ENV} sbatch '${REMOTE_SLURM_SCRIPT}'"
+    SUBMIT_OUT="$("${SSH_BASE[@]}" "${REMOTE_CMD}")"
+    echo "${SUBMIT_OUT}"
+
+    JOB_ID="$(echo "${SUBMIT_OUT}" | sed -n 's/.*Submitted batch job \([0-9]\+\).*/\1/p' | tail -n1)"
+    if [ -z "${JOB_ID}" ]; then
+      JOB_ID="$(date +%s)"
+    fi
+
+    energy_kwh="$(awk -v b="${BATCH_SIZE}" 'BEGIN{printf "%.4f", (b*0.015)+0.25}')"
+    cost_eur="$(awk -v e="${energy_kwh}" -v p="${ELECTRICITY_PRICE_EUR_PER_KWH}" 'BEGIN{printf "%.4f", e*p}')"
+    co2_kg="$(awk -v e="${energy_kwh}" -v c="${GRID_CO2_KG_PER_KWH}" -v pue="${PUE_FACTOR}" 'BEGIN{printf "%.4f", e*c*pue}')"
+
+    total_file="/tmp/slurm_training_energy_kwh_total.txt"
+    if [ ! -f "${total_file}" ]; then
+      echo "0" > "${total_file}"
+    fi
+    prev_total="$(cat "${total_file}")"
+    new_total="$(awk -v p="${prev_total}" -v e="${energy_kwh}" 'BEGIN{printf "%.6f", p+e}')"
+    echo "${new_total}" > "${total_file}"
+
+    total_cost_eur="$(awk -v n="${new_total}" -v p="${ELECTRICITY_PRICE_EUR_PER_KWH}" 'BEGIN{printf "%.6f", n*p}')"
+    total_co2_kg="$(awk -v n="${new_total}" -v c="${GRID_CO2_KG_PER_KWH}" -v pue="${PUE_FACTOR}" 'BEGIN{printf "%.6f", n*c*pue}')"
+
+    if ! command -v curl >/dev/null 2>&1; then
+      apk add --no-cache curl >/dev/null 2>&1 || true
+    fi
+    printf '%s\n' \
+      "slurm_jobs_total 1" \
+      "slurm_job_training_energy_kwh{job_id=\"${JOB_ID}\"} ${energy_kwh}" \
+      "slurm_job_estimated_electricity_cost_eur{job_id=\"${JOB_ID}\"} ${cost_eur}" \
+      "slurm_job_estimated_co2_kg{job_id=\"${JOB_ID}\"} ${co2_kg}" \
+      "slurm_training_energy_kwh_total ${new_total}" \
+      "slurm_jobs_training_energy_kwh_total ${new_total}" \
+      "slurm_jobs_estimated_electricity_cost_eur_total ${total_cost_eur}" \
+      "slurm_jobs_estimated_co2_kg_total ${total_co2_kg}" | tr -d '\r' | curl -fsS --data-binary @- "$(echo "${PROM_PUSHGATEWAY_URL}/metrics/job/slurm_jobs" | tr -d '\r')" >/dev/null
+  test_remote_slurm.sh: |
+    #!/usr/bin/env bash
+    set -euo pipefail
+    strict_mode="${SSH_STRICT_HOST_KEY_CHECKING:-yes}"
+    known_hosts_file="/etc/slurm-connector/ssh/known_hosts"
+    if [ "${strict_mode}" = "no" ]; then
+      known_hosts_file="/dev/null"
+    fi
+    if [ -n "${SLURM_SSH_PASSWORD:-}" ]; then
+      sshpass -p "${SLURM_SSH_PASSWORD}" ssh -o PreferredAuthentications=password -o PubkeyAuthentication=no -o UserKnownHostsFile="${known_hosts_file}" -o StrictHostKeyChecking="${strict_mode}" -p "${SLURM_SSH_PORT}" "${SLURM_SSH_USER}@${SLURM_SSH_HOST}" "sinfo -N -l"
+    else
+      ssh -i /etc/slurm-connector/ssh/id_ed25519 -o UserKnownHostsFile="${known_hosts_file}" -o StrictHostKeyChecking="${strict_mode}" -p "${SLURM_SSH_PORT}" "${SLURM_SSH_USER}@${SLURM_SSH_HOST}" "sinfo -N -l"
+    fi
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pushgateway
+  namespace: mlops-energy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pushgateway
+  template:
+    metadata:
+      labels:
+        app: pushgateway
+    spec:
+      containers:
+        - name: pushgateway
+          image: prom/pushgateway:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 9091
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pushgateway
+  namespace: mlops-energy
+spec:
+  selector:
+    app: pushgateway
+  ports:
+    - name: http
+      port: 9091
+      targetPort: 9091
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mlflow
+  namespace: mlops-energy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mlflow
+  template:
+    metadata:
+      labels:
+        app: mlflow
+    spec:
+      imagePullSecrets:
+        - name: ghcr-pull-secret
+      containers:
+        - name: mlflow
+          image: ghcr.io/its-ghaith/slurm-scheduler-ml/mlops-slurm-runtime:latest
+          imagePullPolicy: Always
+          env:
+            - name: MLFLOW_SERVER_ALLOWED_HOSTS
+              value: "*"
+            - name: MLFLOW_SERVER_CORS_ALLOWED_ORIGINS
+              value: "*"
+          command: ["/bin/bash", "-lc"]
+          args:
+            - |
+              mkdir -p /mlflow /mlruns && \
+              mlflow server \
+                --host 0.0.0.0 \
+                --port 5000 \
+                --backend-store-uri sqlite:////mlflow/mlflow.db \
+                --default-artifact-root /mlruns
+          ports:
+            - containerPort: 5000
+          readinessProbe:
+            tcpSocket:
+              port: 5000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          startupProbe:
+            tcpSocket:
+              port: 5000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 60
+          volumeMounts:
+            - name: mlflow-data
+              mountPath: /mlflow
+            - name: mlruns
+              mountPath: /mlruns
+      volumes:
+        - name: mlflow-data
+          emptyDir: {}
+        - name: mlruns
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mlflow
+  namespace: mlops-energy
+spec:
+  selector:
+    app: mlflow
+  ports:
+    - name: http
+      port: 5000
+      targetPort: 5000
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+  namespace: mlops-energy
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 5s
+
+    scrape_configs:
+      - job_name: prometheus
+        static_configs:
+          - targets: ['localhost:9090']
+      - job_name: pushgateway
+        honor_labels: true
+        static_configs:
+          - targets: ['pushgateway:9091']
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus
+  namespace: mlops-energy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus
+  template:
+    metadata:
+      labels:
+        app: prometheus
+    spec:
+      containers:
+        - name: prometheus
+          image: prom/prometheus:latest
+          imagePullPolicy: IfNotPresent
+          args:
+            - --config.file=/etc/prometheus/prometheus.yml
+            - --storage.tsdb.path=/prometheus
+          ports:
+            - containerPort: 9090
+          volumeMounts:
+            - name: config
+              mountPath: /etc/prometheus/prometheus.yml
+              subPath: prometheus.yml
+            - name: data
+              mountPath: /prometheus
+      volumes:
+        - name: config
+          configMap:
+            name: prometheus-config
+        - name: data
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus
+  namespace: mlops-energy
+spec:
+  selector:
+    app: prometheus
+  ports:
+    - name: http
+      port: 9090
+      targetPort: 9090
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-datasource
+  namespace: mlops-energy
+data:
+  datasource.yml: |
+    apiVersion: 1
+    datasources:
+      - name: Prometheus
+        uid: prometheus
+        type: prometheus
+        access: proxy
+        url: http://prometheus:9090
+        isDefault: true
+        editable: false
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboards-provider
+  namespace: mlops-energy
+data:
+  dashboards.yml: |
+    apiVersion: 1
+    providers:
+      - name: "SLURM Energy Dashboards"
+        orgId: 1
+        folder: "SLURM Energy"
+        type: file
+        disableDeletion: false
+        editable: true
+        options:
+          path: /var/lib/grafana/dashboards
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-slurm-energy
+  namespace: mlops-energy
+data:
+  slurm-energy-overview.json: |
+    {
+      "annotations": {
+        "list": [
+          {
+            "builtIn": 1,
+            "datasource": {
+              "type": "grafana",
+              "uid": "-- Grafana --"
+            },
+            "enable": true,
+            "hide": true,
+            "iconColor": "rgba(0, 211, 255, 1)",
+            "name": "Annotations & Alerts",
+            "type": "dashboard"
+          }
+        ]
+      },
+      "editable": true,
+      "fiscalYearStartMonth": 0,
+      "graphTooltip": 0,
+      "id": null,
+      "links": [],
+      "liveNow": false,
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 6,
+            "x": 0,
+            "y": 0
+          },
+          "id": 1,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "value_and_name"
+          },
+          "pluginVersion": "11.1.0",
+          "targets": [
+            {
+              "expr": "slurm_jobs_total",
+              "refId": "A",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "instant": true,
+              "range": false,
+              "format": "time_series"
+            }
+          ],
+          "title": "Jobs Total",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "kwatth"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 6,
+            "x": 6,
+            "y": 0
+          },
+          "id": 2,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "value_and_name"
+          },
+          "pluginVersion": "11.1.0",
+          "targets": [
+            {
+              "expr": "slurm_jobs_training_energy_kwh_total",
+              "refId": "A",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "instant": true,
+              "range": false,
+              "format": "time_series"
+            }
+          ],
+          "title": "Total Energy (kWh)",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "currencyEUR"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 6,
+            "x": 12,
+            "y": 0
+          },
+          "id": 3,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "value_and_name"
+          },
+          "pluginVersion": "11.1.0",
+          "targets": [
+            {
+              "expr": "slurm_jobs_estimated_electricity_cost_eur_total",
+              "refId": "A",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "instant": true,
+              "range": false,
+              "format": "time_series"
+            }
+          ],
+          "title": "Total Cost (EUR)",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "kg"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 6,
+            "x": 18,
+            "y": 0
+          },
+          "id": 4,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "value_and_name"
+          },
+          "pluginVersion": "11.1.0",
+          "targets": [
+            {
+              "expr": "slurm_jobs_estimated_co2_kg_total",
+              "refId": "A",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "instant": true,
+              "range": false,
+              "format": "time_series"
+            }
+          ],
+          "title": "Total CO2 (kg)",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 2,
+                "pointSize": 4,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "unit": "kwatth"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 4
+          },
+          "id": 5,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "expr": "slurm_job_training_energy_kwh",
+              "legendFormat": "job {{job_id}}",
+              "refId": "A",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "instant": false,
+              "range": true,
+              "format": "time_series"
+            }
+          ],
+          "title": "Energy Per Job (kWh)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 2,
+                "pointSize": 4,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "unit": "currencyEUR"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 4
+          },
+          "id": 6,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "expr": "slurm_job_estimated_electricity_cost_eur",
+              "legendFormat": "job {{job_id}}",
+              "refId": "A",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "instant": false,
+              "range": true,
+              "format": "time_series"
+            }
+          ],
+          "title": "Cost Per Job (EUR)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 2,
+                "pointSize": 4,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "unit": "percent"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 12
+          },
+          "id": 7,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "expr": "slurm_job_gpu_util_avg_pct",
+              "legendFormat": "job {{job_id}}",
+              "refId": "A",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "instant": false,
+              "range": true,
+              "format": "time_series"
+            }
+          ],
+          "title": "Avg GPU Utilization Per Job (%)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 2,
+                "pointSize": 4,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "unit": "s"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 12
+          },
+          "id": 8,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "expr": "slurm_job_duration_seconds",
+              "legendFormat": "job {{job_id}}",
+              "refId": "A",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "instant": false,
+              "range": true,
+              "format": "time_series"
+            }
+          ],
+          "title": "Job Duration (s)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "stacking": {
+                  "mode": "none",
+                  "group": "A"
+                },
+                "hideFrom": {
+                  "tooltip": false,
+                  "viz": false,
+                  "legend": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 2,
+                "axisLabel": "",
+                "axisCenteredZero": false,
+                "spanNulls": false,
+                "axisPlacement": "auto",
+                "pointSize": 4,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "axisBorderShow": false,
+                "axisColorMode": "text",
+                "gradientMode": "none",
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "thresholdsStyle": {
+                  "mode": "off"
+                },
+                "showPoints": "auto"
+              },
+              "color": {
+                "mode": "palette-classic"
+              },
+              "unit": "kwatth"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "y": 20,
+            "w": 12,
+            "x": 0,
+            "h": 8
+          },
+          "id": 9,
+          "options": {
+            "legend": {
+              "placement": "bottom",
+              "showLegend": true,
+              "calcs": [],
+              "displayMode": "list"
+            },
+            "tooltip": {
+              "sort": "none",
+              "mode": "multi"
+            }
+          },
+          "targets": [
+            {
+              "editorMode": "code",
+              "refId": "A",
+              "legendFormat": "job {{job_id}}",
+              "exemplar": false,
+              "instant": false,
+              "format": "time_series",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "range": true,
+              "expr": "slurm_job_phase_energy_kwh{phase=\"training\"}"
+            }
+          ],
+          "title": "Training Phase Energy (kWh)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "stacking": {
+                  "mode": "none",
+                  "group": "A"
+                },
+                "hideFrom": {
+                  "tooltip": false,
+                  "viz": false,
+                  "legend": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 2,
+                "axisLabel": "",
+                "axisCenteredZero": false,
+                "spanNulls": false,
+                "axisPlacement": "auto",
+                "pointSize": 4,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "axisBorderShow": false,
+                "axisColorMode": "text",
+                "gradientMode": "none",
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "thresholdsStyle": {
+                  "mode": "off"
+                },
+                "showPoints": "auto"
+              },
+              "color": {
+                "mode": "palette-classic"
+              },
+              "unit": "kwatth"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "y": 20,
+            "w": 12,
+            "x": 12,
+            "h": 8
+          },
+          "id": 10,
+          "options": {
+            "legend": {
+              "placement": "bottom",
+              "showLegend": true,
+              "calcs": [],
+              "displayMode": "list"
+            },
+            "tooltip": {
+              "sort": "none",
+              "mode": "multi"
+            }
+          },
+          "targets": [
+            {
+              "editorMode": "code",
+              "refId": "A",
+              "legendFormat": "{{phase}} job {{job_id}}",
+              "exemplar": false,
+              "instant": false,
+              "format": "time_series",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "range": true,
+              "expr": "slurm_job_phase_energy_kwh{phase=~\"preprocessing.*\"}"
+            }
+          ],
+          "title": "Preprocessing Phase Energy (kWh)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "stacking": {
+                  "mode": "none",
+                  "group": "A"
+                },
+                "hideFrom": {
+                  "tooltip": false,
+                  "viz": false,
+                  "legend": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 2,
+                "axisLabel": "",
+                "axisCenteredZero": false,
+                "spanNulls": false,
+                "axisPlacement": "auto",
+                "pointSize": 4,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "axisBorderShow": false,
+                "axisColorMode": "text",
+                "gradientMode": "none",
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "thresholdsStyle": {
+                  "mode": "off"
+                },
+                "showPoints": "auto"
+              },
+              "color": {
+                "mode": "palette-classic"
+              },
+              "unit": "kwatth"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "y": 28,
+            "w": 12,
+            "x": 0,
+            "h": 8
+          },
+          "id": 11,
+          "options": {
+            "legend": {
+              "placement": "bottom",
+              "showLegend": true,
+              "calcs": [],
+              "displayMode": "list"
+            },
+            "tooltip": {
+              "sort": "none",
+              "mode": "multi"
+            }
+          },
+          "targets": [
+            {
+              "editorMode": "code",
+              "refId": "A",
+              "legendFormat": "{{phase}} job {{job_id}}",
+              "exemplar": false,
+              "instant": false,
+              "format": "time_series",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "range": true,
+              "expr": "slurm_job_phase_codecarbon_energy_kwh"
+            }
+          ],
+          "title": "CodeCarbon Phase Energy (kWh)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "stacking": {
+                  "mode": "none",
+                  "group": "A"
+                },
+                "hideFrom": {
+                  "tooltip": false,
+                  "viz": false,
+                  "legend": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 2,
+                "axisLabel": "",
+                "axisCenteredZero": false,
+                "spanNulls": false,
+                "axisPlacement": "auto",
+                "pointSize": 4,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "axisBorderShow": false,
+                "axisColorMode": "text",
+                "gradientMode": "none",
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "thresholdsStyle": {
+                  "mode": "off"
+                },
+                "showPoints": "auto"
+              },
+              "color": {
+                "mode": "palette-classic"
+              },
+              "unit": "percent"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "y": 28,
+            "w": 12,
+            "x": 12,
+            "h": 8
+          },
+          "id": 12,
+          "options": {
+            "legend": {
+              "placement": "bottom",
+              "showLegend": true,
+              "calcs": [],
+              "displayMode": "list"
+            },
+            "tooltip": {
+              "sort": "none",
+              "mode": "multi"
+            }
+          },
+          "targets": [
+            {
+              "editorMode": "code",
+              "refId": "A",
+              "legendFormat": "job {{job_id}}",
+              "exemplar": false,
+              "instant": false,
+              "format": "time_series",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "range": true,
+              "expr": "slurm_job_training_energy_compare_rel_diff_pct"
+            }
+          ],
+          "title": "Training Energy Diff % (CodeCarbon vs SLURM)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "unit": "kwatth",
+              "thresholds": {
+                "steps": [
+                  {
+                    "value": null,
+                    "color": "green"
+                  }
+                ],
+                "mode": "absolute"
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "y": 36,
+            "w": 8,
+            "x": 0,
+            "h": 4
+          },
+          "id": 13,
+          "options": {
+            "textMode": "value_and_name",
+            "graphMode": "none",
+            "reduceOptions": {
+              "values": false,
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": ""
+            },
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "colorMode": "value"
+          },
+          "pluginVersion": "11.1.0",
+          "targets": [
+            {
+              "exemplar": false,
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "refId": "A",
+              "format": "time_series",
+              "instant": true,
+              "expr": "slurm_job_training_energy_compare_abs_diff_kwh",
+              "range": false,
+              "editorMode": "code"
+            }
+          ],
+          "title": "Latest Training Abs Diff (kWh)",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "unit": "percent",
+              "thresholds": {
+                "steps": [
+                  {
+                    "value": null,
+                    "color": "green"
+                  }
+                ],
+                "mode": "absolute"
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "y": 36,
+            "w": 8,
+            "x": 8,
+            "h": 4
+          },
+          "id": 14,
+          "options": {
+            "textMode": "value_and_name",
+            "graphMode": "none",
+            "reduceOptions": {
+              "values": false,
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": ""
+            },
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "colorMode": "value"
+          },
+          "pluginVersion": "11.1.0",
+          "targets": [
+            {
+              "exemplar": false,
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "refId": "A",
+              "format": "time_series",
+              "instant": true,
+              "expr": "slurm_job_training_energy_compare_rel_diff_pct",
+              "range": false,
+              "editorMode": "code"
+            }
+          ],
+          "title": "Latest Training Diff (%)",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "unit": "kwatth",
+              "thresholds": {
+                "steps": [
+                  {
+                    "value": null,
+                    "color": "green"
+                  }
+                ],
+                "mode": "absolute"
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "y": 36,
+            "w": 8,
+            "x": 16,
+            "h": 4
+          },
+          "id": 15,
+          "options": {
+            "textMode": "value_and_name",
+            "graphMode": "none",
+            "reduceOptions": {
+              "values": false,
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": ""
+            },
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "colorMode": "value"
+          },
+          "pluginVersion": "11.1.0",
+          "targets": [
+            {
+              "exemplar": false,
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "refId": "A",
+              "format": "time_series",
+              "instant": true,
+              "expr": "slurm_job_phase_energy_kwh{phase=\"training\"}",
+              "range": false,
+              "editorMode": "code"
+            }
+          ],
+          "title": "Latest Training Phase Energy (kWh)",
+          "type": "stat"
+        }
+      ],
+      "refresh": "5s",
+      "schemaVersion": 39,
+      "style": "dark",
+      "tags": [
+        "slurm",
+        "energy",
+        "gpu"
+      ],
+      "templating": {
+        "list": [
+          {
+            "name": "stale_window_sec",
+            "label": "Stale Window (s)",
+            "type": "textbox",
+            "hide": 0,
+            "current": {
+              "text": "21600",
+              "value": "21600"
+            },
+            "query": "21600",
+            "skipUrlSync": false
+          }
+        ]
+      },
+      "time": {
+        "from": "now-30d",
+        "to": "now"
+      },
+      "timepicker": {},
+      "timezone": "browser",
+      "title": "SLURM Energy Overview",
+      "uid": "slurm-energy-overview",
+      "version": 51,
+      "weekStart": ""
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+  namespace: mlops-energy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      containers:
+        - name: grafana
+          image: grafana/grafana:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: GF_SECURITY_ADMIN_PASSWORD
+              value: admin
+          ports:
+            - containerPort: 3000
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/grafana
+            - name: ds
+              mountPath: /etc/grafana/provisioning/datasources/datasource.yml
+              subPath: datasource.yml
+            - name: providers
+              mountPath: /etc/grafana/provisioning/dashboards/dashboards.yml
+              subPath: dashboards.yml
+            - name: dashboard
+              mountPath: /var/lib/grafana/dashboards/slurm-energy-overview.json
+              subPath: slurm-energy-overview.json
+      volumes:
+        - name: data
+          emptyDir: {}
+        - name: ds
+          configMap:
+            name: grafana-datasource
+        - name: providers
+          configMap:
+            name: grafana-dashboards-provider
+        - name: dashboard
+          configMap:
+            name: grafana-dashboard-slurm-energy
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana
+  namespace: mlops-energy
+spec:
+  selector:
+    app: grafana
+  ports:
+    - name: http
+      port: 3000
+      targetPort: 3000
