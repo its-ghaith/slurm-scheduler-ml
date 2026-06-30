@@ -1,0 +1,8 @@
+model_name: YOLOv8
+version: yolov8n.pt # yolov8n.yaml for model without pretrained weights
+approach: objectdetection
+epochs: 100
+freeze: 0
+patience: 4
+batch_size: 8
+pretrained: true

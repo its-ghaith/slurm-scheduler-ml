@@ -1,5 +1,3 @@
-rotationally-invariant-cnns/
-_stage_rotacnn/data/
 .venv/
 __pycache__/
 .env

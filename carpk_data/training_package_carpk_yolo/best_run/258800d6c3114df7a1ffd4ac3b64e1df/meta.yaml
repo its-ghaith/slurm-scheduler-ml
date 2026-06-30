@@ -1,0 +1,15 @@
+artifact_uri: /home/vossi/Dokumente/rotational_inv/rotationally-invariant-cnns/mlruns/194494198610096246/258800d6c3114df7a1ffd4ac3b64e1df/artifacts
+end_time: 1761050365318
+entry_point_name: ''
+experiment_id: '194494198610096246'
+lifecycle_stage: active
+run_id: 258800d6c3114df7a1ffd4ac3b64e1df
+run_name: yolov8n.pt
+run_uuid: 258800d6c3114df7a1ffd4ac3b64e1df
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1761049853973
+status: 3
+tags: []
+user_id: vossi

@@ -1,0 +1,5 @@
+﻿Dieses Paket ist auf CARPK + YOLO reduziert.
+Enthalten: nur CARPK-Dataset, CARPK-Preprocessing, YOLO-Training (yolov8/yolov11) und relevante Configs/Skripte.
+
+Start:
+uv run python src/countcv/effcv/run_experiment.py --multirun +dataset=carpk +model=yolov8

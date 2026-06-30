@@ -1,0 +1,4 @@
+﻿Best CARPK run copied (by val_map):
+RunDir: D:\OLD\Sync\Projekte\Masterarbeit\Project\PoC4\rotationally-invariant-cnns\mlruns_shared_no_artifacts\194494198610096246\258800d6c3114df7a1ffd4ac3b64e1df
+val_map: 0.989901602268219
+CopiedAt: 2026-05-17T15:38:39.5425240+02:00
