@@ -1,4 +1,4 @@
-﻿apiVersion: v1
+apiVersion: v1
 kind: Secret
 metadata:
   name: slurm-munge-key
@@ -1045,6 +1045,523 @@ data:
           ],
           "title": "Job Duration (s)",
           "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "stacking": {
+                  "mode": "none",
+                  "group": "A"
+                },
+                "hideFrom": {
+                  "tooltip": false,
+                  "viz": false,
+                  "legend": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 2,
+                "axisLabel": "",
+                "axisCenteredZero": false,
+                "spanNulls": false,
+                "axisPlacement": "auto",
+                "pointSize": 4,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "axisBorderShow": false,
+                "axisColorMode": "text",
+                "gradientMode": "none",
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "thresholdsStyle": {
+                  "mode": "off"
+                },
+                "showPoints": "auto"
+              },
+              "color": {
+                "mode": "palette-classic"
+              },
+              "unit": "kwatth"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "y": 20,
+            "w": 12,
+            "x": 0,
+            "h": 8
+          },
+          "id": 9,
+          "options": {
+            "legend": {
+              "placement": "bottom",
+              "showLegend": true,
+              "calcs": [],
+              "displayMode": "list"
+            },
+            "tooltip": {
+              "sort": "none",
+              "mode": "multi"
+            }
+          },
+          "targets": [
+            {
+              "editorMode": "code",
+              "refId": "A",
+              "legendFormat": "job {{job_id}}",
+              "exemplar": false,
+              "instant": false,
+              "format": "time_series",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "range": true,
+              "expr": "slurm_job_phase_energy_kwh{phase=\"training\"}"
+            }
+          ],
+          "title": "Training Phase Energy (kWh)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "stacking": {
+                  "mode": "none",
+                  "group": "A"
+                },
+                "hideFrom": {
+                  "tooltip": false,
+                  "viz": false,
+                  "legend": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 2,
+                "axisLabel": "",
+                "axisCenteredZero": false,
+                "spanNulls": false,
+                "axisPlacement": "auto",
+                "pointSize": 4,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "axisBorderShow": false,
+                "axisColorMode": "text",
+                "gradientMode": "none",
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "thresholdsStyle": {
+                  "mode": "off"
+                },
+                "showPoints": "auto"
+              },
+              "color": {
+                "mode": "palette-classic"
+              },
+              "unit": "kwatth"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "y": 20,
+            "w": 12,
+            "x": 12,
+            "h": 8
+          },
+          "id": 10,
+          "options": {
+            "legend": {
+              "placement": "bottom",
+              "showLegend": true,
+              "calcs": [],
+              "displayMode": "list"
+            },
+            "tooltip": {
+              "sort": "none",
+              "mode": "multi"
+            }
+          },
+          "targets": [
+            {
+              "editorMode": "code",
+              "refId": "A",
+              "legendFormat": "{{phase}} job {{job_id}}",
+              "exemplar": false,
+              "instant": false,
+              "format": "time_series",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "range": true,
+              "expr": "slurm_job_phase_energy_kwh{phase=~\"preprocessing.*\"}"
+            }
+          ],
+          "title": "Preprocessing Phase Energy (kWh)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "stacking": {
+                  "mode": "none",
+                  "group": "A"
+                },
+                "hideFrom": {
+                  "tooltip": false,
+                  "viz": false,
+                  "legend": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 2,
+                "axisLabel": "",
+                "axisCenteredZero": false,
+                "spanNulls": false,
+                "axisPlacement": "auto",
+                "pointSize": 4,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "axisBorderShow": false,
+                "axisColorMode": "text",
+                "gradientMode": "none",
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "thresholdsStyle": {
+                  "mode": "off"
+                },
+                "showPoints": "auto"
+              },
+              "color": {
+                "mode": "palette-classic"
+              },
+              "unit": "kwatth"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "y": 28,
+            "w": 12,
+            "x": 0,
+            "h": 8
+          },
+          "id": 11,
+          "options": {
+            "legend": {
+              "placement": "bottom",
+              "showLegend": true,
+              "calcs": [],
+              "displayMode": "list"
+            },
+            "tooltip": {
+              "sort": "none",
+              "mode": "multi"
+            }
+          },
+          "targets": [
+            {
+              "editorMode": "code",
+              "refId": "A",
+              "legendFormat": "{{phase}} job {{job_id}}",
+              "exemplar": false,
+              "instant": false,
+              "format": "time_series",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "range": true,
+              "expr": "slurm_job_phase_codecarbon_energy_kwh"
+            }
+          ],
+          "title": "CodeCarbon Phase Energy (kWh)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "stacking": {
+                  "mode": "none",
+                  "group": "A"
+                },
+                "hideFrom": {
+                  "tooltip": false,
+                  "viz": false,
+                  "legend": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 2,
+                "axisLabel": "",
+                "axisCenteredZero": false,
+                "spanNulls": false,
+                "axisPlacement": "auto",
+                "pointSize": 4,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "axisBorderShow": false,
+                "axisColorMode": "text",
+                "gradientMode": "none",
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "thresholdsStyle": {
+                  "mode": "off"
+                },
+                "showPoints": "auto"
+              },
+              "color": {
+                "mode": "palette-classic"
+              },
+              "unit": "percent"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "y": 28,
+            "w": 12,
+            "x": 12,
+            "h": 8
+          },
+          "id": 12,
+          "options": {
+            "legend": {
+              "placement": "bottom",
+              "showLegend": true,
+              "calcs": [],
+              "displayMode": "list"
+            },
+            "tooltip": {
+              "sort": "none",
+              "mode": "multi"
+            }
+          },
+          "targets": [
+            {
+              "editorMode": "code",
+              "refId": "A",
+              "legendFormat": "job {{job_id}}",
+              "exemplar": false,
+              "instant": false,
+              "format": "time_series",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "range": true,
+              "expr": "slurm_job_training_energy_compare_rel_diff_pct"
+            }
+          ],
+          "title": "Training Energy Diff % (CodeCarbon vs SLURM)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "unit": "kwatth",
+              "thresholds": {
+                "steps": [
+                  {
+                    "value": null,
+                    "color": "green"
+                  }
+                ],
+                "mode": "absolute"
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "y": 36,
+            "w": 8,
+            "x": 0,
+            "h": 4
+          },
+          "id": 13,
+          "options": {
+            "textMode": "value_and_name",
+            "graphMode": "none",
+            "reduceOptions": {
+              "values": false,
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": ""
+            },
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "colorMode": "value"
+          },
+          "pluginVersion": "11.1.0",
+          "targets": [
+            {
+              "exemplar": false,
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "refId": "A",
+              "format": "time_series",
+              "instant": true,
+              "expr": "slurm_job_training_energy_compare_abs_diff_kwh",
+              "range": false,
+              "editorMode": "code"
+            }
+          ],
+          "title": "Latest Training Abs Diff (kWh)",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "unit": "percent",
+              "thresholds": {
+                "steps": [
+                  {
+                    "value": null,
+                    "color": "green"
+                  }
+                ],
+                "mode": "absolute"
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "y": 36,
+            "w": 8,
+            "x": 8,
+            "h": 4
+          },
+          "id": 14,
+          "options": {
+            "textMode": "value_and_name",
+            "graphMode": "none",
+            "reduceOptions": {
+              "values": false,
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": ""
+            },
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "colorMode": "value"
+          },
+          "pluginVersion": "11.1.0",
+          "targets": [
+            {
+              "exemplar": false,
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "refId": "A",
+              "format": "time_series",
+              "instant": true,
+              "expr": "slurm_job_training_energy_compare_rel_diff_pct",
+              "range": false,
+              "editorMode": "code"
+            }
+          ],
+          "title": "Latest Training Diff (%)",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "unit": "kwatth",
+              "thresholds": {
+                "steps": [
+                  {
+                    "value": null,
+                    "color": "green"
+                  }
+                ],
+                "mode": "absolute"
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "y": 36,
+            "w": 8,
+            "x": 16,
+            "h": 4
+          },
+          "id": 15,
+          "options": {
+            "textMode": "value_and_name",
+            "graphMode": "none",
+            "reduceOptions": {
+              "values": false,
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": ""
+            },
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "colorMode": "value"
+          },
+          "pluginVersion": "11.1.0",
+          "targets": [
+            {
+              "exemplar": false,
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "refId": "A",
+              "format": "time_series",
+              "instant": true,
+              "expr": "slurm_job_phase_energy_kwh{phase=\"training\"}",
+              "range": false,
+              "editorMode": "code"
+            }
+          ],
+          "title": "Latest Training Phase Energy (kWh)",
+          "type": "stat"
         }
       ],
       "refresh": "5s",
@@ -1059,14 +1576,14 @@ data:
         "list": []
       },
       "time": {
-        "from": "now-30d",
+        "from": "now-6h",
         "to": "now"
       },
       "timepicker": {},
       "timezone": "browser",
       "title": "SLURM Energy Overview",
       "uid": "slurm-energy-overview",
-      "version": 2,
+      "version": 51,
       "weekStart": ""
     }
 ---

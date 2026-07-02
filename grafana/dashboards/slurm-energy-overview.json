@@ -1128,23 +1128,10 @@
     "gpu"
   ],
   "templating": {
-    "list": [
-      {
-        "name": "stale_window_sec",
-        "label": "Stale Window (s)",
-        "type": "textbox",
-        "hide": 0,
-        "current": {
-          "text": "21600",
-          "value": "21600"
-        },
-        "query": "21600",
-        "skipUrlSync": false
-      }
-    ]
+    "list": []
   },
   "time": {
-    "from": "now-30d",
+    "from": "now-6h",
     "to": "now"
   },
   "timepicker": {},
