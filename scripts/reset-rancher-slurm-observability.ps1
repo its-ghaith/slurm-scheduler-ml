@@ -108,9 +108,9 @@ Invoke-Kubectl -Arguments @(
     @'
 mkdir -p /workspace/energy_metrics/node_exporter /workspace/logs
 find /workspace/energy_metrics -mindepth 1 -maxdepth 1 -type f -delete
-find /workspace/energy_metrics/node_exporter -mindepth 1 -maxdepth 1 -type f -delete
-find /workspace/logs -mindepth 1 -maxdepth 1 -type f -delete
-find /workspace -maxdepth 1 -type f \( -name 'slurm-*.out' -o -name 'job-*.out' \) -delete
+rm -f /workspace/energy_metrics/node_exporter/*
+rm -f /workspace/logs/*
+rm -f /workspace/slurm-*.out /workspace/job-*.out
 echo 'slurmd cleanup complete'
 '@
 )
@@ -124,8 +124,8 @@ if (-not $SkipMlflowReset) {
         "--", "bash", "-lc",
         @'
 mkdir -p /mlflow /mlruns
-find /mlflow -mindepth 1 -maxdepth 1 -exec rm -rf {} +
-find /mlruns -mindepth 1 -maxdepth 1 -exec rm -rf {} +
+rm -rf /mlflow/*
+rm -rf /mlruns/*
 echo 'mlflow cleanup complete'
 '@
     )

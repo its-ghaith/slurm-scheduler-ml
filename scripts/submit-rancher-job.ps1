@@ -144,7 +144,7 @@ Write-Host "Bereite Workspace im slurmd-Pod vor ..." -ForegroundColor Cyan
 Invoke-Kubectl -Arguments @(
     "--kubeconfig", $Kubeconfig,
     "-n", $Namespace,
-    "exec", "deploy/slurmd",
+    "exec", $slurmdPod,
     "-c", "slurmd",
     "--", "bash", "-lc",
     @'
@@ -156,12 +156,12 @@ mkdir -p /workspace/logs
 '@
 )
 
-Copy-ToPod -Source "rotationally-invariant-cnns/src" -Pod $slurmdPod -Destination "/workspace/rotationally-invariant-cnns/src" -Container "slurmd"
-Copy-ToPod -Source "rotationally-invariant-cnns/data/synthetic_cells" -Pod $slurmdPod -Destination "/workspace/rotationally-invariant-cnns/data/synthetic_cells" -Container "slurmd"
-Copy-ToPod -Source "rotationally-invariant-cnns/pyproject.toml" -Pod $slurmdPod -Destination "/workspace/rotationally-invariant-cnns/pyproject.toml" -Container "slurmd"
-Copy-ToPod -Source "rotationally-invariant-cnns/uv.lock" -Pod $slurmdPod -Destination "/workspace/rotationally-invariant-cnns/uv.lock" -Container "slurmd"
-Copy-ToPod -Source "rotationally-invariant-cnns-changes/train_repro_phase_tracked.py" -Pod $slurmdPod -Destination "/workspace/rotationally-invariant-cnns-changes/train_repro_phase_tracked.py" -Container "slurmd"
-Copy-ToPod -Source "slurm" -Pod $slurmdPod -Destination "/workspace/slurm" -Container "slurmd"
+Copy-ToPod -Source "rotationally-invariant-cnns/src" -Pod $slurmdPod -Destination "/workspace/rotationally-invariant-cnns" -Container "slurmd"
+Copy-ToPod -Source "rotationally-invariant-cnns/data/synthetic_cells" -Pod $slurmdPod -Destination "/workspace/rotationally-invariant-cnns/data" -Container "slurmd"
+Copy-ToPod -Source "rotationally-invariant-cnns/pyproject.toml" -Pod $slurmdPod -Destination "/workspace/rotationally-invariant-cnns" -Container "slurmd"
+Copy-ToPod -Source "rotationally-invariant-cnns/uv.lock" -Pod $slurmdPod -Destination "/workspace/rotationally-invariant-cnns" -Container "slurmd"
+Copy-ToPod -Source "rotationally-invariant-cnns-changes" -Pod $slurmdPod -Destination "/workspace" -Container "slurmd"
+Copy-ToPod -Source "slurm" -Pod $slurmdPod -Destination "/workspace" -Container "slurmd"
 
 Invoke-Kubectl -Arguments @(
     "--kubeconfig", $Kubeconfig,
@@ -169,10 +169,10 @@ Invoke-Kubectl -Arguments @(
     "exec", "deploy/slurmd",
     "-c", "slurmd",
     "--", "bash", "-lc",
-    "cp -a /workspace/slurm/slurm/. /workspace/slurm/ 2>/dev/null || true"
+    "cp -a /workspace/slurm/slurm/. /workspace/slurm/ 2>/dev/null || true; cp -a /workspace/rotationally-invariant-cnns-changes/rotationally-invariant-cnns-changes/. /workspace/rotationally-invariant-cnns-changes/ 2>/dev/null || true"
 )
 
-Copy-ToPod -Source "slurm/train_repro_rotacnn_job.slurm" -Pod $slurmctldPod -Destination "/workspace/slurm/train_repro_rotacnn_job.slurm"
+Copy-ToPod -Source "slurm/train_repro_rotacnn_job.slurm" -Pod $slurmctldPod -Destination "/workspace/slurm"
 
 Normalize-UnixLines -Deployment "slurmd" -Container "slurmd" -Paths @(
     "/workspace/slurm/train_repro_rotacnn_job.slurm",
@@ -289,27 +289,12 @@ if ($finalState -ne "COMPLETED") {
     throw "Job $jobId endete mit Status $finalState.`n$jobLogs"
 }
 
+$mlflowPython = "from mlflow.tracking import MlflowClient; client=MlflowClient('http://localhost:5000'); exp=client.get_experiment_by_name('$ExperimentName'); assert exp is not None, 'Experiment not found'; runs=client.search_runs([exp.experiment_id], order_by=['attributes.start_time DESC'], max_results=5); matching=[r for r in runs if r.data.tags.get('mlflow.runName') == 'job-energy-$jobId']; assert matching, 'Matching MLflow run not found'; r=matching[0]; print('run_id=' + r.info.run_id); print('status=' + r.info.status)"
 $mlflowCheck = Get-KubectlOutput -Arguments @(
     "--kubeconfig", $Kubeconfig,
     "-n", $Namespace,
     "exec", "deploy/mlflow",
-    "--", "bash", "-lc",
-    @"
-python - <<'PY'
-from mlflow.tracking import MlflowClient
-client = MlflowClient('http://localhost:5000')
-exp = client.get_experiment_by_name('$ExperimentName')
-if exp is None:
-    raise SystemExit('Experiment not found')
-runs = client.search_runs([exp.experiment_id], order_by=['attributes.start_time DESC'], max_results=5)
-matching = [r for r in runs if r.data.tags.get('mlflow.runName') == 'job-energy-$jobId']
-if not matching:
-    raise SystemExit('Matching MLflow run not found')
-r = matching[0]
-print('run_id=' + r.info.run_id)
-print('status=' + r.info.status)
-PY
-"@
+    "--", "python", "-c", $mlflowPython
 )
 
 Write-Host ""

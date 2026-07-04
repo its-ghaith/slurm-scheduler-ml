@@ -101,6 +101,7 @@ def parse_args():
     p.add_argument("--model", required=True, choices=["yolov8", "yolov11", "cnn_base"])
     p.add_argument("--timeline-path", required=True)
     p.add_argument("--phase-metrics-dir", required=True)
+    p.add_argument("--job-metrics-path", required=True)
     p.add_argument("--override", action="append", default=[])
     return p.parse_args()
 
@@ -141,96 +142,119 @@ def main():
     phase_metrics_dir = Path(args.phase_metrics_dir)
     phase_metrics_dir.mkdir(parents=True, exist_ok=True)
     timeline_path = Path(args.timeline_path)
+    job_metrics_path = Path(args.job_metrics_path)
 
     LOGGER.info("Using config: dataset=%s model=%s experiment=%s", args.dataset, args.model, cfg["experiment"])
 
-    with tracked_phase("preprocessing_labels", timeline_path, phase_metrics_dir / "codecarbon_preprocessing_labels.csv"):
-        creator = get_label_creator(dataset=cfg["dataset"]["dataset_name"], dataset_root=data_dir)
-        creator.create_labels()
+    job_start = time.time()
+    job_tracker = OfflineEmissionsTracker(
+        log_level="error",
+        output_dir=str(phase_metrics_dir),
+        output_file="codecarbon_job_total.csv",
+        country_iso_code="DEU",
+    )
+    job_tracker.start()
+    try:
+        with tracked_phase("preprocessing_labels", timeline_path, phase_metrics_dir / "codecarbon_preprocessing_labels.csv"):
+            creator = get_label_creator(dataset=cfg["dataset"]["dataset_name"], dataset_root=data_dir)
+            creator.create_labels()
 
-    for seed in cfg["seeds"]:
-        set_seed(seed)
-        flat_param_dict = {
-            **dict(cfg["dataset"]),
-            **dict(cfg["model"]),
-            "seed": seed,
-            "num_worker": cfg["num_worker"],
-        }
-        if use_direct_tracking_uri:
-            mlflow.set_tracking_uri(tracking_uri)
-            auth = None
-        else:
-            auth = init_mlflow(cfg["remote_mlflow"])
+        for seed in cfg["seeds"]:
+            set_seed(seed)
+            flat_param_dict = {
+                **dict(cfg["dataset"]),
+                **dict(cfg["model"]),
+                "seed": seed,
+                "num_worker": cfg["num_worker"],
+            }
+            if use_direct_tracking_uri:
+                mlflow.set_tracking_uri(tracking_uri)
+                auth = None
+            else:
+                auth = init_mlflow(cfg["remote_mlflow"])
 
-        with tracked_phase(
-            "preprocessing_split",
-            timeline_path,
-            phase_metrics_dir / f"codecarbon_preprocessing_split_seed_{seed}.csv",
-        ):
-            splitter = get_data_splitter(dataset=cfg["dataset"]["dataset_name"], dataset_root=data_dir)
-            splitter.split(train_size=0.8, seed=seed, limit_train_size=flat_param_dict.get("train_size", False))
-
-        run_dir = data_dir
-        if cfg["model"].get("approach") == "objectdetection" and cfg["dataset"]["dataset_name"] == "foci":
             with tracked_phase(
-                "preprocessing_crop",
+                "preprocessing_split",
                 timeline_path,
-                phase_metrics_dir / f"codecarbon_preprocessing_crop_seed_{seed}.csv",
+                phase_metrics_dir / f"codecarbon_preprocessing_split_seed_{seed}.csv",
             ):
-                data_dir_cropped = data_dir / "cropped"
-                save_cropped_images(data_dir=data_dir_cropped, num_worker=cfg["num_worker"])
-                run_dir = data_dir_cropped
+                splitter = get_data_splitter(dataset=cfg["dataset"]["dataset_name"], dataset_root=data_dir)
+                splitter.split(train_size=0.8, seed=seed, limit_train_size=flat_param_dict.get("train_size", False))
 
-        if cfg["model"].get("approach") == "objectdetection":
-            with tracked_phase("training", timeline_path, phase_metrics_dir / f"codecarbon_training_seed_{seed}.csv"):
-                # Run YOLO with explicit workers to avoid shared-memory worker crashes on constrained pods.
-                mlflow.set_experiment(cfg["experiment"])
-                base_run_name = os.environ.get("MLFLOW_RUN_NAME", f"{cfg['model']['version']}")
-                run_name = base_run_name if len(cfg["seeds"]) == 1 else f"{base_run_name}-seed-{seed}"
-                with mlflow.start_run(run_name=run_name):
-                    run_id = mlflow.active_run().info.run_id
-                    run_id_file = os.environ.get("MLFLOW_RUN_ID_FILE")
-                    if run_id_file:
-                        Path(run_id_file).write_text(run_id, encoding="utf-8")
-                    for k, v in flat_param_dict.items():
-                        mlflow.log_param(k, v)
-                    model = YOLO(cfg["model"]["version"])
-                    model.train(
-                        data=str(data_yaml_path),
-                        epochs=int(flat_param_dict.get("epochs", 100)),
-                        freeze=int(flat_param_dict.get("freeze", 0)),
-                        imgsz=flat_param_dict.get("img_size", 640),
-                        batch=int(flat_param_dict.get("batch_size", 8)),
-                        patience=int(flat_param_dict.get("patience", 8)),
-                        pretrained=bool(flat_param_dict.get("pretrained", True)),
-                        single_cls=True,
-                        cache="ram",
-                        hsv_h=float(flat_param_dict.get("hsv_h", 0.015)),
-                        hsv_s=float(flat_param_dict.get("hsv_s", 0.12)),
-                        hsv_v=float(flat_param_dict.get("hsv_v", 0.2)),
-                        translate=float(flat_param_dict.get("translate", 0.12)),
-                        scale=float(flat_param_dict.get("scale", 0.5)),
-                        degrees=float(flat_param_dict.get("degrees", 0.0)),
-                        shear=float(flat_param_dict.get("shear", 0.0)),
-                        mosaic=float(flat_param_dict.get("mosaic", 0.0)),
-                        fliplr=float(flat_param_dict.get("fliplr", 0.0)),
-                        flipud=float(flat_param_dict.get("flipud", 0.0)),
-                        mixup=0.0,
-                        workers=0,
+            run_dir = data_dir
+            if cfg["model"].get("approach") == "objectdetection" and cfg["dataset"]["dataset_name"] == "foci":
+                with tracked_phase(
+                    "preprocessing_crop",
+                    timeline_path,
+                    phase_metrics_dir / f"codecarbon_preprocessing_crop_seed_{seed}.csv",
+                ):
+                    data_dir_cropped = data_dir / "cropped"
+                    save_cropped_images(data_dir=data_dir_cropped, num_worker=cfg["num_worker"])
+                    run_dir = data_dir_cropped
+
+            if cfg["model"].get("approach") == "objectdetection":
+                with tracked_phase("training", timeline_path, phase_metrics_dir / f"codecarbon_training_seed_{seed}.csv"):
+                    # Run YOLO with explicit workers to avoid shared-memory worker crashes on constrained pods.
+                    mlflow.set_experiment(cfg["experiment"])
+                    base_run_name = os.environ.get("MLFLOW_RUN_NAME", f"{cfg['model']['version']}")
+                    run_name = base_run_name if len(cfg["seeds"]) == 1 else f"{base_run_name}-seed-{seed}"
+                    with mlflow.start_run(run_name=run_name):
+                        run_id = mlflow.active_run().info.run_id
+                        run_id_file = os.environ.get("MLFLOW_RUN_ID_FILE")
+                        if run_id_file:
+                            Path(run_id_file).write_text(run_id, encoding="utf-8")
+                        for k, v in flat_param_dict.items():
+                            mlflow.log_param(k, v)
+                        model = YOLO(cfg["model"]["version"])
+                        model.train(
+                            data=str(data_yaml_path),
+                            epochs=int(flat_param_dict.get("epochs", 100)),
+                            freeze=int(flat_param_dict.get("freeze", 0)),
+                            imgsz=flat_param_dict.get("img_size", 640),
+                            batch=int(flat_param_dict.get("batch_size", 8)),
+                            patience=int(flat_param_dict.get("patience", 8)),
+                            pretrained=bool(flat_param_dict.get("pretrained", True)),
+                            single_cls=True,
+                            cache="ram",
+                            hsv_h=float(flat_param_dict.get("hsv_h", 0.015)),
+                            hsv_s=float(flat_param_dict.get("hsv_s", 0.12)),
+                            hsv_v=float(flat_param_dict.get("hsv_v", 0.2)),
+                            translate=float(flat_param_dict.get("translate", 0.12)),
+                            scale=float(flat_param_dict.get("scale", 0.5)),
+                            degrees=float(flat_param_dict.get("degrees", 0.0)),
+                            shear=float(flat_param_dict.get("shear", 0.0)),
+                            mosaic=float(flat_param_dict.get("mosaic", 0.0)),
+                            fliplr=float(flat_param_dict.get("fliplr", 0.0)),
+                            flipud=float(flat_param_dict.get("flipud", 0.0)),
+                            mixup=0.0,
+                            workers=0,
+                        )
+            elif cfg["model"].get("approach") == "densitymap":
+                with tracked_phase("training", timeline_path, phase_metrics_dir / f"codecarbon_training_seed_{seed}.csv"):
+                    run_experiment_densitymap(
+                        model_version=cfg["model"]["version"],
+                        data_dir=run_dir,
+                        experiment_name=cfg["experiment"],
+                        model_params=flat_param_dict,
+                        run_name=f"{cfg['model']['version']}",
+                        auth=auth,
+                        num_workers=cfg["num_worker"],
                     )
-        elif cfg["model"].get("approach") == "densitymap":
-            with tracked_phase("training", timeline_path, phase_metrics_dir / f"codecarbon_training_seed_{seed}.csv"):
-                run_experiment_densitymap(
-                    model_version=cfg["model"]["version"],
-                    data_dir=run_dir,
-                    experiment_name=cfg["experiment"],
-                    model_params=flat_param_dict,
-                    run_name=f"{cfg['model']['version']}",
-                    auth=auth,
-                    num_workers=cfg["num_worker"],
-                )
-        else:
-            raise ValueError(f"Unknown model approach: {cfg['model'].get('approach')}")
+            else:
+                raise ValueError(f"Unknown model approach: {cfg['model'].get('approach')}")
+    finally:
+        job_tracker.stop()
+        job_end = time.time()
+        payload = {
+            "start_ts": job_start,
+            "end_ts": job_end,
+            "duration_seconds": round(job_end - job_start, 6),
+            "codecarbon_energy_kwh": float(getattr(job_tracker._total_energy, "kWh", 0.0)),
+            "codecarbon_gpu_energy_kwh": float(getattr(job_tracker._total_gpu_energy, "kWh", 0.0)),
+            "codecarbon_cpu_energy_kwh": float(getattr(job_tracker._total_cpu_energy, "kWh", 0.0)),
+        }
+        job_metrics_path.parent.mkdir(parents=True, exist_ok=True)
+        job_metrics_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
 
 
 if __name__ == "__main__":

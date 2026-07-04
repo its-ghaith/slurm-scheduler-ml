@@ -335,15 +335,63 @@ Im erweiterten Summary (`gpu_summary_job_<id>_phases.json`):
 - `phase_metrics.<phase>.gpu_energy_kwh`
 - `phase_metrics.<phase>.total_energy_kwh`
 - `phase_metrics.<phase>.codecarbon_energy_kwh`
+- `phase_metrics.<phase>.codecarbon_gpu_energy_kwh`
 - `codecarbon_vs_slurm.training_abs_diff_kwh`
 - `codecarbon_vs_slurm.training_rel_diff_pct`
+- `codecarbon_vs_slurm.compare_basis`
+- `codecarbon_vs_slurm.training_gpu_abs_diff_kwh`
+- `codecarbon_vs_slurm.training_gpu_rel_diff_pct`
+- `codecarbon_vs_slurm.training_total_abs_diff_kwh`
+- `codecarbon_vs_slurm.training_total_rel_diff_pct`
 
 In Prometheus (zusaeztlich):
 - `slurm_job_phase_energy_kwh{job_id,phase}`
 - `slurm_job_phase_gpu_energy_kwh{job_id,phase}`
 - `slurm_job_phase_codecarbon_energy_kwh{job_id,phase}`
+- `slurm_job_phase_codecarbon_gpu_energy_kwh{job_id,phase}`
+- `slurm_job_training_codecarbon_energy_kwh{job_id}`
+- `slurm_job_training_codecarbon_gpu_energy_kwh{job_id}`
 - `slurm_job_training_energy_compare_abs_diff_kwh{job_id}`
 - `slurm_job_training_energy_compare_rel_diff_pct{job_id}`
+- `slurm_job_training_gpu_energy_compare_abs_diff_kwh{job_id}`
+- `slurm_job_training_gpu_energy_compare_rel_diff_pct{job_id}`
+- `slurm_job_training_total_energy_compare_abs_diff_kwh{job_id}`
+- `slurm_job_training_total_energy_compare_rel_diff_pct{job_id}`
+
+## Faire Vergleichslogik: CodeCarbon vs. SLURM
+
+Die Phasenabgrenzung fuer beide Systeme ist identisch:
+- Start und Ende jeder Phase werden in `tracked_phase(...)` in `rotationally-invariant-cnns-changes/train_repro_phase_tracked.py` geschrieben
+- dieselben Zeitstempel werden spaeter fuer die SLURM/GPU-Auswertung in `slurm/summarize_gpu_metrics_phases.py` verwendet
+
+Dadurch messen beide Systeme denselben Codeabschnitt fuer:
+- `preprocessing_labels`
+- `preprocessing_split`
+- `preprocessing_crop`
+- `training`
+
+Wichtige Klarstellung zur Fairness:
+- SLURM/GPU basiert auf integrierter GPU-Leistung aus `gpu_monitor.sh`
+- CodeCarbon liefert sowohl Gesamtenergie als auch GPU-Energie
+
+Der eigentliche Vergleich `training_abs_diff_kwh` und `training_rel_diff_pct` verwendet jetzt bewusst:
+- SLURM: `gpu_energy_kwh`
+- CodeCarbon: `codecarbon_gpu_energy_kwh`
+
+Also:
+- gleicher Codeabschnitt
+- gleiche Zeitgrenzen
+- gleiche Vergleichsbasis: GPU gegen GPU
+
+Zusaetzlich werden weiterhin Vergleichswerte fuer Gesamtenergie exportiert, damit man GPU-vs-GPU und Total-vs-Total getrennt analysieren kann.
+
+Wichtige Dashboard-Klarstellung:
+- `CodeCarbon Phase Total Energy by Job (Wh)` zeigt die gesamte CodeCarbon-Energie der Phase
+- diese Gesamtenergie kann deutlich groesser sein als `codecarbon_gpu_energy_kwh`, weil CodeCarbon auch CPU- und RAM-Anteile beruecksichtigt
+- Beispiel Training:
+  - CodeCarbon Total: `codecarbon_energy_kwh`
+  - CodeCarbon GPU-only: `codecarbon_gpu_energy_kwh`
+  - der faire Differenz-Chart `Training GPU Energy Diff % (CodeCarbon GPU vs SLURM GPU)` nutzt die GPU-only-Werte
 
 ## Wichtige Code-Aenderungen
 

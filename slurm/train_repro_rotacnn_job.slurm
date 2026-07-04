@@ -38,6 +38,7 @@ GPU_SUMMARY_JSON="${GPU_METRICS_DIR}/gpu_summary_job_${JOB_ID}.json"
 GPU_SUMMARY_PHASES_JSON="${GPU_METRICS_DIR}/gpu_summary_job_${JOB_ID}_phases.json"
 TIMELINE_JSONL="${GPU_METRICS_DIR}/phase_timeline_job_${JOB_ID}.jsonl"
 PHASE_CC_DIR="${GPU_METRICS_DIR}/codecarbon_job_${JOB_ID}"
+JOB_CC_JSON="${GPU_METRICS_DIR}/codecarbon_job_total_job_${JOB_ID}.json"
 MLFLOW_RUN_ID_FILE="${GPU_METRICS_DIR}/mlflow_run_id_job_${JOB_ID}.txt"
 PHASE_PROM="${PROM_TEXTFILE_DIR}/job_${JOB_ID}_phases.prom"
 
@@ -63,6 +64,7 @@ python "${REPRO_SCRIPT}" \
   --model "${REPRO_MODEL}" \
   --timeline-path "${TIMELINE_JSONL}" \
   --phase-metrics-dir "${PHASE_CC_DIR}" \
+  --job-metrics-path "${JOB_CC_JSON}" \
   "${OVR_ARR[@]}"
 TRAIN_EXIT=$?
 set -e
@@ -83,6 +85,9 @@ python slurm/summarize_gpu_metrics_phases.py \
   --timeline-jsonl "${TIMELINE_JSONL}" \
   --base-summary-json "${GPU_SUMMARY_JSON}" \
   --output-json "${GPU_SUMMARY_PHASES_JSON}" \
+  --job-codecarbon-json "${JOB_CC_JSON}" \
+  --price-eur-kwh "${ELECTRICITY_PRICE_EUR_PER_KWH}" \
+  --co2-kg-kwh "${GRID_CO2_KG_PER_KWH}" \
   --pue "${PUE_FACTOR}"
 
 if [ "${MLFLOW_LOG_JOB_ENERGY}" = "1" ] || [ "${MLFLOW_LOG_JOB_ENERGY,,}" = "true" ] || [ "${MLFLOW_LOG_JOB_ENERGY,,}" = "yes" ]; then
@@ -100,7 +105,7 @@ if [ "${MLFLOW_LOG_JOB_ENERGY}" = "1" ] || [ "${MLFLOW_LOG_JOB_ENERGY,,}" = "tru
 fi
 
 python slurm/export_job_metrics_prom.py \
-  --summary-json "${GPU_SUMMARY_JSON}" \
+  --summary-json "${GPU_SUMMARY_PHASES_JSON}" \
   --output-dir "${PROM_TEXTFILE_DIR}" \
   --aggregate-dir "${GPU_METRICS_DIR}"
 

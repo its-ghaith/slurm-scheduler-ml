@@ -15,6 +15,11 @@ JOB_METRIC_KEYS = [
     "training_energy_kwh",
     "estimated_electricity_cost_eur",
     "estimated_co2_kg",
+    "codecarbon_job_total_duration_seconds",
+    "codecarbon_job_total_energy_kwh",
+    "codecarbon_job_total_gpu_energy_kwh",
+    "codecarbon_estimated_electricity_cost_eur",
+    "codecarbon_estimated_co2_kg",
 ]
 
 
@@ -83,6 +88,10 @@ def aggregate_summaries(summaries):
     total_training_energy = sum(to_float(s.get("training_energy_kwh", 0.0)) for s in summaries)
     total_cost = sum(to_float(s.get("estimated_electricity_cost_eur", 0.0)) for s in summaries)
     total_co2 = sum(to_float(s.get("estimated_co2_kg", 0.0)) for s in summaries)
+    total_codecarbon_energy = sum(to_float(s.get("codecarbon_job_total_energy_kwh", 0.0)) for s in summaries)
+    total_codecarbon_gpu_energy = sum(to_float(s.get("codecarbon_job_total_gpu_energy_kwh", 0.0)) for s in summaries)
+    total_codecarbon_cost = sum(to_float(s.get("codecarbon_estimated_electricity_cost_eur", 0.0)) for s in summaries)
+    total_codecarbon_co2 = sum(to_float(s.get("codecarbon_estimated_co2_kg", 0.0)) for s in summaries)
     avg_gpu_util = (
         sum(to_float(s.get("gpu_util_avg_pct", 0.0)) for s in summaries) / count if count else 0.0
     )
@@ -106,6 +115,18 @@ def aggregate_summaries(summaries):
         "# HELP slurm_jobs_estimated_co2_kg_total Total estimated CO2 in kg over all summarized jobs.",
         "# TYPE slurm_jobs_estimated_co2_kg_total gauge",
         f"slurm_jobs_estimated_co2_kg_total {total_co2:.12g}",
+        "# HELP slurm_jobs_codecarbon_total_energy_kwh_total Total CodeCarbon total energy in kWh over all summarized jobs.",
+        "# TYPE slurm_jobs_codecarbon_total_energy_kwh_total gauge",
+        f"slurm_jobs_codecarbon_total_energy_kwh_total {total_codecarbon_energy:.12g}",
+        "# HELP slurm_jobs_codecarbon_total_gpu_energy_kwh_total Total CodeCarbon GPU-only energy in kWh over all summarized jobs.",
+        "# TYPE slurm_jobs_codecarbon_total_gpu_energy_kwh_total gauge",
+        f"slurm_jobs_codecarbon_total_gpu_energy_kwh_total {total_codecarbon_gpu_energy:.12g}",
+        "# HELP slurm_jobs_codecarbon_estimated_electricity_cost_eur_total Total CodeCarbon estimated electricity cost in EUR.",
+        "# TYPE slurm_jobs_codecarbon_estimated_electricity_cost_eur_total gauge",
+        f"slurm_jobs_codecarbon_estimated_electricity_cost_eur_total {total_codecarbon_cost:.12g}",
+        "# HELP slurm_jobs_codecarbon_estimated_co2_kg_total Total CodeCarbon estimated CO2 in kg over all summarized jobs.",
+        "# TYPE slurm_jobs_codecarbon_estimated_co2_kg_total gauge",
+        f"slurm_jobs_codecarbon_estimated_co2_kg_total {total_codecarbon_co2:.12g}",
         "# HELP slurm_jobs_gpu_util_avg_pct_mean Mean GPU utilization percentage across job summaries.",
         "# TYPE slurm_jobs_gpu_util_avg_pct_mean gauge",
         f"slurm_jobs_gpu_util_avg_pct_mean {avg_gpu_util:.12g}",
