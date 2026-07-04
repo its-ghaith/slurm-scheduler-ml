@@ -444,1148 +444,1439 @@ metadata:
 data:
   slurm-energy-overview.json: |
     {
-      "annotations": {
-        "list": [
-          {
-            "builtIn": 1,
-            "datasource": {
-              "type": "grafana",
-              "uid": "-- Grafana --"
-            },
-            "enable": true,
-            "hide": true,
-            "iconColor": "rgba(0, 211, 255, 1)",
-            "name": "Annotations & Alerts",
-            "type": "dashboard"
-          }
-        ]
-      },
-      "editable": true,
-      "fiscalYearStartMonth": 0,
-      "graphTooltip": 0,
-      "id": null,
-      "links": [],
-      "liveNow": false,
-      "panels": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 4,
-            "w": 6,
-            "x": 0,
-            "y": 0
-          },
-          "id": 1,
-          "options": {
-            "colorMode": "value",
-            "graphMode": "none",
-            "justifyMode": "auto",
-            "orientation": "auto",
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "textMode": "value_and_name"
-          },
-          "pluginVersion": "11.1.0",
-          "targets": [
-            {
-              "expr": "slurm_jobs_total",
-              "refId": "A",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              },
-              "editorMode": "code",
-              "exemplar": false,
-              "instant": true,
-              "range": false,
-              "format": "time_series"
-            }
-          ],
-          "title": "Jobs Total",
-          "type": "stat"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              },
-              "unit": "kwatth"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 4,
-            "w": 6,
-            "x": 6,
-            "y": 0
-          },
-          "id": 2,
-          "options": {
-            "colorMode": "value",
-            "graphMode": "none",
-            "justifyMode": "auto",
-            "orientation": "auto",
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "textMode": "value_and_name"
-          },
-          "pluginVersion": "11.1.0",
-          "targets": [
-            {
-              "expr": "slurm_jobs_training_energy_kwh_total",
-              "refId": "A",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              },
-              "editorMode": "code",
-              "exemplar": false,
-              "instant": true,
-              "range": false,
-              "format": "time_series"
-            }
-          ],
-          "title": "Total Energy (kWh)",
-          "type": "stat"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              },
-              "unit": "currencyEUR"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 4,
-            "w": 6,
-            "x": 12,
-            "y": 0
-          },
-          "id": 3,
-          "options": {
-            "colorMode": "value",
-            "graphMode": "none",
-            "justifyMode": "auto",
-            "orientation": "auto",
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "textMode": "value_and_name"
-          },
-          "pluginVersion": "11.1.0",
-          "targets": [
-            {
-              "expr": "slurm_jobs_estimated_electricity_cost_eur_total",
-              "refId": "A",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              },
-              "editorMode": "code",
-              "exemplar": false,
-              "instant": true,
-              "range": false,
-              "format": "time_series"
-            }
-          ],
-          "title": "Total Cost (EUR)",
-          "type": "stat"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              },
-              "unit": "kg"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 4,
-            "w": 6,
-            "x": 18,
-            "y": 0
-          },
-          "id": 4,
-          "options": {
-            "colorMode": "value",
-            "graphMode": "none",
-            "justifyMode": "auto",
-            "orientation": "auto",
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "textMode": "value_and_name"
-          },
-          "pluginVersion": "11.1.0",
-          "targets": [
-            {
-              "expr": "slurm_jobs_estimated_co2_kg_total",
-              "refId": "A",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              },
-              "editorMode": "code",
-              "exemplar": false,
-              "instant": true,
-              "range": false,
-              "format": "time_series"
-            }
-          ],
-          "title": "Total CO2 (kg)",
-          "type": "stat"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "drawStyle": "line",
-                "fillOpacity": 10,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "lineInterpolation": "linear",
-                "lineWidth": 2,
-                "pointSize": 4,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "unit": "kwatth"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 0,
-            "y": 4
-          },
-          "id": 5,
-          "options": {
-            "legend": {
-              "calcs": [],
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "multi",
-              "sort": "none"
-            }
-          },
-          "targets": [
-            {
-              "expr": "slurm_job_training_energy_kwh",
-              "legendFormat": "job {{job_id}}",
-              "refId": "A",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              },
-              "editorMode": "code",
-              "exemplar": false,
-              "instant": false,
-              "range": true,
-              "format": "time_series"
-            }
-          ],
-          "title": "Energy Per Job (kWh)",
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "drawStyle": "line",
-                "fillOpacity": 10,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "lineInterpolation": "linear",
-                "lineWidth": 2,
-                "pointSize": 4,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "unit": "currencyEUR"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 12,
-            "y": 4
-          },
-          "id": 6,
-          "options": {
-            "legend": {
-              "calcs": [],
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "multi",
-              "sort": "none"
-            }
-          },
-          "targets": [
-            {
-              "expr": "slurm_job_estimated_electricity_cost_eur",
-              "legendFormat": "job {{job_id}}",
-              "refId": "A",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              },
-              "editorMode": "code",
-              "exemplar": false,
-              "instant": false,
-              "range": true,
-              "format": "time_series"
-            }
-          ],
-          "title": "Cost Per Job (EUR)",
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "drawStyle": "line",
-                "fillOpacity": 10,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "lineInterpolation": "linear",
-                "lineWidth": 2,
-                "pointSize": 4,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "unit": "percent"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 0,
-            "y": 12
-          },
-          "id": 7,
-          "options": {
-            "legend": {
-              "calcs": [],
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "multi",
-              "sort": "none"
-            }
-          },
-          "targets": [
-            {
-              "expr": "slurm_job_gpu_util_avg_pct",
-              "legendFormat": "job {{job_id}}",
-              "refId": "A",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              },
-              "editorMode": "code",
-              "exemplar": false,
-              "instant": false,
-              "range": true,
-              "format": "time_series"
-            }
-          ],
-          "title": "Avg GPU Utilization Per Job (%)",
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "drawStyle": "line",
-                "fillOpacity": 10,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "lineInterpolation": "linear",
-                "lineWidth": 2,
-                "pointSize": 4,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "unit": "s"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 12,
-            "y": 12
-          },
-          "id": 8,
-          "options": {
-            "legend": {
-              "calcs": [],
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "multi",
-              "sort": "none"
-            }
-          },
-          "targets": [
-            {
-              "expr": "slurm_job_duration_seconds",
-              "legendFormat": "job {{job_id}}",
-              "refId": "A",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              },
-              "editorMode": "code",
-              "exemplar": false,
-              "instant": false,
-              "range": true,
-              "format": "time_series"
-            }
-          ],
-          "title": "Job Duration (s)",
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "custom": {
-                "stacking": {
-                  "mode": "none",
-                  "group": "A"
-                },
-                "hideFrom": {
-                  "tooltip": false,
-                  "viz": false,
-                  "legend": false
-                },
-                "lineInterpolation": "linear",
-                "lineWidth": 2,
-                "axisLabel": "",
-                "axisCenteredZero": false,
-                "spanNulls": false,
-                "axisPlacement": "auto",
-                "pointSize": 4,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "axisBorderShow": false,
-                "axisColorMode": "text",
-                "gradientMode": "none",
-                "drawStyle": "line",
-                "fillOpacity": 10,
-                "thresholdsStyle": {
-                  "mode": "off"
-                },
-                "showPoints": "auto"
-              },
-              "color": {
-                "mode": "palette-classic"
-              },
-              "unit": "kwatth"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "y": 20,
-            "w": 12,
-            "x": 0,
-            "h": 8
-          },
-          "id": 9,
-          "options": {
-            "legend": {
-              "placement": "bottom",
-              "showLegend": true,
-              "calcs": [],
-              "displayMode": "list"
-            },
-            "tooltip": {
-              "sort": "none",
-              "mode": "multi"
-            }
-          },
-          "targets": [
-            {
-              "editorMode": "code",
-              "refId": "A",
-              "legendFormat": "job {{job_id}}",
-              "exemplar": false,
-              "instant": false,
-              "format": "time_series",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              },
-              "range": true,
-              "expr": "slurm_job_phase_energy_kwh{phase=\"training\"}"
-            }
-          ],
-          "title": "Training Phase Energy (kWh)",
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "custom": {
-                "stacking": {
-                  "mode": "none",
-                  "group": "A"
-                },
-                "hideFrom": {
-                  "tooltip": false,
-                  "viz": false,
-                  "legend": false
-                },
-                "lineInterpolation": "linear",
-                "lineWidth": 2,
-                "axisLabel": "",
-                "axisCenteredZero": false,
-                "spanNulls": false,
-                "axisPlacement": "auto",
-                "pointSize": 4,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "axisBorderShow": false,
-                "axisColorMode": "text",
-                "gradientMode": "none",
-                "drawStyle": "line",
-                "fillOpacity": 10,
-                "thresholdsStyle": {
-                  "mode": "off"
-                },
-                "showPoints": "auto"
-              },
-              "color": {
-                "mode": "palette-classic"
-              },
-              "unit": "kwatth"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "y": 20,
-            "w": 12,
-            "x": 12,
-            "h": 8
-          },
-          "id": 10,
-          "options": {
-            "legend": {
-              "placement": "bottom",
-              "showLegend": true,
-              "calcs": [],
-              "displayMode": "list"
-            },
-            "tooltip": {
-              "sort": "none",
-              "mode": "multi"
-            }
-          },
-          "targets": [
-            {
-              "editorMode": "code",
-              "refId": "A",
-              "legendFormat": "{{phase}} job {{job_id}}",
-              "exemplar": false,
-              "instant": false,
-              "format": "time_series",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              },
-              "range": true,
-              "expr": "slurm_job_phase_energy_kwh{phase=~\"preprocessing.*\"}"
-            }
-          ],
-          "title": "Preprocessing Phase Energy (kWh)",
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "custom": {
-                "stacking": {
-                  "mode": "none",
-                  "group": "A"
-                },
-                "hideFrom": {
-                  "tooltip": false,
-                  "viz": false,
-                  "legend": false
-                },
-                "lineInterpolation": "linear",
-                "lineWidth": 2,
-                "axisLabel": "",
-                "axisCenteredZero": false,
-                "spanNulls": false,
-                "axisPlacement": "auto",
-                "pointSize": 4,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "axisBorderShow": false,
-                "axisColorMode": "text",
-                "gradientMode": "none",
-                "drawStyle": "line",
-                "fillOpacity": 10,
-                "thresholdsStyle": {
-                  "mode": "off"
-                },
-                "showPoints": "auto"
-              },
-              "color": {
-                "mode": "palette-classic"
-              },
-              "unit": "kwatth"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "y": 28,
-            "w": 12,
-            "x": 0,
-            "h": 8
-          },
-          "id": 11,
-          "options": {
-            "legend": {
-              "placement": "bottom",
-              "showLegend": true,
-              "calcs": [],
-              "displayMode": "list"
-            },
-            "tooltip": {
-              "sort": "none",
-              "mode": "multi"
-            }
-          },
-          "targets": [
-            {
-              "editorMode": "code",
-              "refId": "A",
-              "legendFormat": "{{phase}} job {{job_id}}",
-              "exemplar": false,
-              "instant": false,
-              "format": "time_series",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              },
-              "range": true,
-              "expr": "slurm_job_phase_codecarbon_energy_kwh"
-            }
-          ],
-          "title": "CodeCarbon Phase Energy (kWh)",
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "custom": {
-                "stacking": {
-                  "mode": "none",
-                  "group": "A"
-                },
-                "hideFrom": {
-                  "tooltip": false,
-                  "viz": false,
-                  "legend": false
-                },
-                "lineInterpolation": "linear",
-                "lineWidth": 2,
-                "axisLabel": "",
-                "axisCenteredZero": false,
-                "spanNulls": false,
-                "axisPlacement": "auto",
-                "pointSize": 4,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "axisBorderShow": false,
-                "axisColorMode": "text",
-                "gradientMode": "none",
-                "drawStyle": "line",
-                "fillOpacity": 10,
-                "thresholdsStyle": {
-                  "mode": "off"
-                },
-                "showPoints": "auto"
-              },
-              "color": {
-                "mode": "palette-classic"
-              },
-              "unit": "percent"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "y": 28,
-            "w": 12,
-            "x": 12,
-            "h": 8
-          },
-          "id": 12,
-          "options": {
-            "legend": {
-              "placement": "bottom",
-              "showLegend": true,
-              "calcs": [],
-              "displayMode": "list"
-            },
-            "tooltip": {
-              "sort": "none",
-              "mode": "multi"
-            }
-          },
-          "targets": [
-            {
-              "editorMode": "code",
-              "refId": "A",
-              "legendFormat": "job {{job_id}}",
-              "exemplar": false,
-              "instant": false,
-              "format": "time_series",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              },
-              "range": true,
-              "expr": "slurm_job_training_energy_compare_rel_diff_pct"
-            }
-          ],
-          "title": "Training Energy Diff % (CodeCarbon vs SLURM)",
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
-              "unit": "kwatth",
-              "thresholds": {
-                "steps": [
-                  {
-                    "value": null,
-                    "color": "green"
-                  }
-                ],
-                "mode": "absolute"
-              }
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "y": 36,
-            "w": 8,
-            "x": 0,
-            "h": 4
-          },
-          "id": 13,
-          "options": {
-            "textMode": "value_and_name",
-            "graphMode": "none",
-            "reduceOptions": {
-              "values": false,
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": ""
-            },
-            "justifyMode": "auto",
-            "orientation": "auto",
-            "colorMode": "value"
-          },
-          "pluginVersion": "11.1.0",
-          "targets": [
-            {
-              "exemplar": false,
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              },
-              "refId": "A",
-              "format": "time_series",
-              "instant": true,
-              "expr": "slurm_job_training_energy_compare_abs_diff_kwh",
-              "range": false,
-              "editorMode": "code"
-            }
-          ],
-          "title": "Latest Training Abs Diff (kWh)",
-          "type": "stat"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
-              "unit": "percent",
-              "thresholds": {
-                "steps": [
-                  {
-                    "value": null,
-                    "color": "green"
-                  }
-                ],
-                "mode": "absolute"
-              }
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "y": 36,
-            "w": 8,
-            "x": 8,
-            "h": 4
-          },
-          "id": 14,
-          "options": {
-            "textMode": "value_and_name",
-            "graphMode": "none",
-            "reduceOptions": {
-              "values": false,
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": ""
-            },
-            "justifyMode": "auto",
-            "orientation": "auto",
-            "colorMode": "value"
-          },
-          "pluginVersion": "11.1.0",
-          "targets": [
-            {
-              "exemplar": false,
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              },
-              "refId": "A",
-              "format": "time_series",
-              "instant": true,
-              "expr": "slurm_job_training_energy_compare_rel_diff_pct",
-              "range": false,
-              "editorMode": "code"
-            }
-          ],
-          "title": "Latest Training Diff (%)",
-          "type": "stat"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
-              "unit": "kwatth",
-              "thresholds": {
-                "steps": [
-                  {
-                    "value": null,
-                    "color": "green"
-                  }
-                ],
-                "mode": "absolute"
-              }
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "y": 36,
-            "w": 8,
-            "x": 16,
-            "h": 4
-          },
-          "id": 15,
-          "options": {
-            "textMode": "value_and_name",
-            "graphMode": "none",
-            "reduceOptions": {
-              "values": false,
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": ""
-            },
-            "justifyMode": "auto",
-            "orientation": "auto",
-            "colorMode": "value"
-          },
-          "pluginVersion": "11.1.0",
-          "targets": [
-            {
-              "exemplar": false,
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              },
-              "refId": "A",
-              "format": "time_series",
-              "instant": true,
-              "expr": "slurm_job_phase_energy_kwh{phase=\"training\"}",
-              "range": false,
-              "editorMode": "code"
-            }
-          ],
-          "title": "Latest Training Phase Energy (kWh)",
-          "type": "stat"
-        }
-      ],
-      "refresh": "5s",
-      "schemaVersion": 39,
-      "style": "dark",
-      "tags": [
-        "slurm",
-        "energy",
-        "gpu"
-      ],
-      "templating": {
-        "list": []
-      },
-      "time": {
-        "from": "now-6h",
-        "to": "now"
-      },
-      "timepicker": {},
-      "timezone": "browser",
-      "title": "SLURM Energy Overview",
-      "uid": "slurm-energy-overview",
-      "version": 51,
-      "weekStart": ""
+        "annotations":  {
+                            "list":  [
+                                         {
+                                             "builtIn":  1,
+                                             "datasource":  {
+                                                                "type":  "grafana",
+                                                                "uid":  "-- Grafana --"
+                                                            },
+                                             "enable":  true,
+                                             "hide":  true,
+                                             "iconColor":  "rgba(0, 211, 255, 1)",
+                                             "name":  "Annotations \u0026 Alerts",
+                                             "type":  "dashboard"
+                                         }
+                                     ]
+                        },
+        "editable":  true,
+        "fiscalYearStartMonth":  0,
+        "graphTooltip":  0,
+        "id":  null,
+        "links":  [
+    
+                  ],
+        "liveNow":  false,
+        "panels":  [
+                       {
+                           "datasource":  {
+                                              "type":  "prometheus",
+                                              "uid":  "prometheus"
+                                          },
+                           "fieldConfig":  {
+                                               "defaults":  {
+                                                                "color":  {
+                                                                              "mode":  "thresholds"
+                                                                          },
+                                                                "thresholds":  {
+                                                                                   "mode":  "absolute",
+                                                                                   "steps":  [
+                                                                                                 {
+                                                                                                     "color":  "green",
+                                                                                                     "value":  null
+                                                                                                 }
+                                                                                             ]
+                                                                               }
+                                                            },
+                                               "overrides":  [
+    
+                                                             ]
+                                           },
+                           "gridPos":  {
+                                           "h":  4,
+                                           "w":  6,
+                                           "x":  0,
+                                           "y":  0
+                                       },
+                           "id":  1,
+                           "options":  {
+                                           "colorMode":  "value",
+                                           "graphMode":  "none",
+                                           "justifyMode":  "auto",
+                                           "orientation":  "auto",
+                                           "reduceOptions":  {
+                                                                 "calcs":  [
+                                                                               "lastNotNull"
+                                                                           ],
+                                                                 "fields":  "",
+                                                                 "values":  false
+                                                             },
+                                           "textMode":  "value_and_name"
+                                       },
+                           "pluginVersion":  "11.1.0",
+                           "targets":  [
+                                           {
+                                               "expr":  "slurm_jobs_total",
+                                               "refId":  "A",
+                                               "datasource":  {
+                                                                  "type":  "prometheus",
+                                                                  "uid":  "prometheus"
+                                                              },
+                                               "editorMode":  "code",
+                                               "exemplar":  false,
+                                               "instant":  true,
+                                               "range":  false,
+                                               "format":  "time_series"
+                                           }
+                                       ],
+                           "title":  "Jobs Total",
+                           "type":  "stat"
+                       },
+                       {
+                           "datasource":  {
+                                              "type":  "prometheus",
+                                              "uid":  "prometheus"
+                                          },
+                           "fieldConfig":  {
+                                               "defaults":  {
+                                                                "color":  {
+                                                                              "mode":  "thresholds"
+                                                                          },
+                                                                "thresholds":  {
+                                                                                   "mode":  "absolute",
+                                                                                   "steps":  [
+                                                                                                 {
+                                                                                                     "color":  "green",
+                                                                                                     "value":  null
+                                                                                                 }
+                                                                                             ]
+                                                                               },
+                                                                "unit":  "kwatth"
+                                                            },
+                                               "overrides":  [
+    
+                                                             ]
+                                           },
+                           "gridPos":  {
+                                           "h":  4,
+                                           "w":  6,
+                                           "x":  6,
+                                           "y":  0
+                                       },
+                           "id":  2,
+                           "options":  {
+                                           "colorMode":  "value",
+                                           "graphMode":  "none",
+                                           "justifyMode":  "auto",
+                                           "orientation":  "auto",
+                                           "reduceOptions":  {
+                                                                 "calcs":  [
+                                                                               "lastNotNull"
+                                                                           ],
+                                                                 "fields":  "",
+                                                                 "values":  false
+                                                             },
+                                           "textMode":  "value_and_name"
+                                       },
+                           "pluginVersion":  "11.1.0",
+                           "targets":  [
+                                           {
+                                               "expr":  "slurm_jobs_training_energy_kwh_total",
+                                               "refId":  "A",
+                                               "datasource":  {
+                                                                  "type":  "prometheus",
+                                                                  "uid":  "prometheus"
+                                                              },
+                                               "editorMode":  "code",
+                                               "exemplar":  false,
+                                               "instant":  true,
+                                               "range":  false,
+                                               "format":  "time_series"
+                                           }
+                                       ],
+                           "title":  "Total Energy (kWh)",
+                           "type":  "stat"
+                       },
+                       {
+                           "datasource":  {
+                                              "type":  "prometheus",
+                                              "uid":  "prometheus"
+                                          },
+                           "fieldConfig":  {
+                                               "defaults":  {
+                                                                "color":  {
+                                                                              "mode":  "thresholds"
+                                                                          },
+                                                                "thresholds":  {
+                                                                                   "mode":  "absolute",
+                                                                                   "steps":  [
+                                                                                                 {
+                                                                                                     "color":  "green",
+                                                                                                     "value":  null
+                                                                                                 }
+                                                                                             ]
+                                                                               },
+                                                                "unit":  "currencyEUR"
+                                                            },
+                                               "overrides":  [
+    
+                                                             ]
+                                           },
+                           "gridPos":  {
+                                           "h":  4,
+                                           "w":  6,
+                                           "x":  12,
+                                           "y":  0
+                                       },
+                           "id":  3,
+                           "options":  {
+                                           "colorMode":  "value",
+                                           "graphMode":  "none",
+                                           "justifyMode":  "auto",
+                                           "orientation":  "auto",
+                                           "reduceOptions":  {
+                                                                 "calcs":  [
+                                                                               "lastNotNull"
+                                                                           ],
+                                                                 "fields":  "",
+                                                                 "values":  false
+                                                             },
+                                           "textMode":  "value_and_name"
+                                       },
+                           "pluginVersion":  "11.1.0",
+                           "targets":  [
+                                           {
+                                               "expr":  "slurm_jobs_estimated_electricity_cost_eur_total",
+                                               "refId":  "A",
+                                               "datasource":  {
+                                                                  "type":  "prometheus",
+                                                                  "uid":  "prometheus"
+                                                              },
+                                               "editorMode":  "code",
+                                               "exemplar":  false,
+                                               "instant":  true,
+                                               "range":  false,
+                                               "format":  "time_series"
+                                           }
+                                       ],
+                           "title":  "Total Cost (EUR)",
+                           "type":  "stat"
+                       },
+                       {
+                           "datasource":  {
+                                              "type":  "prometheus",
+                                              "uid":  "prometheus"
+                                          },
+                           "fieldConfig":  {
+                                               "defaults":  {
+                                                                "color":  {
+                                                                              "mode":  "thresholds"
+                                                                          },
+                                                                "thresholds":  {
+                                                                                   "mode":  "absolute",
+                                                                                   "steps":  [
+                                                                                                 {
+                                                                                                     "color":  "green",
+                                                                                                     "value":  null
+                                                                                                 }
+                                                                                             ]
+                                                                               },
+                                                                "unit":  "kg"
+                                                            },
+                                               "overrides":  [
+    
+                                                             ]
+                                           },
+                           "gridPos":  {
+                                           "h":  4,
+                                           "w":  6,
+                                           "x":  18,
+                                           "y":  0
+                                       },
+                           "id":  4,
+                           "options":  {
+                                           "colorMode":  "value",
+                                           "graphMode":  "none",
+                                           "justifyMode":  "auto",
+                                           "orientation":  "auto",
+                                           "reduceOptions":  {
+                                                                 "calcs":  [
+                                                                               "lastNotNull"
+                                                                           ],
+                                                                 "fields":  "",
+                                                                 "values":  false
+                                                             },
+                                           "textMode":  "value_and_name"
+                                       },
+                           "pluginVersion":  "11.1.0",
+                           "targets":  [
+                                           {
+                                               "expr":  "slurm_jobs_estimated_co2_kg_total",
+                                               "refId":  "A",
+                                               "datasource":  {
+                                                                  "type":  "prometheus",
+                                                                  "uid":  "prometheus"
+                                                              },
+                                               "editorMode":  "code",
+                                               "exemplar":  false,
+                                               "instant":  true,
+                                               "range":  false,
+                                               "format":  "time_series"
+                                           }
+                                       ],
+                           "title":  "Total CO2 (kg)",
+                           "type":  "stat"
+                       },
+                       {
+                           "datasource":  {
+                                              "type":  "prometheus",
+                                              "uid":  "prometheus"
+                                          },
+                           "fieldConfig":  {
+                                               "defaults":  {
+                                                                "color":  {
+                                                                              "mode":  "palette-classic"
+                                                                          },
+                                                                "custom":  {
+                                                                               "axisBorderShow":  false,
+                                                                               "axisCenteredZero":  false,
+                                                                               "axisColorMode":  "text",
+                                                                               "axisLabel":  "",
+                                                                               "axisPlacement":  "auto",
+                                                                               "fillOpacity":  85,
+                                                                               "gradientMode":  "none",
+                                                                               "hideFrom":  {
+                                                                                                "legend":  false,
+                                                                                                "tooltip":  false,
+                                                                                                "viz":  false
+                                                                                            },
+                                                                               "lineWidth":  1,
+                                                                               "scaleDistribution":  {
+                                                                                                         "type":  "linear"
+                                                                                                     },
+                                                                               "thresholdsStyle":  {
+                                                                                                       "mode":  "off"
+                                                                                                   }
+                                                                           },
+                                                                "unit":  "kwatth"
+                                                            },
+                                               "overrides":  [
+    
+                                                             ]
+                                           },
+                           "gridPos":  {
+                                           "h":  8,
+                                           "w":  12,
+                                           "x":  0,
+                                           "y":  4
+                                       },
+                           "id":  5,
+                           "options":  {
+                                           "xField":  "job",
+                                           "orientation":  "vertical",
+                                           "xTickLabelRotation":  0,
+                                           "xTickLabelSpacing":  0,
+                                           "showValue":  "auto",
+                                           "stacking":  "none",
+                                           "groupWidth":  0.75,
+                                           "barWidth":  0.18,
+                                           "barRadius":  0,
+                                           "fullHighlight":  false,
+                                           "tooltip":  {
+                                                           "mode":  "single",
+                                                           "sort":  "none",
+                                                           "hideZeros":  false
+                                                       },
+                                           "legend":  {
+                                                          "showLegend":  false,
+                                                          "displayMode":  "list",
+                                                          "placement":  "bottom",
+                                                          "calcs":  [
+    
+                                                                    ]
+                                                      }
+                                       },
+                           "targets":  [
+                                           {
+                                               "expr":  "slurm_job_training_energy_kwh",
+                                               "legendFormat":  "job {{job_id}}",
+                                               "refId":  "A",
+                                               "datasource":  {
+                                                                  "type":  "prometheus",
+                                                                  "uid":  "prometheus"
+                                                              },
+                                               "editorMode":  "code",
+                                               "exemplar":  false,
+                                               "instant":  true,
+                                               "range":  false,
+                                               "format":  "time_series"
+                                           }
+                                       ],
+                           "title":  "Energy Per Job (kWh)",
+                           "type":  "barchart",
+                           "pluginVersion":  "11.1.0",
+                           "transformations":  [
+                                                   {
+                                                       "id":  "seriesToRows",
+                                                       "options":  {
+    
+                                                                   }
+                                                   },
+                                                   {
+                                                       "id":  "organize",
+                                                       "options":  {
+                                                                       "renameByName":  {
+                                                                                            "Metric":  "job",
+                                                                                            "Value":  "value"
+                                                                                        },
+                                                                       "indexByName":  {
+                                                                                           "job":  0,
+                                                                                           "value":  1
+                                                                                       },
+                                                                       "excludeByName":  {
+                                                                                             "Time":  true
+                                                                                         }
+                                                                   }
+                                                   }
+                                               ]
+                       },
+                       {
+                           "datasource":  {
+                                              "type":  "prometheus",
+                                              "uid":  "prometheus"
+                                          },
+                           "fieldConfig":  {
+                                               "defaults":  {
+                                                                "color":  {
+                                                                              "mode":  "palette-classic"
+                                                                          },
+                                                                "custom":  {
+                                                                               "axisBorderShow":  false,
+                                                                               "axisCenteredZero":  false,
+                                                                               "axisColorMode":  "text",
+                                                                               "axisLabel":  "",
+                                                                               "axisPlacement":  "auto",
+                                                                               "fillOpacity":  85,
+                                                                               "gradientMode":  "none",
+                                                                               "hideFrom":  {
+                                                                                                "legend":  false,
+                                                                                                "tooltip":  false,
+                                                                                                "viz":  false
+                                                                                            },
+                                                                               "lineWidth":  1,
+                                                                               "scaleDistribution":  {
+                                                                                                         "type":  "linear"
+                                                                                                     },
+                                                                               "thresholdsStyle":  {
+                                                                                                       "mode":  "off"
+                                                                                                   }
+                                                                           },
+                                                                "unit":  "currencyEUR"
+                                                            },
+                                               "overrides":  [
+    
+                                                             ]
+                                           },
+                           "gridPos":  {
+                                           "h":  8,
+                                           "w":  12,
+                                           "x":  12,
+                                           "y":  4
+                                       },
+                           "id":  6,
+                           "options":  {
+                                           "xField":  "job",
+                                           "orientation":  "vertical",
+                                           "xTickLabelRotation":  0,
+                                           "xTickLabelSpacing":  0,
+                                           "showValue":  "auto",
+                                           "stacking":  "none",
+                                           "groupWidth":  0.75,
+                                           "barWidth":  0.18,
+                                           "barRadius":  0,
+                                           "fullHighlight":  false,
+                                           "tooltip":  {
+                                                           "mode":  "single",
+                                                           "sort":  "none",
+                                                           "hideZeros":  false
+                                                       },
+                                           "legend":  {
+                                                          "showLegend":  false,
+                                                          "displayMode":  "list",
+                                                          "placement":  "bottom",
+                                                          "calcs":  [
+    
+                                                                    ]
+                                                      }
+                                       },
+                           "targets":  [
+                                           {
+                                               "expr":  "slurm_job_estimated_electricity_cost_eur",
+                                               "legendFormat":  "job {{job_id}}",
+                                               "refId":  "A",
+                                               "datasource":  {
+                                                                  "type":  "prometheus",
+                                                                  "uid":  "prometheus"
+                                                              },
+                                               "editorMode":  "code",
+                                               "exemplar":  false,
+                                               "instant":  true,
+                                               "range":  false,
+                                               "format":  "time_series"
+                                           }
+                                       ],
+                           "title":  "Cost Per Job (EUR)",
+                           "type":  "barchart",
+                           "pluginVersion":  "11.1.0",
+                           "transformations":  [
+                                                   {
+                                                       "id":  "seriesToRows",
+                                                       "options":  {
+    
+                                                                   }
+                                                   },
+                                                   {
+                                                       "id":  "organize",
+                                                       "options":  {
+                                                                       "renameByName":  {
+                                                                                            "Metric":  "job",
+                                                                                            "Value":  "value"
+                                                                                        },
+                                                                       "indexByName":  {
+                                                                                           "job":  0,
+                                                                                           "value":  1
+                                                                                       },
+                                                                       "excludeByName":  {
+                                                                                             "Time":  true
+                                                                                         }
+                                                                   }
+                                                   }
+                                               ]
+                       },
+                       {
+                           "datasource":  {
+                                              "type":  "prometheus",
+                                              "uid":  "prometheus"
+                                          },
+                           "fieldConfig":  {
+                                               "defaults":  {
+                                                                "color":  {
+                                                                              "mode":  "palette-classic"
+                                                                          },
+                                                                "custom":  {
+                                                                               "axisBorderShow":  false,
+                                                                               "axisCenteredZero":  false,
+                                                                               "axisColorMode":  "text",
+                                                                               "axisLabel":  "",
+                                                                               "axisPlacement":  "auto",
+                                                                               "fillOpacity":  85,
+                                                                               "gradientMode":  "none",
+                                                                               "hideFrom":  {
+                                                                                                "legend":  false,
+                                                                                                "tooltip":  false,
+                                                                                                "viz":  false
+                                                                                            },
+                                                                               "lineWidth":  1,
+                                                                               "scaleDistribution":  {
+                                                                                                         "type":  "linear"
+                                                                                                     },
+                                                                               "thresholdsStyle":  {
+                                                                                                       "mode":  "off"
+                                                                                                   }
+                                                                           },
+                                                                "unit":  "percent"
+                                                            },
+                                               "overrides":  [
+    
+                                                             ]
+                                           },
+                           "gridPos":  {
+                                           "h":  8,
+                                           "w":  12,
+                                           "x":  0,
+                                           "y":  12
+                                       },
+                           "id":  7,
+                           "options":  {
+                                           "xField":  "job",
+                                           "orientation":  "vertical",
+                                           "xTickLabelRotation":  0,
+                                           "xTickLabelSpacing":  0,
+                                           "showValue":  "auto",
+                                           "stacking":  "none",
+                                           "groupWidth":  0.75,
+                                           "barWidth":  0.18,
+                                           "barRadius":  0,
+                                           "fullHighlight":  false,
+                                           "tooltip":  {
+                                                           "mode":  "single",
+                                                           "sort":  "none",
+                                                           "hideZeros":  false
+                                                       },
+                                           "legend":  {
+                                                          "showLegend":  false,
+                                                          "displayMode":  "list",
+                                                          "placement":  "bottom",
+                                                          "calcs":  [
+    
+                                                                    ]
+                                                      }
+                                       },
+                           "targets":  [
+                                           {
+                                               "expr":  "slurm_job_gpu_util_avg_pct",
+                                               "legendFormat":  "job {{job_id}}",
+                                               "refId":  "A",
+                                               "datasource":  {
+                                                                  "type":  "prometheus",
+                                                                  "uid":  "prometheus"
+                                                              },
+                                               "editorMode":  "code",
+                                               "exemplar":  false,
+                                               "instant":  true,
+                                               "range":  false,
+                                               "format":  "time_series"
+                                           }
+                                       ],
+                           "title":  "Avg GPU Utilization Per Job (%)",
+                           "type":  "barchart",
+                           "pluginVersion":  "11.1.0",
+                           "transformations":  [
+                                                   {
+                                                       "id":  "seriesToRows",
+                                                       "options":  {
+    
+                                                                   }
+                                                   },
+                                                   {
+                                                       "id":  "organize",
+                                                       "options":  {
+                                                                       "renameByName":  {
+                                                                                            "Metric":  "job",
+                                                                                            "Value":  "value"
+                                                                                        },
+                                                                       "indexByName":  {
+                                                                                           "job":  0,
+                                                                                           "value":  1
+                                                                                       },
+                                                                       "excludeByName":  {
+                                                                                             "Time":  true
+                                                                                         }
+                                                                   }
+                                                   }
+                                               ]
+                       },
+                       {
+                           "datasource":  {
+                                              "type":  "prometheus",
+                                              "uid":  "prometheus"
+                                          },
+                           "fieldConfig":  {
+                                               "defaults":  {
+                                                                "color":  {
+                                                                              "mode":  "palette-classic"
+                                                                          },
+                                                                "custom":  {
+                                                                               "axisBorderShow":  false,
+                                                                               "axisCenteredZero":  false,
+                                                                               "axisColorMode":  "text",
+                                                                               "axisLabel":  "",
+                                                                               "axisPlacement":  "auto",
+                                                                               "fillOpacity":  85,
+                                                                               "gradientMode":  "none",
+                                                                               "hideFrom":  {
+                                                                                                "legend":  false,
+                                                                                                "tooltip":  false,
+                                                                                                "viz":  false
+                                                                                            },
+                                                                               "lineWidth":  1,
+                                                                               "scaleDistribution":  {
+                                                                                                         "type":  "linear"
+                                                                                                     },
+                                                                               "thresholdsStyle":  {
+                                                                                                       "mode":  "off"
+                                                                                                   }
+                                                                           },
+                                                                "unit":  "s"
+                                                            },
+                                               "overrides":  [
+    
+                                                             ]
+                                           },
+                           "gridPos":  {
+                                           "h":  8,
+                                           "w":  12,
+                                           "x":  12,
+                                           "y":  12
+                                       },
+                           "id":  8,
+                           "options":  {
+                                           "xField":  "job",
+                                           "orientation":  "vertical",
+                                           "xTickLabelRotation":  0,
+                                           "xTickLabelSpacing":  0,
+                                           "showValue":  "auto",
+                                           "stacking":  "none",
+                                           "groupWidth":  0.75,
+                                           "barWidth":  0.18,
+                                           "barRadius":  0,
+                                           "fullHighlight":  false,
+                                           "tooltip":  {
+                                                           "mode":  "single",
+                                                           "sort":  "none",
+                                                           "hideZeros":  false
+                                                       },
+                                           "legend":  {
+                                                          "showLegend":  false,
+                                                          "displayMode":  "list",
+                                                          "placement":  "bottom",
+                                                          "calcs":  [
+    
+                                                                    ]
+                                                      }
+                                       },
+                           "targets":  [
+                                           {
+                                               "expr":  "slurm_job_duration_seconds",
+                                               "legendFormat":  "job {{job_id}}",
+                                               "refId":  "A",
+                                               "datasource":  {
+                                                                  "type":  "prometheus",
+                                                                  "uid":  "prometheus"
+                                                              },
+                                               "editorMode":  "code",
+                                               "exemplar":  false,
+                                               "instant":  true,
+                                               "range":  false,
+                                               "format":  "time_series"
+                                           }
+                                       ],
+                           "title":  "Job Duration (s)",
+                           "type":  "barchart",
+                           "pluginVersion":  "11.1.0",
+                           "transformations":  [
+                                                   {
+                                                       "id":  "seriesToRows",
+                                                       "options":  {
+    
+                                                                   }
+                                                   },
+                                                   {
+                                                       "id":  "organize",
+                                                       "options":  {
+                                                                       "renameByName":  {
+                                                                                            "Metric":  "job",
+                                                                                            "Value":  "value"
+                                                                                        },
+                                                                       "indexByName":  {
+                                                                                           "job":  0,
+                                                                                           "value":  1
+                                                                                       },
+                                                                       "excludeByName":  {
+                                                                                             "Time":  true
+                                                                                         }
+                                                                   }
+                                                   }
+                                               ]
+                       },
+                       {
+                           "datasource":  {
+                                              "type":  "prometheus",
+                                              "uid":  "prometheus"
+                                          },
+                           "fieldConfig":  {
+                                               "defaults":  {
+                                                                "custom":  {
+                                                                               "axisBorderShow":  false,
+                                                                               "axisCenteredZero":  false,
+                                                                               "axisColorMode":  "text",
+                                                                               "axisLabel":  "",
+                                                                               "axisPlacement":  "auto",
+                                                                               "fillOpacity":  85,
+                                                                               "gradientMode":  "none",
+                                                                               "hideFrom":  {
+                                                                                                "legend":  false,
+                                                                                                "tooltip":  false,
+                                                                                                "viz":  false
+                                                                                            },
+                                                                               "lineWidth":  1,
+                                                                               "scaleDistribution":  {
+                                                                                                         "type":  "linear"
+                                                                                                     },
+                                                                               "thresholdsStyle":  {
+                                                                                                       "mode":  "off"
+                                                                                                   }
+                                                                           },
+                                                                "color":  {
+                                                                              "mode":  "palette-classic"
+                                                                          },
+                                                                "unit":  "kwatth"
+                                                            },
+                                               "overrides":  [
+    
+                                                             ]
+                                           },
+                           "gridPos":  {
+                                           "y":  20,
+                                           "w":  12,
+                                           "x":  0,
+                                           "h":  8
+                                       },
+                           "id":  9,
+                           "options":  {
+                                           "xField":  "job",
+                                           "orientation":  "vertical",
+                                           "xTickLabelRotation":  0,
+                                           "xTickLabelSpacing":  0,
+                                           "showValue":  "auto",
+                                           "stacking":  "none",
+                                           "groupWidth":  0.75,
+                                           "barWidth":  0.18,
+                                           "barRadius":  0,
+                                           "fullHighlight":  false,
+                                           "tooltip":  {
+                                                           "mode":  "single",
+                                                           "sort":  "none",
+                                                           "hideZeros":  false
+                                                       },
+                                           "legend":  {
+                                                          "showLegend":  false,
+                                                          "displayMode":  "list",
+                                                          "placement":  "bottom",
+                                                          "calcs":  [
+    
+                                                                    ]
+                                                      }
+                                       },
+                           "targets":  [
+                                           {
+                                               "editorMode":  "code",
+                                               "refId":  "A",
+                                               "legendFormat":  "job {{job_id}}",
+                                               "exemplar":  false,
+                                               "instant":  true,
+                                               "format":  "time_series",
+                                               "datasource":  {
+                                                                  "type":  "prometheus",
+                                                                  "uid":  "prometheus"
+                                                              },
+                                               "range":  false,
+                                               "expr":  "slurm_job_phase_energy_kwh{phase=\"training\"}"
+                                           }
+                                       ],
+                           "title":  "Training Phase Energy (kWh)",
+                           "type":  "barchart",
+                           "pluginVersion":  "11.1.0",
+                           "transformations":  [
+                                                   {
+                                                       "id":  "seriesToRows",
+                                                       "options":  {
+    
+                                                                   }
+                                                   },
+                                                   {
+                                                       "id":  "organize",
+                                                       "options":  {
+                                                                       "renameByName":  {
+                                                                                            "Metric":  "job",
+                                                                                            "Value":  "value"
+                                                                                        },
+                                                                       "indexByName":  {
+                                                                                           "job":  0,
+                                                                                           "value":  1
+                                                                                       },
+                                                                       "excludeByName":  {
+                                                                                             "Time":  true
+                                                                                         }
+                                                                   }
+                                                   }
+                                               ]
+                       },
+                       {
+                           "datasource":  {
+                                              "type":  "prometheus",
+                                              "uid":  "prometheus"
+                                          },
+                           "fieldConfig":  {
+                                               "defaults":  {
+                                                                "custom":  {
+                                                                               "axisBorderShow":  false,
+                                                                               "axisCenteredZero":  false,
+                                                                               "axisColorMode":  "text",
+                                                                               "axisLabel":  "",
+                                                                               "axisPlacement":  "auto",
+                                                                               "fillOpacity":  85,
+                                                                               "gradientMode":  "none",
+                                                                               "hideFrom":  {
+                                                                                                "legend":  false,
+                                                                                                "tooltip":  false,
+                                                                                                "viz":  false
+                                                                                            },
+                                                                               "lineWidth":  1,
+                                                                               "scaleDistribution":  {
+                                                                                                         "type":  "linear"
+                                                                                                     },
+                                                                               "thresholdsStyle":  {
+                                                                                                       "mode":  "off"
+                                                                                                   }
+                                                                           },
+                                                                "color":  {
+                                                                              "mode":  "palette-classic"
+                                                                          },
+                                                                "unit":  "kwatth"
+                                                            },
+                                               "overrides":  [
+    
+                                                             ]
+                                           },
+                           "gridPos":  {
+                                           "y":  20,
+                                           "w":  12,
+                                           "x":  12,
+                                           "h":  8
+                                       },
+                           "id":  10,
+                           "options":  {
+                                           "xField":  "job_name",
+                                           "orientation":  "vertical",
+                                           "xTickLabelRotation":  0,
+                                           "xTickLabelSpacing":  0,
+                                           "showValue":  "auto",
+                                           "stacking":  "none",
+                                           "groupWidth":  0.65,
+                                           "barWidth":  0.14,
+                                           "barRadius":  0,
+                                           "fullHighlight":  false,
+                                           "tooltip":  {
+                                                           "mode":  "single",
+                                                           "sort":  "none",
+                                                           "hideZeros":  false
+                                                       },
+                                           "legend":  {
+                                                          "showLegend":  true,
+                                                          "displayMode":  "list",
+                                                          "placement":  "bottom",
+                                                          "calcs":  [
+    
+                                                                    ]
+                                                      }
+                                       },
+                           "targets":  [
+                                           {
+                                               "editorMode":  "code",
+                                               "refId":  "A",
+                                               "legendFormat":  "job {{job_id}} phase {{phase}}",
+                                               "exemplar":  false,
+                                               "instant":  true,
+                                               "format":  "table",
+                                               "datasource":  {
+                                                                  "type":  "prometheus",
+                                                                  "uid":  "prometheus"
+                                                              },
+                                               "range":  false,
+                                               "expr":  "label_replace(slurm_job_phase_energy_kwh{phase=~\"preprocessing_labels|preprocessing_split|training\"}, \"job_name\", \"Job $1\", \"job_id\", \"(.*)\")"
+                                           }
+                                       ],
+                           "title":  "SLURM Phase Energy by Job (kWh)",
+                           "type":  "barchart",
+                           "pluginVersion":  "11.1.0",
+                           "transformations":  [
+                                                   {
+                                                       "id":  "groupingToMatrix",
+                                                       "options":  {
+                                                                       "rowField":  "job_name",
+                                                                       "columnField":  "phase",
+                                                                       "valueField":  "Value",
+                                                                       "emptyValue":  "null"
+                                                                   }
+                                                   },
+                                                   {
+                                                       "id":  "organize",
+                                                       "options":  {
+                                                                       "renameByName":  {
+                                                                                            "job_name":  "job_name",
+                                                                                            "preprocessing_labels":  "preprocessing_labels",
+                                                                                            "preprocessing_split":  "preprocessing_split",
+                                                                                            "training":  "training"
+                                                                                        },
+                                                                       "indexByName":  {
+                                                                                           "job_name":  0,
+                                                                                           "preprocessing_labels":  1,
+                                                                                           "preprocessing_split":  2,
+                                                                                           "training":  3
+                                                                                       },
+                                                                       "excludeByName":  {
+                                                                                             "Time":  true,
+                                                                                             "__name__":  true,
+                                                                                             "instance":  true,
+                                                                                             "job":  true,
+                                                                                             "job_id":  true
+                                                                                         }
+                                                                   }
+                                                   }
+                                               ]
+                       },
+                       {
+                           "datasource":  {
+                                              "type":  "prometheus",
+                                              "uid":  "prometheus"
+                                          },
+                           "fieldConfig":  {
+                                               "defaults":  {
+                                                                "custom":  {
+                                                                               "axisBorderShow":  false,
+                                                                               "axisCenteredZero":  false,
+                                                                               "axisColorMode":  "text",
+                                                                               "axisLabel":  "",
+                                                                               "axisPlacement":  "auto",
+                                                                               "fillOpacity":  85,
+                                                                               "gradientMode":  "none",
+                                                                               "hideFrom":  {
+                                                                                                "legend":  false,
+                                                                                                "tooltip":  false,
+                                                                                                "viz":  false
+                                                                                            },
+                                                                               "lineWidth":  1,
+                                                                               "scaleDistribution":  {
+                                                                                                         "type":  "linear"
+                                                                                                     },
+                                                                               "thresholdsStyle":  {
+                                                                                                       "mode":  "off"
+                                                                                                   }
+                                                                           },
+                                                                "color":  {
+                                                                              "mode":  "palette-classic"
+                                                                          },
+                                                                "unit":  "kwatth"
+                                                            },
+                                               "overrides":  [
+    
+                                                             ]
+                                           },
+                           "gridPos":  {
+                                           "y":  28,
+                                           "w":  12,
+                                           "x":  0,
+                                           "h":  8
+                                       },
+                           "id":  11,
+                           "options":  {
+                                           "xField":  "job_name",
+                                           "orientation":  "vertical",
+                                           "xTickLabelRotation":  0,
+                                           "xTickLabelSpacing":  0,
+                                           "showValue":  "auto",
+                                           "stacking":  "none",
+                                           "groupWidth":  0.65,
+                                           "barWidth":  0.14,
+                                           "barRadius":  0,
+                                           "fullHighlight":  false,
+                                           "tooltip":  {
+                                                           "mode":  "single",
+                                                           "sort":  "none",
+                                                           "hideZeros":  false
+                                                       },
+                                           "legend":  {
+                                                          "showLegend":  true,
+                                                          "displayMode":  "list",
+                                                          "placement":  "bottom",
+                                                          "calcs":  [
+    
+                                                                    ]
+                                                      }
+                                       },
+                           "targets":  [
+                                           {
+                                               "editorMode":  "code",
+                                               "refId":  "A",
+                                               "legendFormat":  "job {{job_id}} phase {{phase}}",
+                                               "exemplar":  false,
+                                               "instant":  true,
+                                               "format":  "table",
+                                               "datasource":  {
+                                                                  "type":  "prometheus",
+                                                                  "uid":  "prometheus"
+                                                              },
+                                               "range":  false,
+                                               "expr":  "label_replace(slurm_job_phase_codecarbon_energy_kwh{phase=~\"preprocessing_labels|preprocessing_split|training\"}, \"job_name\", \"Job $1\", \"job_id\", \"(.*)\")"
+                                           }
+                                       ],
+                           "title":  "CodeCarbon Phase Energy by Job (kWh)",
+                           "type":  "barchart",
+                           "pluginVersion":  "11.1.0",
+                           "transformations":  [
+                                                   {
+                                                       "id":  "groupingToMatrix",
+                                                       "options":  {
+                                                                       "rowField":  "job_name",
+                                                                       "columnField":  "phase",
+                                                                       "valueField":  "Value",
+                                                                       "emptyValue":  "null"
+                                                                   }
+                                                   },
+                                                   {
+                                                       "id":  "organize",
+                                                       "options":  {
+                                                                       "renameByName":  {
+                                                                                            "job_name":  "job_name",
+                                                                                            "preprocessing_labels":  "preprocessing_labels",
+                                                                                            "preprocessing_split":  "preprocessing_split",
+                                                                                            "training":  "training"
+                                                                                        },
+                                                                       "indexByName":  {
+                                                                                           "job_name":  0,
+                                                                                           "preprocessing_labels":  1,
+                                                                                           "preprocessing_split":  2,
+                                                                                           "training":  3
+                                                                                       },
+                                                                       "excludeByName":  {
+                                                                                             "Time":  true,
+                                                                                             "__name__":  true,
+                                                                                             "instance":  true,
+                                                                                             "job":  true,
+                                                                                             "job_id":  true
+                                                                                         }
+                                                                   }
+                                                   }
+                                               ]
+                       },
+                       {
+                           "datasource":  {
+                                              "type":  "prometheus",
+                                              "uid":  "prometheus"
+                                          },
+                           "fieldConfig":  {
+                                               "defaults":  {
+                                                                "custom":  {
+                                                                               "axisBorderShow":  false,
+                                                                               "axisCenteredZero":  false,
+                                                                               "axisColorMode":  "text",
+                                                                               "axisLabel":  "",
+                                                                               "axisPlacement":  "auto",
+                                                                               "fillOpacity":  85,
+                                                                               "gradientMode":  "none",
+                                                                               "hideFrom":  {
+                                                                                                "legend":  false,
+                                                                                                "tooltip":  false,
+                                                                                                "viz":  false
+                                                                                            },
+                                                                               "lineWidth":  1,
+                                                                               "scaleDistribution":  {
+                                                                                                         "type":  "linear"
+                                                                                                     },
+                                                                               "thresholdsStyle":  {
+                                                                                                       "mode":  "off"
+                                                                                                   }
+                                                                           },
+                                                                "color":  {
+                                                                              "mode":  "palette-classic"
+                                                                          },
+                                                                "unit":  "percent"
+                                                            },
+                                               "overrides":  [
+    
+                                                             ]
+                                           },
+                           "gridPos":  {
+                                           "y":  28,
+                                           "w":  12,
+                                           "x":  12,
+                                           "h":  8
+                                       },
+                           "id":  12,
+                           "options":  {
+                                           "xField":  "job",
+                                           "orientation":  "vertical",
+                                           "xTickLabelRotation":  0,
+                                           "xTickLabelSpacing":  0,
+                                           "showValue":  "auto",
+                                           "stacking":  "none",
+                                           "groupWidth":  0.75,
+                                           "barWidth":  0.18,
+                                           "barRadius":  0,
+                                           "fullHighlight":  false,
+                                           "tooltip":  {
+                                                           "mode":  "single",
+                                                           "sort":  "none",
+                                                           "hideZeros":  false
+                                                       },
+                                           "legend":  {
+                                                          "showLegend":  false,
+                                                          "displayMode":  "list",
+                                                          "placement":  "bottom",
+                                                          "calcs":  [
+    
+                                                                    ]
+                                                      }
+                                       },
+                           "targets":  [
+                                           {
+                                               "editorMode":  "code",
+                                               "refId":  "A",
+                                               "legendFormat":  "job {{job_id}}",
+                                               "exemplar":  false,
+                                               "instant":  true,
+                                               "format":  "time_series",
+                                               "datasource":  {
+                                                                  "type":  "prometheus",
+                                                                  "uid":  "prometheus"
+                                                              },
+                                               "range":  false,
+                                               "expr":  "slurm_job_training_energy_compare_rel_diff_pct"
+                                           }
+                                       ],
+                           "title":  "Training Energy Diff % (CodeCarbon vs SLURM)",
+                           "type":  "barchart",
+                           "pluginVersion":  "11.1.0",
+                           "transformations":  [
+                                                   {
+                                                       "id":  "seriesToRows",
+                                                       "options":  {
+    
+                                                                   }
+                                                   },
+                                                   {
+                                                       "id":  "organize",
+                                                       "options":  {
+                                                                       "renameByName":  {
+                                                                                            "Metric":  "job",
+                                                                                            "Value":  "value"
+                                                                                        },
+                                                                       "indexByName":  {
+                                                                                           "job":  0,
+                                                                                           "value":  1
+                                                                                       },
+                                                                       "excludeByName":  {
+                                                                                             "Time":  true
+                                                                                         }
+                                                                   }
+                                                   }
+                                               ]
+                       },
+                       {
+                           "datasource":  {
+                                              "type":  "prometheus",
+                                              "uid":  "prometheus"
+                                          },
+                           "fieldConfig":  {
+                                               "defaults":  {
+                                                                "color":  {
+                                                                              "mode":  "thresholds"
+                                                                          },
+                                                                "unit":  "kwatth",
+                                                                "thresholds":  {
+                                                                                   "steps":  [
+                                                                                                 {
+                                                                                                     "value":  null,
+                                                                                                     "color":  "green"
+                                                                                                 }
+                                                                                             ],
+                                                                                   "mode":  "absolute"
+                                                                               }
+                                                            },
+                                               "overrides":  [
+    
+                                                             ]
+                                           },
+                           "gridPos":  {
+                                           "y":  36,
+                                           "w":  8,
+                                           "x":  0,
+                                           "h":  4
+                                       },
+                           "id":  13,
+                           "options":  {
+                                           "textMode":  "value_and_name",
+                                           "graphMode":  "none",
+                                           "reduceOptions":  {
+                                                                 "values":  false,
+                                                                 "calcs":  [
+                                                                               "lastNotNull"
+                                                                           ],
+                                                                 "fields":  ""
+                                                             },
+                                           "justifyMode":  "auto",
+                                           "orientation":  "auto",
+                                           "colorMode":  "value"
+                                       },
+                           "pluginVersion":  "11.1.0",
+                           "targets":  [
+                                           {
+                                               "exemplar":  false,
+                                               "datasource":  {
+                                                                  "type":  "prometheus",
+                                                                  "uid":  "prometheus"
+                                                              },
+                                               "refId":  "A",
+                                               "format":  "time_series",
+                                               "instant":  true,
+                                               "expr":  "slurm_job_training_energy_compare_abs_diff_kwh",
+                                               "range":  false,
+                                               "editorMode":  "code"
+                                           }
+                                       ],
+                           "title":  "Latest Training Abs Diff (kWh)",
+                           "type":  "stat"
+                       },
+                       {
+                           "datasource":  {
+                                              "type":  "prometheus",
+                                              "uid":  "prometheus"
+                                          },
+                           "fieldConfig":  {
+                                               "defaults":  {
+                                                                "color":  {
+                                                                              "mode":  "thresholds"
+                                                                          },
+                                                                "unit":  "percent",
+                                                                "thresholds":  {
+                                                                                   "steps":  [
+                                                                                                 {
+                                                                                                     "value":  null,
+                                                                                                     "color":  "green"
+                                                                                                 }
+                                                                                             ],
+                                                                                   "mode":  "absolute"
+                                                                               }
+                                                            },
+                                               "overrides":  [
+    
+                                                             ]
+                                           },
+                           "gridPos":  {
+                                           "y":  36,
+                                           "w":  8,
+                                           "x":  8,
+                                           "h":  4
+                                       },
+                           "id":  14,
+                           "options":  {
+                                           "textMode":  "value_and_name",
+                                           "graphMode":  "none",
+                                           "reduceOptions":  {
+                                                                 "values":  false,
+                                                                 "calcs":  [
+                                                                               "lastNotNull"
+                                                                           ],
+                                                                 "fields":  ""
+                                                             },
+                                           "justifyMode":  "auto",
+                                           "orientation":  "auto",
+                                           "colorMode":  "value"
+                                       },
+                           "pluginVersion":  "11.1.0",
+                           "targets":  [
+                                           {
+                                               "exemplar":  false,
+                                               "datasource":  {
+                                                                  "type":  "prometheus",
+                                                                  "uid":  "prometheus"
+                                                              },
+                                               "refId":  "A",
+                                               "format":  "time_series",
+                                               "instant":  true,
+                                               "expr":  "slurm_job_training_energy_compare_rel_diff_pct",
+                                               "range":  false,
+                                               "editorMode":  "code"
+                                           }
+                                       ],
+                           "title":  "Latest Training Diff (%)",
+                           "type":  "stat"
+                       },
+                       {
+                           "datasource":  {
+                                              "type":  "prometheus",
+                                              "uid":  "prometheus"
+                                          },
+                           "fieldConfig":  {
+                                               "defaults":  {
+                                                                "color":  {
+                                                                              "mode":  "thresholds"
+                                                                          },
+                                                                "unit":  "kwatth",
+                                                                "thresholds":  {
+                                                                                   "steps":  [
+                                                                                                 {
+                                                                                                     "value":  null,
+                                                                                                     "color":  "green"
+                                                                                                 }
+                                                                                             ],
+                                                                                   "mode":  "absolute"
+                                                                               }
+                                                            },
+                                               "overrides":  [
+    
+                                                             ]
+                                           },
+                           "gridPos":  {
+                                           "y":  36,
+                                           "w":  8,
+                                           "x":  16,
+                                           "h":  4
+                                       },
+                           "id":  15,
+                           "options":  {
+                                           "textMode":  "value_and_name",
+                                           "graphMode":  "none",
+                                           "reduceOptions":  {
+                                                                 "values":  false,
+                                                                 "calcs":  [
+                                                                               "lastNotNull"
+                                                                           ],
+                                                                 "fields":  ""
+                                                             },
+                                           "justifyMode":  "auto",
+                                           "orientation":  "auto",
+                                           "colorMode":  "value"
+                                       },
+                           "pluginVersion":  "11.1.0",
+                           "targets":  [
+                                           {
+                                               "exemplar":  false,
+                                               "datasource":  {
+                                                                  "type":  "prometheus",
+                                                                  "uid":  "prometheus"
+                                                              },
+                                               "refId":  "A",
+                                               "format":  "time_series",
+                                               "instant":  true,
+                                               "expr":  "slurm_job_phase_energy_kwh{phase=\"training\"}",
+                                               "range":  false,
+                                               "editorMode":  "code"
+                                           }
+                                       ],
+                           "title":  "Latest Training Phase Energy (kWh)",
+                           "type":  "stat"
+                       }
+                   ],
+        "refresh":  "5s",
+        "schemaVersion":  39,
+        "style":  "dark",
+        "tags":  [
+                     "slurm",
+                     "energy",
+                     "gpu"
+                 ],
+        "templating":  {
+                           "list":  [
+    
+                                    ]
+                       },
+        "time":  {
+                     "from":  "now-6h",
+                     "to":  "now"
+                 },
+        "timepicker":  {
+    
+                       },
+        "timezone":  "browser",
+        "title":  "SLURM Energy Overview",
+        "uid":  "slurm-energy-overview",
+        "version":  62,
+        "weekStart":  ""
     }
+    
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -1648,3 +1939,20 @@ spec:
     - name: http
       port: 3000
       targetPort: 3000
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
