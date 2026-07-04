@@ -130,6 +130,9 @@ def main():
 
     summaries = []
     for json_path in sorted(aggregate_dir.glob("gpu_summary_job_*.json")):
+        # Exclude phase-enriched summaries so each SLURM job is counted exactly once.
+        if json_path.name.endswith("_phases.json"):
+            continue
         try:
             summaries.append(load_json(json_path))
         except Exception:

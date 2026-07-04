@@ -124,6 +124,103 @@ Optional:
 ./setup_rancher.ps1 -Action test
 ```
 
+## Hilfsskripte
+
+Die folgenden PowerShell-Skripte unter `scripts/` vereinfachen Reset, E2E-Test und manuelle Job-Einreichung auf Rancher.
+
+### `scripts/reset-rancher-slurm-observability.ps1`
+
+Zweck:
+- bricht laufende oder wartende SLURM-Jobs ab
+- leert Energy-Metriken, Prometheus-Textfiles und Logdateien im `slurmd`-Pod
+- leert optional MLflow-Daten und Artefakte
+- startet optional `slurmctld`, `slurmd`, `prometheus`, `grafana` und `mlflow` neu
+
+Wichtige Parameter:
+- `-Kubeconfig`: Pfad zur Rancher-Kubeconfig
+- `-Namespace`: Ziel-Namespace, Standard `mlops-energy`
+- `-SkipMlflowReset`: laesst MLflow-Daten unangetastet
+- `-SkipRestart`: fuehrt nur Cleanup aus, ohne Rollout-Neustarts
+- `-Force`: fuehrt das Reset ohne Rueckfrage aus
+
+Beispiele:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\reset-rancher-slurm-observability.ps1 -Force
+```
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\reset-rancher-slurm-observability.ps1 -SkipMlflowReset -SkipRestart -Force
+```
+
+### `scripts/run-rancher-e2e-job1.ps1`
+
+Zweck:
+- fuehrt einen kompletten Rancher-E2E-Test mit frischem Reset aus
+- kopiert den Repro-Workspace in `slurmd` und `slurmctld`
+- reicht einen SLURM-Job ein
+- erwartet nach dem Reset bewusst `Job-ID 1`
+- prueft danach Prometheus- und MLflow-Ergebnisse
+
+Wichtige Parameter:
+- `-Kubeconfig`
+- `-Namespace`
+- `-ExperimentName`
+- `-Dataset`
+- `-Model`
+- `-Epochs`
+- `-BatchSize`
+- `-ImageSize`
+- `-Patience`
+- `-TimeoutSeconds`
+- `-SkipDependencyInstall`
+
+Beispiel:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\run-rancher-e2e-job1.ps1
+```
+
+Sinn des Skripts:
+- reproduzierbarer Smoke-Test
+- sauberer Startzustand fuer Grafana, Prometheus und MLflow
+- schneller Nachweis, dass genau ein neuer Job alle Metriken erzeugt
+
+### `scripts/submit-rancher-job.ps1`
+
+Zweck:
+- reicht einen neuen Rancher-SLURM-Job ein
+- fuehrt im Gegensatz zum E2E-Skript **kein Reset** durch
+- kann optional auf Job-Abschluss warten
+
+Wichtige Parameter:
+- `-Kubeconfig`
+- `-Namespace`
+- `-ExperimentName`
+- `-Dataset`
+- `-Model`
+- `-Epochs`
+- `-BatchSize`
+- `-ImageSize`
+- `-Patience`
+- `-TimeoutSeconds`
+- `-SkipDependencyInstall`
+- `-WaitForCompletion`
+
+Beispiele:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\submit-rancher-job.ps1
+```
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\submit-rancher-job.ps1 -WaitForCompletion
+```
+
+Einsatzfall:
+- weitere Jobs nach einem erfolgreichen Bootstrap starten
+- Metriken fuer neue Jobs sammeln, ohne Prometheus, Grafana oder MLflow vorher zurueckzusetzen
+
 ## Webzugriff
 
 Port-Forward manuell (separate Terminals):
@@ -247,6 +344,28 @@ In Prometheus (zusaeztlich):
 - `slurm_job_phase_codecarbon_energy_kwh{job_id,phase}`
 - `slurm_job_training_energy_compare_abs_diff_kwh{job_id}`
 - `slurm_job_training_energy_compare_rel_diff_pct{job_id}`
+
+## Wichtige Code-Aenderungen
+
+### `slurm/export_job_metrics_prom.py`
+
+Hier wurde die Aggregation so korrigiert, dass Dateien vom Typ `gpu_summary_job_<id>_phases.json` nicht als eigenstaendige Jobs mitgezaehlt werden.
+
+Nutzen:
+- `slurm_jobs_total` zaehlt echte Jobs korrekt
+- Grafana-KPIs wie `Jobs Total` und aggregierte Summen werden nicht durch Phase-Summaries verfaelscht
+
+### `rotationally-invariant-cnns-changes/train_repro_phase_tracked.py`
+
+Hier wurden drei praktische Verbesserungen ergaenzt:
+- direkte Nutzung von `MLFLOW_TRACKING_URI`, wenn eine HTTP/HTTPS-URL gesetzt ist
+- Normalisierung von `seeds`, falls nur ein einzelner Wert uebergeben wird
+- eindeutige Run-Namen pro Seed bei Multi-Seed-Laeufen
+
+Nutzen:
+- stabileres MLflow-Logging in Rancher
+- weniger Fehler bei Konfigurationsvarianten
+- nachvollziehbare Runs wie `job-energy-1-seed-0`, falls mehrere Seeds trainiert werden
 
 ##
 

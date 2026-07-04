@@ -131,6 +131,10 @@ def main():
         "model": model_cfg,
     }
     _apply_overrides(cfg, args.override)
+    tracking_uri = os.environ.get("MLFLOW_TRACKING_URI", "").strip()
+    use_direct_tracking_uri = tracking_uri.startswith("http://") or tracking_uri.startswith("https://")
+    if not isinstance(cfg["seeds"], list):
+        cfg["seeds"] = [cfg["seeds"]]
 
     data_dir = Path(cfg["dataset"]["path"])
     data_yaml_path = Path(cfg["dataset"]["data_yaml"])
@@ -152,7 +156,11 @@ def main():
             "seed": seed,
             "num_worker": cfg["num_worker"],
         }
-        auth = init_mlflow(cfg["remote_mlflow"])
+        if use_direct_tracking_uri:
+            mlflow.set_tracking_uri(tracking_uri)
+            auth = None
+        else:
+            auth = init_mlflow(cfg["remote_mlflow"])
 
         with tracked_phase(
             "preprocessing_split",
@@ -177,7 +185,8 @@ def main():
             with tracked_phase("training", timeline_path, phase_metrics_dir / f"codecarbon_training_seed_{seed}.csv"):
                 # Run YOLO with explicit workers to avoid shared-memory worker crashes on constrained pods.
                 mlflow.set_experiment(cfg["experiment"])
-                run_name = os.environ.get("MLFLOW_RUN_NAME", f"{cfg['model']['version']}")
+                base_run_name = os.environ.get("MLFLOW_RUN_NAME", f"{cfg['model']['version']}")
+                run_name = base_run_name if len(cfg["seeds"]) == 1 else f"{base_run_name}-seed-{seed}"
                 with mlflow.start_run(run_name=run_name):
                     run_id = mlflow.active_run().info.run_id
                     run_id_file = os.environ.get("MLFLOW_RUN_ID_FILE")
