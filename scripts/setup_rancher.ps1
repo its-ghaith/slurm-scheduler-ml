@@ -1,9 +1,9 @@
 ﻿param(
     [ValidateSet("bootstrap", "rollout", "submit", "test", "portforward")]
     [string]$Action = "bootstrap",
-    [string]$Kubeconfig = "rancherConfigs/main.yaml",
+    [string]$Kubeconfig = "",
     [string]$Namespace = "mlops-energy",
-    [string]$Manifest = "rancherConfigs/slurm-stack.yaml",
+    [string]$Manifest = "",
     [string]$TrainCmd = "python train_with_energy_tracking_mlflow.py",
     [string]$BatchSize = "",
     [string]$MlflowTrackingUri = "",
@@ -16,6 +16,12 @@
 )
 
 $ErrorActionPreference = "Stop"
+$RepoRoot = Split-Path -Parent $PSScriptRoot
+$DefaultKubeconfig = Join-Path $RepoRoot "rancherConfigs/main.yaml"
+$DefaultManifest = Join-Path $RepoRoot "rancherConfigs/slurm-stack.yaml"
+
+if (-not $Kubeconfig) { $Kubeconfig = $DefaultKubeconfig }
+if (-not $Manifest) { $Manifest = $DefaultManifest }
 
 function Invoke-Kubectl {
     param(
@@ -29,7 +35,7 @@ function Invoke-Kubectl {
 }
 
 function Import-DotEnv {
-    param([string]$Path = ".env")
+    param([string]$Path = (Join-Path $RepoRoot ".env"))
     if (-not (Test-Path $Path)) { return }
     Get-Content $Path | ForEach-Object {
         $line = $_.Trim()
@@ -113,6 +119,9 @@ if ($PSBoundParameters.ContainsKey("GridCo2KgPerKwh") -eq $false -and $env:GRID_
 if ($PSBoundParameters.ContainsKey("PueFactor") -eq $false -and $env:PUE_FACTOR) { $PueFactor = $env:PUE_FACTOR }
 if ($PSBoundParameters.ContainsKey("MlflowLogJobEnergy") -eq $false -and $env:MLFLOW_LOG_JOB_ENERGY) { $MlflowLogJobEnergy = $env:MLFLOW_LOG_JOB_ENERGY }
 if ($PSBoundParameters.ContainsKey("MlflowJobEnergyExperiment") -eq $false -and $env:MLFLOW_JOB_ENERGY_EXPERIMENT) { $MlflowJobEnergyExperiment = $env:MLFLOW_JOB_ENERGY_EXPERIMENT }
+
+if (-not [System.IO.Path]::IsPathRooted($Kubeconfig)) { $Kubeconfig = Join-Path $RepoRoot $Kubeconfig }
+if (-not [System.IO.Path]::IsPathRooted($Manifest)) { $Manifest = Join-Path $RepoRoot $Manifest }
 
 switch ($Action) {
     "bootstrap" {

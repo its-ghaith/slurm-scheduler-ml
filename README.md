@@ -39,7 +39,7 @@ Visualisierung:
 
 ## Relevante Dateien
 
-- `setup_rancher.ps1`
+- `scripts/setup_rancher.ps1`
 - `.env.example`
 - `rancherConfigs/slurm-stack.yaml`
 - `slurm/train_mlflow_local.slurm`
@@ -96,7 +96,7 @@ MLFLOW_JOB_ENERGY_EXPERIMENT=ml-energy-poc
 ### A) Bootstrap
 
 ```powershell
-./setup_rancher.ps1 -Action bootstrap
+./scripts/setup_rancher.ps1 -Action bootstrap
 ```
 
 Macht:
@@ -109,19 +109,19 @@ Macht:
 ### B) Training-Job submit
 
 ```powershell
-./setup_rancher.ps1 -Action submit
+./scripts/setup_rancher.ps1 -Action submit
 ```
 
 Optional:
 
 ```powershell
-./setup_rancher.ps1 -Action submit -TrainCmd "python train.py"
+./scripts/setup_rancher.ps1 -Action submit -TrainCmd "python train.py"
 ```
 
 ### C) Schnelltest
 
 ```powershell
-./setup_rancher.ps1 -Action test
+./scripts/setup_rancher.ps1 -Action test
 ```
 
 ## Hilfsskripte
@@ -250,7 +250,7 @@ kubectl --kubeconfig rancherConfigs/main.yaml -n mlops-energy exec deploy/slurmc
 
 3. Job submit + warten:
 ```powershell
-./setup_rancher.ps1 -Action submit
+./scripts/setup_rancher.ps1 -Action submit
 kubectl --kubeconfig rancherConfigs/main.yaml -n mlops-energy exec deploy/slurmctld -- squeue
 ```
 
@@ -302,7 +302,7 @@ Wenn Pods ein aelteres Runtime-Image nutzen, koennen Skript-Aenderungen lokal ni
 Fuer dauerhafte Wirkung:
 1. Image neu bauen/pushen.
 2. `rancherConfigs/slurm-stack.yaml` mit neuem Tag aktualisieren.
-3. `./setup_rancher.ps1 -Action rollout` oder `bootstrap`.
+3. `./scripts/setup_rancher.ps1 -Action rollout` oder `bootstrap`.
 
 ## Branch-Policy
 
@@ -445,3 +445,4 @@ kubectl --kubeconfig rancherConfigs/main.yaml -n mlops-energy exec deploy/promet
 - Reproduzierbarer Trainingsflow mit phasengetrenntem Energie-Tracking ist etabliert.
 - CodeCarbon-vs-SLURM-Vergleich fuer Training ist messbar und in Grafana sichtbar.
 - Ein separates Zero-on-Idle-Dashboard ist vorhanden, ohne bestehende Dashboard-Ergebnisse zu verfaelschen.
+
