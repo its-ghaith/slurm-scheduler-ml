@@ -53,15 +53,6 @@ database/*
 # VSCode
 .vscode/
 
-# Data
-# Ignore everything in data
-data/*/**
-# Except the raw folders and their content
-!data/**/raw
-!data/**/raw/**
-# ... and the data.yaml files
-!data/**/data.yaml
-
 # ultralytics creates cache files
 *.cache
 

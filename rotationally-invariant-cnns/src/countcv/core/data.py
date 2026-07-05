@@ -590,22 +590,3 @@ def infer_normalisation_constants(
 	return tuple(mean.tolist()), tuple(std.tolist())
 
 
-def get_densitymap_loaders(
-	transform_config: SyncedTransformConfig,
-	batch_size: int,
-	data_dir: Path = Path("data/carpk"),
-	num_workers: int = 2,
-	pin_memory: bool = True,
-):
-	"""Returns train/test DataLoaders for data with density map labels with appropriate transforms and augmentations"""
-	transform = SyncedTransform(transform_config)
-
-	train_dataset = CountingDataset(data_dir=data_dir, set_type="train", transform=transform, fetch_dot_labels=True)
-	val_dataset = CountingDataset(data_dir=data_dir, set_type="val", transform=transform, fetch_dot_labels=True)
-	val_dataset = CachedDataset(val_dataset)
-
-	loader_kwargs: dict[str, Any] = {"batch_size": batch_size, "num_workers": num_workers, "pin_memory": pin_memory}
-	train_loader = DataLoader(train_dataset, shuffle=True, **loader_kwargs)
-	val_loader = DataLoader(val_dataset, shuffle=False, **loader_kwargs)
-
-	return train_loader, val_loader, transform

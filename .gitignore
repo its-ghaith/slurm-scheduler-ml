@@ -1,7 +1,6 @@
 .venv/
 __pycache__/
 .env
-rotationally-invariant-cnns/data/
 rotationally-invariant-cnns/mlruns_shared_no_artifacts/
 rotationally-invariant-cnns/models/*.pth
 

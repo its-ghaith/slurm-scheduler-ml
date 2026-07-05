@@ -10,7 +10,6 @@ authors = [{ name = "Your Name", email = "you@example.com" }]
 dependencies = [
   "albumentations>=2.0.8",
   "codecarbon>=3.0.2",
-  "groundingdino-py>=0.4.0",
   "hydra-core>=1.3.2",
   "jwt>=1.3.1",
   "matplotlib>=3.10.1",
@@ -49,9 +48,6 @@ dev = [
   "pytest>=8.4.1",
   "ruff>=0.12.5",
   "ty>=0.0.9",
-]
-escnn = [
-  "escnn>=1.0.11",
 ]
 
 [build-system]
