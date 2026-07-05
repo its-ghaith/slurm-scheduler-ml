@@ -1,8 +1,9 @@
-rotationally-invariant-cnns/
-_stage_rotacnn/data/
 .venv/
 __pycache__/
 .env
+rotationally-invariant-cnns/data/
+rotationally-invariant-cnns/mlruns_shared_no_artifacts/
+rotationally-invariant-cnns/models/*.pth
 
 # Generated runtime artifacts
 logs/*.out

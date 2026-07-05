@@ -45,6 +45,10 @@ Visualisierung:
 - `slurm/train_mlflow_local.slurm`
 - `slurm/log_job_energy_mlflow.py`
 - `train_with_energy_tracking_mlflow.py`
+- `slurm/gpu_energy_utils.py`
+- `slurm/epoch_energy_controller.py`
+- `slurm/summarize_gpu_metrics_epochs.py`
+- `slurm/export_job_epoch_metrics_prom.py`
 - `slurm/export_job_metrics_prom.py`
 - `grafana/dashboards/slurm-energy-overview.json`
 - `prometheus/prometheus.yml`
@@ -314,20 +318,136 @@ Fuer dauerhafte Wirkung:
 ## Reproduzierbares Retraining von `rotationally-invariant-cnns` mit Phasen-Energie-Tracking
 
 Ohne Aenderungen im Originalordner `rotationally-invariant-cnns`:
-- Runner: `rotationally-invariant-cnns-changes/train_repro_phase_tracked.py`
+- Runner: `slurm/train_repro_phase_tracked.py`
 - SLURM Job: `slurm/train_repro_rotacnn_job.slurm`
 - Phase-Summary: `slurm/summarize_gpu_metrics_phases.py`
 - Prometheus Export (Phasen): `slurm/export_job_phase_metrics_prom.py`
 
+## Energieadaptives Training pro Epoche
+
+Der Rancher-Workflow misst jetzt waehrend YOLO-Training nicht nur Job- und Phasen-Energie, sondern auch pro Epoche:
+
+- `mAP50`
+- `mAP50-95`
+- `Precision`
+- `Recall`
+- SLURM-GPU-Energie
+- SLURM-Gesamtenergie (GPU * PUE)
+- `MAPE = delta(mAP50) / delta(Wh)`
+
+Wichtig:
+- Die adaptive Stop-Entscheidung verwendet dieselbe SLURM-GPU-Energie-Integrationslogik wie die spaetere Offline-Auswertung.
+- Dadurch bleibt der Vergleich zwischen Epochenmetriken und finalen Summary-Dateien konsistent.
+- Der adaptive Modus ist standardmaessig **aus**, das Epochen-Tracking jedoch **an**, sobald `slurm/train_repro_rotacnn_job.slurm` genutzt wird.
+
+### Neue Artefakte pro Job
+
+Im `slurmd`-Pod unter `/workspace/energy_metrics`:
+
+- `epoch_timeline_job_<JOBID>.jsonl`
+- `epoch_summary_job_<JOBID>.json`
+
+Im Node-Exporter-Textfile-Verzeichnis:
+
+- `job_<JOBID>_epochs.prom`
+
+### Neue Prometheus-Metriken
+
+Beispiele:
+
+- `slurm_job_epoch_energy_kwh`
+- `slurm_job_epoch_gpu_energy_kwh`
+- `slurm_job_epoch_map50`
+- `slurm_job_epoch_precision`
+- `slurm_job_epoch_recall`
+- `slurm_job_epoch_delta_map50`
+- `slurm_job_epoch_mape_map50_per_wh`
+- `slurm_job_epoch_should_stop`
+
+### Baseline vs. adaptiver Lauf
+
+Baseline:
+- `ENERGY_ADAPTIVE_ENABLED=false`
+- Training laeuft mit der regulären Epochenzahl
+- trotzdem werden Epochenmetriken fuer die spaetere Auswertung gespeichert
+
+Adaptiv:
+- `ENERGY_ADAPTIVE_ENABLED=true`
+- nach jeder Epoche werden `delta(mAP50)` und `MAPE` berechnet
+- wenn geglaettetes `delta(mAP50)` und geglaettetes `MAPE` unter die konfigurierten Schwellwerte fallen, stoppt das Training frueh
+
+### Konfigurierbare adaptive Parameter
+
+Im SLURM-Job bzw. ueber Rancher-Submit-Skripte:
+
+- `ENERGY_ADAPTIVE_ENABLED`
+- `ENERGY_ADAPTIVE_MIN_EPOCHS`
+- `ENERGY_ADAPTIVE_PATIENCE`
+- `ENERGY_ADAPTIVE_SMOOTHING_WINDOW`
+- `ENERGY_ADAPTIVE_MIN_DELTA_MAP50`
+- `ENERGY_ADAPTIVE_MIN_MAPE_MAP50_PER_WH`
+
+### Job ueber Rancher-Hilfsskript einreichen
+
+Baseline:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\submit-rancher-job.ps1 `
+  -Dataset carpk `
+  -Model yolov8 `
+  -Epochs 100 `
+  -BatchSize 8 `
+  -Patience 20
+```
+
+Adaptiv:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\submit-rancher-job.ps1 `
+  -Dataset carpk `
+  -Model yolov8 `
+  -Epochs 100 `
+  -BatchSize 8 `
+  -Patience 20 `
+  -AdaptiveEnabled `
+  -AdaptiveMinEpochs 20 `
+  -AdaptivePatience 3 `
+  -AdaptiveSmoothingWindow 3 `
+  -AdaptiveMinDeltaMap50 0.001 `
+  -AdaptiveMinMapeMap50PerWh 0.0001 `
+  -WaitForCompletion
+```
+
+### Forschungslogik
+
+Damit lassen sich jetzt direkt zwei Trainingsmodi vergleichen:
+
+1. fester Trainingsplan, z. B. `100` Epochen
+2. energieadaptiver Trainingsplan mit dynamischem Stopp
+
+Die Vergleichswerte liegen danach gemeinsam in:
+
+- MLflow
+- Prometheus
+- Grafana
+- `epoch_summary_job_<JOBID>.json`
+
+Damit koennt ihr fuer die Masterarbeit systematisch auswerten:
+
+- finale Genauigkeit
+- Trainingsdauer
+- verbrauchte Energie
+- marginale Genauigkeitsgewinne pro Wattstunde
+
 ### Submit Beispiel
 
 ```powershell
-kubectl --kubeconfig rancherConfigs/main.yaml -n mlops-energy exec deploy/slurmctld -- bash -lc "REPRO_DATASET=foci REPRO_MODEL=yolov8 REPRO_OVERRIDES='experiment=repro_foci_y8;dataset.train_size=158;model.epochs=100;model.patience=8;model.batch_size=8;dataset.img_size=660' sbatch /workspace/slurm/train_repro_rotacnn_job.slurm"
+kubectl --kubeconfig rancherConfigs/main.yaml -n mlops-energy exec deploy/slurmctld -- bash -lc "REPRO_DATASET=carpk REPRO_MODEL=yolov8 REPRO_OVERRIDES='experiment=repro_carpk_y8;dataset.train_size=500;model.epochs=100;model.patience=8;model.batch_size=8;dataset.img_size=1280,720' sbatch /workspace/slurm/train_repro_rotacnn_job.slurm"
 ```
 
 `REPRO_OVERRIDES` Format:
 - Semikolon-getrennt: `key=value;key2=value2`
-- Beispiel: `dataset.path=/workspace/rotationally-invariant-cnns/data/uc_cells`
+- Beispiel: `dataset.path=/workspace/rotationally-invariant-cnns/data/carpk`
 
 ### Neue Metriken
 
@@ -361,7 +481,7 @@ In Prometheus (zusaeztlich):
 ## Faire Vergleichslogik: CodeCarbon vs. SLURM
 
 Die Phasenabgrenzung fuer beide Systeme ist identisch:
-- Start und Ende jeder Phase werden in `tracked_phase(...)` in `rotationally-invariant-cnns-changes/train_repro_phase_tracked.py` geschrieben
+- Start und Ende jeder Phase werden in `tracked_phase(...)` in `slurm/train_repro_phase_tracked.py` geschrieben
 - dieselben Zeitstempel werden spaeter fuer die SLURM/GPU-Auswertung in `slurm/summarize_gpu_metrics_phases.py` verwendet
 
 Dadurch messen beide Systeme denselben Codeabschnitt fuer:
@@ -403,7 +523,7 @@ Nutzen:
 - `slurm_jobs_total` zaehlt echte Jobs korrekt
 - Grafana-KPIs wie `Jobs Total` und aggregierte Summen werden nicht durch Phase-Summaries verfaelscht
 
-### `rotationally-invariant-cnns-changes/train_repro_phase_tracked.py`
+### `slurm/train_repro_phase_tracked.py`
 
 Hier wurden drei praktische Verbesserungen ergaenzt:
 - direkte Nutzung von `MLFLOW_TRACKING_URI`, wenn eine HTTP/HTTPS-URL gesetzt ist

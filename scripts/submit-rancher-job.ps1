@@ -3,13 +3,20 @@ param(
     [string]$Kubeconfig = "rancherConfigs/main.yaml",
     [string]$Namespace = "mlops-energy",
     [string]$ExperimentName = "ml-energy-poc",
-    [string]$Dataset = "synthcells",
+    [ValidateSet("carpk")]
+    [string]$Dataset = "carpk",
     [string]$Model = "yolov8",
     [int]$Epochs = 1,
     [int]$BatchSize = 2,
     [int]$ImageSize = 640,
     [int]$Patience = 1,
     [int]$TimeoutSeconds = 1800,
+    [switch]$AdaptiveEnabled,
+    [int]$AdaptiveMinEpochs = 20,
+    [int]$AdaptivePatience = 3,
+    [int]$AdaptiveSmoothingWindow = 3,
+    [double]$AdaptiveMinDeltaMap50 = 0.001,
+    [double]$AdaptiveMinMapeMap50PerWh = 0.0001,
     [switch]$SkipDependencyInstall,
     [switch]$WaitForCompletion
 )
@@ -150,17 +157,15 @@ Invoke-Kubectl -Arguments @(
     @'
 mkdir -p /workspace/rotationally-invariant-cnns
 mkdir -p /workspace/rotationally-invariant-cnns/data
-mkdir -p /workspace/rotationally-invariant-cnns-changes
 mkdir -p /workspace/slurm
 mkdir -p /workspace/logs
 '@
 )
 
 Copy-ToPod -Source "rotationally-invariant-cnns/src" -Pod $slurmdPod -Destination "/workspace/rotationally-invariant-cnns" -Container "slurmd"
-Copy-ToPod -Source "rotationally-invariant-cnns/data/synthetic_cells" -Pod $slurmdPod -Destination "/workspace/rotationally-invariant-cnns/data" -Container "slurmd"
+Copy-ToPod -Source "rotationally-invariant-cnns/data/carpk" -Pod $slurmdPod -Destination "/workspace/rotationally-invariant-cnns/data" -Container "slurmd"
 Copy-ToPod -Source "rotationally-invariant-cnns/pyproject.toml" -Pod $slurmdPod -Destination "/workspace/rotationally-invariant-cnns" -Container "slurmd"
 Copy-ToPod -Source "rotationally-invariant-cnns/uv.lock" -Pod $slurmdPod -Destination "/workspace/rotationally-invariant-cnns" -Container "slurmd"
-Copy-ToPod -Source "rotationally-invariant-cnns-changes" -Pod $slurmdPod -Destination "/workspace" -Container "slurmd"
 Copy-ToPod -Source "slurm" -Pod $slurmdPod -Destination "/workspace" -Container "slurmd"
 
 Invoke-Kubectl -Arguments @(
@@ -169,17 +174,23 @@ Invoke-Kubectl -Arguments @(
     "exec", "deploy/slurmd",
     "-c", "slurmd",
     "--", "bash", "-lc",
-    "cp -a /workspace/slurm/slurm/. /workspace/slurm/ 2>/dev/null || true; cp -a /workspace/rotationally-invariant-cnns-changes/rotationally-invariant-cnns-changes/. /workspace/rotationally-invariant-cnns-changes/ 2>/dev/null || true"
+    "cp -a /workspace/slurm/slurm/. /workspace/slurm/ 2>/dev/null || true"
 )
 
 Copy-ToPod -Source "slurm/train_repro_rotacnn_job.slurm" -Pod $slurmctldPod -Destination "/workspace/slurm"
 
 Normalize-UnixLines -Deployment "slurmd" -Container "slurmd" -Paths @(
     "/workspace/slurm/train_repro_rotacnn_job.slurm",
+    "/workspace/slurm/gpu_energy_utils.py",
+    "/workspace/slurm/epoch_energy_controller.py",
     "/workspace/slurm/export_job_metrics_prom.py",
+    "/workspace/slurm/export_job_epoch_metrics_prom.py",
     "/workspace/slurm/export_job_phase_metrics_prom.py",
     "/workspace/slurm/log_job_energy_mlflow.py",
-    "/workspace/rotationally-invariant-cnns-changes/train_repro_phase_tracked.py"
+    "/workspace/slurm/summarize_gpu_metrics.py",
+    "/workspace/slurm/summarize_gpu_metrics_epochs.py",
+    "/workspace/slurm/summarize_gpu_metrics_phases.py",
+    "/workspace/slurm/train_repro_phase_tracked.py"
 )
 Normalize-UnixLines -Deployment "slurmctld" -Container "slurmctld" -Paths @(
     "/workspace/slurm/train_repro_rotacnn_job.slurm"
@@ -209,17 +220,17 @@ if (-not (Test-SlurmdDependencies)) {
 }
 
 Write-Host "Validiere vorbereiteten Workspace ..." -ForegroundColor Cyan
-Assert-PathExistsInPod -Deployment "slurmd" -Container "slurmd" -Path "/workspace/rotationally-invariant-cnns/src/config/dataset/synthcells.yaml"
-Assert-PathExistsInPod -Deployment "slurmd" -Container "slurmd" -Path "/workspace/rotationally-invariant-cnns/data/synthetic_cells/raw"
-Assert-PathExistsInPod -Deployment "slurmd" -Container "slurmd" -Path "/workspace/rotationally-invariant-cnns-changes/train_repro_phase_tracked.py"
+Assert-PathExistsInPod -Deployment "slurmd" -Container "slurmd" -Path "/workspace/rotationally-invariant-cnns/src/config/dataset/carpk.yaml"
+Assert-PathExistsInPod -Deployment "slurmd" -Container "slurmd" -Path "/workspace/rotationally-invariant-cnns/data/carpk/raw"
+Assert-PathExistsInPod -Deployment "slurmd" -Container "slurmd" -Path "/workspace/slurm/train_repro_phase_tracked.py"
 Assert-PathExistsInPod -Deployment "slurmd" -Container "slurmd" -Path "/workspace/slurm/train_repro_rotacnn_job.slurm"
 Assert-PathExistsInPod -Deployment "slurmctld" -Container "slurmctld" -Path "/workspace/slurm/train_repro_rotacnn_job.slurm"
 
 $overrideString = @(
     "experiment=$ExperimentName"
     "seeds=0"
-    "dataset.path=/workspace/rotationally-invariant-cnns/data/synthetic_cells"
-    "dataset.data_yaml=/workspace/rotationally-invariant-cnns/data/synthetic_cells/data.yaml"
+    "dataset.path=/workspace/rotationally-invariant-cnns/data/carpk"
+    "dataset.data_yaml=/workspace/rotationally-invariant-cnns/data/carpk/data.yaml"
     "model.epochs=$Epochs"
     "model.batch_size=$BatchSize"
     "model.img_size=$ImageSize"
@@ -227,12 +238,25 @@ $overrideString = @(
 ) -join ";"
 
 Write-Host "Reiche Job ein ..." -ForegroundColor Cyan
+$submitPairs = @(
+    "REPRO_DATASET=$Dataset",
+    "REPRO_MODEL=$Model",
+    "REPRO_OVERRIDES='$overrideString'",
+    "MLFLOW_JOB_ENERGY_EXPERIMENT=$ExperimentName",
+    "ENERGY_ADAPTIVE_ENABLED=$($AdaptiveEnabled.IsPresent.ToString().ToLower())",
+    "ENERGY_ADAPTIVE_MIN_EPOCHS=$AdaptiveMinEpochs",
+    "ENERGY_ADAPTIVE_PATIENCE=$AdaptivePatience",
+    "ENERGY_ADAPTIVE_SMOOTHING_WINDOW=$AdaptiveSmoothingWindow",
+    "ENERGY_ADAPTIVE_MIN_DELTA_MAP50=$AdaptiveMinDeltaMap50",
+    "ENERGY_ADAPTIVE_MIN_MAPE_MAP50_PER_WH=$AdaptiveMinMapeMap50PerWh"
+)
+$submitCommand = ($submitPairs -join " ") + " sbatch /workspace/slurm/train_repro_rotacnn_job.slurm"
 $submitOutput = Get-KubectlOutput -Arguments @(
     "--kubeconfig", $Kubeconfig,
     "-n", $Namespace,
     "exec", "deploy/slurmctld",
     "--", "bash", "-lc",
-    "REPRO_DATASET=$Dataset REPRO_MODEL=$Model REPRO_OVERRIDES='$overrideString' MLFLOW_JOB_ENERGY_EXPERIMENT=$ExperimentName sbatch /workspace/slurm/train_repro_rotacnn_job.slurm"
+    $submitCommand
 )
 
 Write-Host $submitOutput -ForegroundColor Green

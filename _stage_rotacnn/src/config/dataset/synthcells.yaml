@@ -1,5 +1,0 @@
-dataset_name: synthcells
-path: ./data/synthetic_cells
-train_size: False
-data_yaml: ./data/synthetic_cells/data.yaml
-img_size: 256
