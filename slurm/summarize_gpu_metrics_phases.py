@@ -20,6 +20,8 @@ def parse_args():
 
 def load_timeline(path: Path):
     phases = {}
+    if not path.exists():
+        return phases
     with path.open("r", encoding="utf-8") as f:
         for line in f:
             event = json.loads(line)

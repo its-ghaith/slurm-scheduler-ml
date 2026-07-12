@@ -73,6 +73,430 @@ data:
     PartitionName=debug Nodes=slurmd Default=YES MaxTime=INFINITE State=UP
   gres.conf: |
     NodeName=slurmd Name=gpu File=/dev/nvidia2
+  job_inference_server.py: |
+    import base64
+    import cgi
+    import json
+    import logging
+    import os
+    from http import HTTPStatus
+    from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+    from pathlib import Path
+    from urllib.parse import parse_qs, urlparse
+
+    import cv2
+    import numpy as np
+    from ultralytics import YOLO
+
+
+    LOGGER = logging.getLogger("job_inference_server")
+    MODEL_CACHE = {}
+    REGISTRY_ROOT = Path(os.environ.get("JOB_MODEL_REGISTRY_DIR", "/workspace-cache/model_registry"))
+    HOST = os.environ.get("INFERENCE_HOST", "0.0.0.0")
+    PORT = int(os.environ.get("INFERENCE_PORT", "7860"))
+
+
+    def _json_response(handler, payload, status=200):
+        body = json.dumps(payload).encode("utf-8")
+        handler.send_response(status)
+        handler.send_header("Content-Type", "application/json; charset=utf-8")
+        handler.send_header("Content-Length", str(len(body)))
+        handler.send_header("Access-Control-Allow-Origin", "*")
+        handler.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        handler.send_header("Access-Control-Allow-Headers", "Content-Type")
+        handler.end_headers()
+        handler.wfile.write(body)
+
+
+    def _text_response(handler, body, status=200, content_type="text/html; charset=utf-8"):
+        payload = body.encode("utf-8")
+        handler.send_response(status)
+        handler.send_header("Content-Type", content_type)
+        handler.send_header("Content-Length", str(len(payload)))
+        handler.send_header("Access-Control-Allow-Origin", "*")
+        handler.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        handler.send_header("Access-Control-Allow-Headers", "Content-Type")
+        handler.end_headers()
+        handler.wfile.write(payload)
+
+
+    def _registry_dir(job_id):
+        return REGISTRY_ROOT / f"job_{job_id}"
+
+
+    def _metadata_for_job(job_id):
+        metadata_path = _registry_dir(job_id) / "metadata.json"
+        if not metadata_path.exists():
+            return None
+        return json.loads(metadata_path.read_text(encoding="utf-8"))
+
+
+    def _available_jobs():
+        jobs = []
+        if not REGISTRY_ROOT.exists():
+            return jobs
+        for item in sorted(REGISTRY_ROOT.glob("job_*")):
+            metadata = {}
+            metadata_path = item / "metadata.json"
+            if metadata_path.exists():
+                try:
+                    metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+                except json.JSONDecodeError:
+                    metadata = {}
+            jobs.append(
+                {
+                    "job_id": item.name.removeprefix("job_"),
+                    "model_path": str(item / "best.pt"),
+                    "has_model": (item / "best.pt").exists(),
+                    "metadata": metadata,
+                }
+            )
+        return jobs
+
+
+    def _load_model(job_id):
+        if job_id in MODEL_CACHE:
+            return MODEL_CACHE[job_id]
+
+        model_path = _registry_dir(job_id) / "best.pt"
+        if not model_path.exists():
+            raise FileNotFoundError(f"Kein exportiertes Modell fuer Job {job_id} gefunden unter {model_path}.")
+
+        model = YOLO(str(model_path))
+        MODEL_CACHE[job_id] = model
+        return model
+
+
+    def _predict(job_id, image_bytes):
+        arr = np.frombuffer(image_bytes, dtype=np.uint8)
+        image = cv2.imdecode(arr, cv2.IMREAD_COLOR)
+        if image is None:
+            raise ValueError("Bild konnte nicht gelesen werden.")
+
+        model = _load_model(job_id)
+        results = model.predict(source=image, verbose=False, save=False, conf=0.25, max_det=500)
+        result = results[0]
+        boxes = result.boxes
+        count = int(len(boxes)) if boxes is not None else 0
+        confidences = []
+        if boxes is not None and boxes.conf is not None:
+            confidences = [round(float(x), 4) for x in boxes.conf.detach().cpu().tolist()]
+
+        plotted = result.plot()
+        ok, encoded = cv2.imencode(".png", plotted)
+        if not ok:
+            raise RuntimeError("Annotiertes Bild konnte nicht kodiert werden.")
+
+        metadata = _metadata_for_job(job_id) or {}
+        return {
+            "job_id": job_id,
+            "prediction_count": count,
+            "avg_confidence": round(sum(confidences) / len(confidences), 4) if confidences else None,
+            "confidences": confidences,
+            "metadata": metadata,
+            "annotated_image_base64": base64.b64encode(encoded.tobytes()).decode("ascii"),
+        }
+
+
+    def _ui_html(job_id):
+        preselected = job_id or ""
+        return f"""<!DOCTYPE html>
+    <html lang="de">
+    <head>
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <title>SLURM Job Inference</title>
+      <style>
+        :root {{
+          --bg: #f5f1e8;
+          --card: #fffdf7;
+          --ink: #1f2a2a;
+          --accent: #0f766e;
+          --accent-2: #d97706;
+          --line: #d8cfbf;
+        }}
+        body {{
+          margin: 0;
+          font-family: Georgia, "Trebuchet MS", serif;
+          background: linear-gradient(135deg, #f8f4ea, #efe5d2 55%, #f5f1e8);
+          color: var(--ink);
+        }}
+        .wrap {{
+          max-width: 1120px;
+          margin: 0 auto;
+          padding: 20px;
+        }}
+        .grid {{
+          display: grid;
+          grid-template-columns: 320px 1fr;
+          gap: 20px;
+        }}
+        .card {{
+          background: var(--card);
+          border: 1px solid var(--line);
+          border-radius: 18px;
+          padding: 18px;
+          box-shadow: 0 10px 28px rgba(31, 42, 42, 0.08);
+        }}
+        h1 {{
+          margin: 0 0 16px;
+          font-size: 28px;
+        }}
+        .muted {{
+          color: #5d685f;
+          font-size: 14px;
+          line-height: 1.5;
+        }}
+        label {{
+          display: block;
+          font-weight: 700;
+          margin: 14px 0 8px;
+        }}
+        select, input[type=file], button {{
+          width: 100%;
+          box-sizing: border-box;
+          border-radius: 12px;
+          border: 1px solid #b9c4bb;
+          padding: 12px 14px;
+          font-size: 15px;
+          background: white;
+        }}
+        button {{
+          margin-top: 16px;
+          border: 0;
+          background: linear-gradient(135deg, var(--accent), #155e75);
+          color: white;
+          font-weight: 700;
+          cursor: pointer;
+        }}
+        .stats {{
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 12px;
+          margin-bottom: 16px;
+        }}
+        .stat {{
+          border: 1px solid var(--line);
+          border-radius: 14px;
+          padding: 12px;
+          background: #fffaf0;
+        }}
+        .stat .k {{
+          font-size: 12px;
+          color: #667066;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+        }}
+        .stat .v {{
+          font-size: 24px;
+          font-weight: 700;
+          margin-top: 6px;
+        }}
+        .imgbox {{
+          border: 1px dashed #b8aa8a;
+          border-radius: 18px;
+          min-height: 420px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
+          background: repeating-linear-gradient(45deg, #faf7ef, #faf7ef 12px, #f5efdf 12px, #f5efdf 24px);
+        }}
+        .imgbox img {{
+          width: 100%;
+          height: auto;
+          display: none;
+        }}
+        .meta {{
+          margin-top: 16px;
+          font-size: 14px;
+          line-height: 1.6;
+          white-space: pre-wrap;
+          background: #f7f5ee;
+          border-radius: 14px;
+          padding: 12px;
+          border: 1px solid var(--line);
+        }}
+        .status {{
+          margin-top: 12px;
+          color: var(--accent-2);
+          min-height: 20px;
+          font-weight: 700;
+        }}
+        @media (max-width: 900px) {{
+          .grid {{ grid-template-columns: 1fr; }}
+          .stats {{ grid-template-columns: 1fr; }}
+        }}
+      </style>
+    </head>
+    <body>
+      <div class="wrap">
+        <h1>Job Inference Playground</h1>
+        <div class="grid">
+          <div class="card">
+            <div class="muted">Waehle einen trainierten SLURM-Job, lade ein Bild hoch und lasse genau das Modell dieses Jobs auf dem Bild inferieren.</div>
+            <label for="jobId">Job</label>
+            <select id="jobId"></select>
+            <label for="imageFile">Bild</label>
+            <input id="imageFile" type="file" accept="image/*" />
+            <button id="runBtn">Vorhersage starten</button>
+            <div class="status" id="status"></div>
+          </div>
+          <div class="card">
+            <div class="stats">
+              <div class="stat"><div class="k">Job</div><div class="v" id="jobStat">-</div></div>
+              <div class="stat"><div class="k">Autos erkannt</div><div class="v" id="countStat">-</div></div>
+              <div class="stat"><div class="k">Ø Confidence</div><div class="v" id="confStat">-</div></div>
+            </div>
+            <div class="imgbox"><img id="resultImage" alt="Inference Ergebnis" /><div id="placeholder">Noch keine Vorhersage.</div></div>
+            <div class="meta" id="metaBox">Noch keine Metadaten.</div>
+          </div>
+        </div>
+      </div>
+      <script>
+        const preselectedJob = {json.dumps(preselected)};
+        const statusEl = document.getElementById('status');
+        const jobEl = document.getElementById('jobId');
+        const imgEl = document.getElementById('resultImage');
+        const placeholderEl = document.getElementById('placeholder');
+        const countStat = document.getElementById('countStat');
+        const confStat = document.getElementById('confStat');
+        const jobStat = document.getElementById('jobStat');
+        const metaBox = document.getElementById('metaBox');
+
+        async function loadJobs() {{
+          const res = await fetch('/jobs');
+          const jobs = await res.json();
+          jobEl.innerHTML = '';
+          jobs.forEach((job) => {{
+            const opt = document.createElement('option');
+            opt.value = job.job_id;
+            const modelVersion = job.metadata && job.metadata.model_version ? ` - ${{job.metadata.model_version}}` : '';
+            opt.textContent = `Job ${{job.job_id}}${{modelVersion}}`;
+            if (job.job_id === preselectedJob) opt.selected = true;
+            jobEl.appendChild(opt);
+          }});
+          if (!jobEl.value && jobEl.options.length > 0) {{
+            jobEl.options[0].selected = true;
+          }}
+          if (jobEl.options.length === 0) {{
+            statusEl.textContent = 'Noch keine exportierten Modelle vorhanden.';
+          }}
+        }}
+
+        async function runPrediction() {{
+          const file = document.getElementById('imageFile').files[0];
+          const jobId = jobEl.value;
+          if (!jobId) {{
+            statusEl.textContent = 'Bitte zuerst einen Job waehlen.';
+            return;
+          }}
+          if (!file) {{
+            statusEl.textContent = 'Bitte zuerst ein Bild auswaehlen.';
+            return;
+          }}
+          statusEl.textContent = 'Vorhersage laeuft ...';
+          const formData = new FormData();
+          formData.append('image', file);
+          const res = await fetch(`/predict?job_id=${{encodeURIComponent(jobId)}}`, {{
+            method: 'POST',
+            body: formData
+          }});
+          const payload = await res.json();
+          if (!res.ok) {{
+            statusEl.textContent = payload.error || 'Vorhersage fehlgeschlagen.';
+            return;
+          }}
+          imgEl.src = `data:image/png;base64,${{payload.annotated_image_base64}}`;
+          imgEl.style.display = 'block';
+          placeholderEl.style.display = 'none';
+          countStat.textContent = payload.prediction_count;
+          confStat.textContent = payload.avg_confidence == null ? '-' : payload.avg_confidence;
+          jobStat.textContent = payload.job_id;
+          metaBox.textContent = JSON.stringify(payload.metadata, null, 2);
+          statusEl.textContent = 'Vorhersage abgeschlossen.';
+        }}
+
+        document.getElementById('runBtn').addEventListener('click', runPrediction);
+        loadJobs().catch((err) => {{
+          statusEl.textContent = 'Jobs konnten nicht geladen werden: ' + err;
+        }});
+      </script>
+    </body>
+    </html>"""
+
+
+    class InferenceHandler(BaseHTTPRequestHandler):
+        def do_OPTIONS(self):
+            self.send_response(HTTPStatus.NO_CONTENT)
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+            self.send_header("Access-Control-Allow-Headers", "Content-Type")
+            self.end_headers()
+
+        def do_GET(self):
+            parsed = urlparse(self.path)
+            if parsed.path == "/health":
+                _json_response(self, {"status": "ok", "jobs": len(_available_jobs())})
+                return
+            if parsed.path == "/jobs":
+                _json_response(self, _available_jobs())
+                return
+            if parsed.path == "/ui" or parsed.path == "/":
+                query = parse_qs(parsed.query)
+                job_id = query.get("job_id", [None])[0]
+                _text_response(self, _ui_html(job_id))
+                return
+            _json_response(self, {"error": "Not found"}, status=404)
+
+        def do_POST(self):
+            parsed = urlparse(self.path)
+            if parsed.path != "/predict":
+                _json_response(self, {"error": "Not found"}, status=404)
+                return
+
+            query = parse_qs(parsed.query)
+            job_id = query.get("job_id", [None])[0]
+            if not job_id:
+                _json_response(self, {"error": "job_id fehlt."}, status=400)
+                return
+
+            form = cgi.FieldStorage(
+                fp=self.rfile,
+                headers=self.headers,
+                environ={
+                    "REQUEST_METHOD": "POST",
+                    "CONTENT_TYPE": self.headers.get("Content-Type", ""),
+                },
+            )
+            file_item = form["image"] if "image" in form else None
+            if file_item is None or not getattr(file_item, "file", None):
+                _json_response(self, {"error": "Bilddatei fehlt."}, status=400)
+                return
+
+            try:
+                payload = _predict(job_id, file_item.file.read())
+                _json_response(self, payload)
+            except FileNotFoundError as exc:
+                _json_response(self, {"error": str(exc)}, status=404)
+            except Exception as exc:
+                LOGGER.exception("Vorhersage fehlgeschlagen")
+                _json_response(self, {"error": str(exc)}, status=500)
+
+        def log_message(self, fmt, *args):
+            LOGGER.info("%s - %s", self.address_string(), fmt % args)
+
+
+    def main():
+        logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
+        REGISTRY_ROOT.mkdir(parents=True, exist_ok=True)
+        server = ThreadingHTTPServer((HOST, PORT), InferenceHandler)
+        LOGGER.info("Inference server listening on %s:%s", HOST, PORT)
+        server.serve_forever()
+
+
+    if __name__ == "__main__":
+        main()
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -107,7 +531,7 @@ spec:
               mlflow server \
                 --host 0.0.0.0 \
                 --port 5000 \
-                --backend-store-uri sqlite:////mlflow/mlflow.db \
+                --backend-store-uri file:///mlflow \
                 --default-artifact-root /mlruns
           ports:
             - containerPort: 5000
@@ -274,6 +698,50 @@ spec:
               mountPath: /workspace/logs
             - name: energy-metrics
               mountPath: /workspace/energy_metrics
+            - name: workspace-cache
+              mountPath: /workspace-cache
+        - name: inference-api
+          image: ghcr.io/its-ghaith/slurm-scheduler-ml/mlops-slurm-runtime:latest
+          imagePullPolicy: Always
+          env:
+            - name: JOB_MODEL_REGISTRY_DIR
+              value: /workspace-cache/model_registry
+            - name: INFERENCE_HOST
+              value: 0.0.0.0
+            - name: INFERENCE_PORT
+              value: "7860"
+          command: ["/bin/bash", "-lc"]
+          args:
+            - |
+              apt-get update >/dev/null
+              apt-get install -y -qq libgl1 libglib2.0-0 >/dev/null
+              python - <<'PY'
+              import importlib, subprocess, sys
+              required = ["numpy", "cv2", "ultralytics"]
+              missing = []
+              for name in required:
+                  try:
+                      importlib.import_module(name)
+                  except Exception:
+                      missing.append(name)
+              if missing:
+                  subprocess.check_call([sys.executable, "-m", "pip", "install", "-q", "numpy<2", "opencv-python-headless", "ultralytics"])
+              PY
+              python /opt/inference/job_inference_server.py
+          ports:
+            - containerPort: 7860
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 7860
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          volumeMounts:
+            - name: workspace-cache
+              mountPath: /workspace-cache
+            - name: slurm-config
+              mountPath: /opt/inference/job_inference_server.py
+              subPath: job_inference_server.py
         - name: node-exporter
           image: prom/node-exporter:latest
           imagePullPolicy: IfNotPresent
@@ -305,6 +773,22 @@ spec:
           emptyDir: {}
         - name: energy-metrics
           emptyDir: {}
+        - name: workspace-cache
+          persistentVolumeClaim:
+            claimName: slurmd-workspace-cache-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: slurmd-workspace-cache-pvc
+  namespace: mlops-energy
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+  storageClassName: longhorn
 ---
 apiVersion: v1
 kind: Service
@@ -318,6 +802,19 @@ spec:
     - name: slurmd
       port: 6818
       targetPort: 6818
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: slurm-inference
+  namespace: mlops-energy
+spec:
+  selector:
+    app: slurmd
+  ports:
+    - name: http
+      port: 7860
+      targetPort: 7860
 ---
 apiVersion: v1
 kind: Service
@@ -514,7 +1011,7 @@ data:
           "pluginVersion": "11.1.0",
           "targets": [
             {
-              "expr": "slurm_jobs_total",
+              "expr": "count(slurm_job_info{job_id=~\"$job_ids\"})",
               "refId": "A",
               "datasource": {
                 "type": "prometheus",
@@ -577,7 +1074,7 @@ data:
           "pluginVersion": "11.1.0",
           "targets": [
             {
-              "expr": "sum(slurm_job_training_energy_kwh) * 1000",
+              "expr": "sum(slurm_job_training_energy_kwh{job_id=~\"$job_ids\"}) * 1000",
               "refId": "A",
               "datasource": {
                 "type": "prometheus",
@@ -640,7 +1137,7 @@ data:
           "pluginVersion": "11.1.0",
           "targets": [
             {
-              "expr": "sum(slurm_job_codecarbon_total_gpu_energy_kwh) * 1000",
+              "expr": "sum(slurm_job_codecarbon_total_gpu_energy_kwh{job_id=~\"$job_ids\"}) * 1000",
               "refId": "A",
               "datasource": {
                 "type": "prometheus",
@@ -703,7 +1200,7 @@ data:
           "pluginVersion": "11.1.0",
           "targets": [
             {
-              "expr": "sum(slurm_job_codecarbon_total_energy_kwh) * 1000",
+              "expr": "sum(slurm_job_codecarbon_total_energy_kwh{job_id=~\"$job_ids\"}) * 1000",
               "refId": "A",
               "datasource": {
                 "type": "prometheus",
@@ -766,7 +1263,7 @@ data:
           "pluginVersion": "11.1.0",
           "targets": [
             {
-              "expr": "sum(slurm_job_estimated_electricity_cost_eur)",
+              "expr": "sum(slurm_job_estimated_electricity_cost_eur{job_id=~\"$job_ids\"})",
               "refId": "A",
               "datasource": {
                 "type": "prometheus",
@@ -829,7 +1326,7 @@ data:
           "pluginVersion": "11.1.0",
           "targets": [
             {
-              "expr": "sum(slurm_job_codecarbon_estimated_electricity_cost_eur)",
+              "expr": "sum(slurm_job_codecarbon_estimated_electricity_cost_eur{job_id=~\"$job_ids\"})",
               "refId": "A",
               "datasource": {
                 "type": "prometheus",
@@ -892,7 +1389,7 @@ data:
           "pluginVersion": "11.1.0",
           "targets": [
             {
-              "expr": "sum(slurm_job_estimated_co2_kg)",
+              "expr": "sum(slurm_job_estimated_co2_kg{job_id=~\"$job_ids\"})",
               "refId": "A",
               "datasource": {
                 "type": "prometheus",
@@ -955,7 +1452,7 @@ data:
           "pluginVersion": "11.1.0",
           "targets": [
             {
-              "expr": "sum(slurm_job_codecarbon_estimated_co2_kg)",
+              "expr": "sum(slurm_job_codecarbon_estimated_co2_kg{job_id=~\"$job_ids\"})",
               "refId": "A",
               "datasource": {
                 "type": "prometheus",
@@ -1049,7 +1546,7 @@ data:
                 "uid": "prometheus"
               },
               "range": false,
-              "expr": "label_replace(slurm_job_phase_duration_seconds{phase=~\"preprocessing_labels|preprocessing_split|preprocessing_crop|training|other\"}, \"job_name\", \"Job $1\", \"job_id\", \"(.*)\")"
+              "expr": "label_replace(slurm_job_phase_duration_seconds{phase=~\"preprocessing_labels|preprocessing_split|preprocessing_crop|training|other\",job_id=~\"$job_ids\"}, \"job_name\", \"Job $1\", \"job_id\", \"(.*)\")"
             }
           ],
           "title": "Phase Duration by Job (s)",
@@ -1173,7 +1670,7 @@ data:
                 "uid": "prometheus"
               },
               "range": false,
-              "expr": "label_replace((slurm_job_phase_energy_kwh{phase=~\"preprocessing_labels|preprocessing_split|preprocessing_crop|training|other\"} * 1000), \"job_name\", \"Job $1\", \"job_id\", \"(.*)\")"
+              "expr": "label_replace((slurm_job_phase_energy_kwh{phase=~\"preprocessing_labels|preprocessing_split|preprocessing_crop|training|other\",job_id=~\"$job_ids\"} * 1000), \"job_name\", \"Job $1\", \"job_id\", \"(.*)\")"
             }
           ],
           "title": "SLURM Phase Total GPU Energy by Job (Wh)",
@@ -1297,7 +1794,7 @@ data:
                 "uid": "prometheus"
               },
               "range": false,
-              "expr": "label_replace((slurm_job_phase_codecarbon_gpu_energy_kwh{phase=~\"preprocessing_labels|preprocessing_split|preprocessing_crop|training|other\"} * 1000), \"job_name\", \"Job $1\", \"job_id\", \"(.*)\")"
+              "expr": "label_replace((slurm_job_phase_codecarbon_gpu_energy_kwh{phase=~\"preprocessing_labels|preprocessing_split|preprocessing_crop|training|other\",job_id=~\"$job_ids\"} * 1000), \"job_name\", \"Job $1\", \"job_id\", \"(.*)\")"
             }
           ],
           "title": "CodeCarbon Phase Total GPU Energy by Job (Wh)",
@@ -1421,7 +1918,7 @@ data:
                 "uid": "prometheus"
               },
               "range": false,
-              "expr": "label_replace((slurm_job_phase_codecarbon_energy_kwh{phase=~\"preprocessing_labels|preprocessing_split|preprocessing_crop|training|other\"} * 1000), \"job_name\", \"Job $1\", \"job_id\", \"(.*)\")"
+              "expr": "label_replace((slurm_job_phase_codecarbon_energy_kwh{phase=~\"preprocessing_labels|preprocessing_split|preprocessing_crop|training|other\",job_id=~\"$job_ids\"} * 1000), \"job_name\", \"Job $1\", \"job_id\", \"(.*)\")"
             }
           ],
           "title": "CodeCarbon Phase Total Energy by Job (Wh)",
@@ -1545,7 +2042,7 @@ data:
                 "uid": "prometheus"
               },
               "range": false,
-              "expr": "label_replace(slurm_job_phase_estimated_electricity_cost_eur{phase=~\"preprocessing_labels|preprocessing_split|preprocessing_crop|training|other\"}, \"job_name\", \"Job $1\", \"job_id\", \"(.*)\")"
+              "expr": "label_replace(slurm_job_phase_estimated_electricity_cost_eur{phase=~\"preprocessing_labels|preprocessing_split|preprocessing_crop|training|other\",job_id=~\"$job_ids\"}, \"job_name\", \"Job $1\", \"job_id\", \"(.*)\")"
             }
           ],
           "title": "SLURM Phase Cost by Job (EUR)",
@@ -1669,7 +2166,7 @@ data:
                 "uid": "prometheus"
               },
               "range": false,
-              "expr": "label_replace(slurm_job_phase_codecarbon_estimated_electricity_cost_eur{phase=~\"preprocessing_labels|preprocessing_split|preprocessing_crop|training|other\"}, \"job_name\", \"Job $1\", \"job_id\", \"(.*)\")"
+              "expr": "label_replace(slurm_job_phase_codecarbon_estimated_electricity_cost_eur{phase=~\"preprocessing_labels|preprocessing_split|preprocessing_crop|training|other\",job_id=~\"$job_ids\"}, \"job_name\", \"Job $1\", \"job_id\", \"(.*)\")"
             }
           ],
           "title": "CodeCarbon Phase Cost by Job (EUR)",
@@ -1782,7 +2279,7 @@ data:
           },
           "targets": [
             {
-              "expr": "slurm_job_training_energy_compare_rel_diff_pct",
+              "expr": "slurm_job_training_energy_compare_rel_diff_pct{job_id=~\"$job_ids\"}",
               "legendFormat": "Job {{job_id}}",
               "refId": "A",
               "datasource": {
@@ -1900,7 +2397,7 @@ data:
                 "uid": "prometheus"
               },
               "range": false,
-              "expr": "label_replace(slurm_job_phase_estimated_co2_kg{phase=~\"preprocessing_labels|preprocessing_split|preprocessing_crop|training|other\"}, \"job_name\", \"Job $1\", \"job_id\", \"(.*)\")"
+              "expr": "label_replace(slurm_job_phase_estimated_co2_kg{phase=~\"preprocessing_labels|preprocessing_split|preprocessing_crop|training|other\",job_id=~\"$job_ids\"}, \"job_name\", \"Job $1\", \"job_id\", \"(.*)\")"
             }
           ],
           "title": "SLURM Phase CO2 by Job (kg)",
@@ -2024,7 +2521,7 @@ data:
                 "uid": "prometheus"
               },
               "range": false,
-              "expr": "label_replace(slurm_job_phase_codecarbon_estimated_co2_kg{phase=~\"preprocessing_labels|preprocessing_split|preprocessing_crop|training|other\"}, \"job_name\", \"Job $1\", \"job_id\", \"(.*)\")"
+              "expr": "label_replace(slurm_job_phase_codecarbon_estimated_co2_kg{phase=~\"preprocessing_labels|preprocessing_split|preprocessing_crop|training|other\",job_id=~\"$job_ids\"}, \"job_name\", \"Job $1\", \"job_id\", \"(.*)\")"
             }
           ],
           "title": "CodeCarbon Phase CO2 by Job (kg)",
@@ -2137,7 +2634,7 @@ data:
           },
           "targets": [
             {
-              "expr": "slurm_job_training_energy_compare_abs_diff_kwh * 1000",
+              "expr": "slurm_job_training_energy_compare_abs_diff_kwh{job_id=~\"$job_ids\"} * 1000",
               "legendFormat": "Job {{job_id}}",
               "refId": "A",
               "datasource": {
@@ -2176,6 +2673,2927 @@ data:
               }
             }
           ]
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "fillOpacity": 85,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineWidth": 1,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                },
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                }
+              },
+              "color": {
+                "mode": "palette-classic"
+              },
+              "unit": "s"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "x": 0,
+            "y": 44,
+            "w": 8,
+            "h": 9
+          },
+          "id": 19,
+          "options": {
+            "xField": "epoch",
+            "orientation": "vertical",
+            "xTickLabelRotation": 90,
+            "xTickLabelSpacing": 0,
+            "showValue": "auto",
+            "stacking": "none",
+            "tooltip": {
+              "mode": "single",
+              "sort": "none",
+              "hideZeros": false
+            },
+            "legend": {
+              "showLegend": true,
+              "displayMode": "list",
+              "placement": "bottom",
+              "calcs": []
+            },
+            "groupWidth": 0.72,
+            "barWidth": 0.18,
+            "barRadius": 0,
+            "fullHighlight": false
+          },
+          "targets": [
+            {
+              "editorMode": "code",
+              "refId": "A",
+              "legendFormat": "Job {{job_id}}",
+              "exemplar": false,
+              "instant": true,
+              "format": "table",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "range": false,
+              "expr": "label_replace(slurm_job_epoch_duration_seconds{job_id=~\"$job_ids\"}, \"job_name\", \"Job $1\", \"job_id\", \"(.*)\")"
+            }
+          ],
+          "title": "Epoch Duration by Job (s)",
+          "type": "barchart",
+          "pluginVersion": "11.1.0",
+          "transformations": [
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "field": "epoch_label",
+                    "desc": false
+                  }
+                ]
+              }
+            },
+            {
+              "id": "groupingToMatrix",
+              "options": {
+                "rowField": "epoch_label",
+                "columnField": "job_name",
+                "valueField": "Value",
+                "emptyValue": "null"
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "renameByName": {
+                  "epoch_label": "epoch"
+                },
+                "indexByName": {
+                  "epoch_label": 0
+                },
+                "excludeByName": {
+                  "Time": true,
+                  "__name__": true,
+                  "instance": true,
+                  "job": true,
+                  "job_id": true,
+                  "epoch": true,
+                  "epoch_label": false
+                }
+              }
+            }
+          ]
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "fillOpacity": 85,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineWidth": 1,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                },
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                }
+              },
+              "color": {
+                "mode": "palette-classic"
+              },
+              "unit": "watth"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "x": 8,
+            "y": 44,
+            "w": 8,
+            "h": 9
+          },
+          "id": 20,
+          "options": {
+            "xField": "epoch",
+            "orientation": "vertical",
+            "xTickLabelRotation": 90,
+            "xTickLabelSpacing": 0,
+            "showValue": "auto",
+            "stacking": "none",
+            "tooltip": {
+              "mode": "single",
+              "sort": "none",
+              "hideZeros": false
+            },
+            "legend": {
+              "showLegend": true,
+              "displayMode": "list",
+              "placement": "bottom",
+              "calcs": []
+            },
+            "groupWidth": 0.72,
+            "barWidth": 0.18,
+            "barRadius": 0,
+            "fullHighlight": false
+          },
+          "targets": [
+            {
+              "editorMode": "code",
+              "refId": "A",
+              "legendFormat": "Job {{job_id}}",
+              "exemplar": false,
+              "instant": true,
+              "format": "table",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "range": false,
+              "expr": "label_replace((slurm_job_epoch_energy_kwh{job_id=~\"$job_ids\"} * 1000), \"job_name\", \"Job $1\", \"job_id\", \"(.*)\")"
+            }
+          ],
+          "title": "SLURM Epoch Total Energy by Job (Wh)",
+          "type": "barchart",
+          "pluginVersion": "11.1.0",
+          "transformations": [
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "field": "epoch_label",
+                    "desc": false
+                  }
+                ]
+              }
+            },
+            {
+              "id": "groupingToMatrix",
+              "options": {
+                "rowField": "epoch_label",
+                "columnField": "job_name",
+                "valueField": "Value",
+                "emptyValue": "null"
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "renameByName": {
+                  "epoch_label": "epoch"
+                },
+                "indexByName": {
+                  "epoch_label": 0
+                },
+                "excludeByName": {
+                  "Time": true,
+                  "__name__": true,
+                  "instance": true,
+                  "job": true,
+                  "job_id": true,
+                  "epoch": true,
+                  "epoch_label": false
+                }
+              }
+            }
+          ]
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "fillOpacity": 85,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineWidth": 1,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                },
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                }
+              },
+              "color": {
+                "mode": "palette-classic"
+              },
+              "unit": "watth"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "x": 16,
+            "y": 44,
+            "w": 8,
+            "h": 9
+          },
+          "id": 21,
+          "options": {
+            "xField": "epoch",
+            "orientation": "vertical",
+            "xTickLabelRotation": 90,
+            "xTickLabelSpacing": 0,
+            "showValue": "auto",
+            "stacking": "none",
+            "tooltip": {
+              "mode": "single",
+              "sort": "none",
+              "hideZeros": false
+            },
+            "legend": {
+              "showLegend": true,
+              "displayMode": "list",
+              "placement": "bottom",
+              "calcs": []
+            },
+            "groupWidth": 0.72,
+            "barWidth": 0.18,
+            "barRadius": 0,
+            "fullHighlight": false
+          },
+          "targets": [
+            {
+              "editorMode": "code",
+              "refId": "A",
+              "legendFormat": "Job {{job_id}}",
+              "exemplar": false,
+              "instant": true,
+              "format": "table",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "range": false,
+              "expr": "label_replace((slurm_job_epoch_gpu_energy_kwh{job_id=~\"$job_ids\"} * 1000), \"job_name\", \"Job $1\", \"job_id\", \"(.*)\")"
+            }
+          ],
+          "title": "SLURM Epoch GPU Energy by Job (Wh)",
+          "type": "barchart",
+          "pluginVersion": "11.1.0",
+          "transformations": [
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "field": "epoch_label",
+                    "desc": false
+                  }
+                ]
+              }
+            },
+            {
+              "id": "groupingToMatrix",
+              "options": {
+                "rowField": "epoch_label",
+                "columnField": "job_name",
+                "valueField": "Value",
+                "emptyValue": "null"
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "renameByName": {
+                  "epoch_label": "epoch"
+                },
+                "indexByName": {
+                  "epoch_label": 0
+                },
+                "excludeByName": {
+                  "Time": true,
+                  "__name__": true,
+                  "instance": true,
+                  "job": true,
+                  "job_id": true,
+                  "epoch": true,
+                  "epoch_label": false
+                }
+              }
+            }
+          ]
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "fillOpacity": 85,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineWidth": 1,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                },
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                }
+              },
+              "color": {
+                "mode": "palette-classic"
+              },
+              "unit": "percent"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "x": 0,
+            "y": 53,
+            "w": 8,
+            "h": 9
+          },
+          "id": 22,
+          "options": {
+            "xField": "epoch",
+            "orientation": "vertical",
+            "xTickLabelRotation": 90,
+            "xTickLabelSpacing": 0,
+            "showValue": "auto",
+            "stacking": "none",
+            "tooltip": {
+              "mode": "single",
+              "sort": "none",
+              "hideZeros": false
+            },
+            "legend": {
+              "showLegend": true,
+              "displayMode": "list",
+              "placement": "bottom",
+              "calcs": []
+            },
+            "groupWidth": 0.72,
+            "barWidth": 0.18,
+            "barRadius": 0,
+            "fullHighlight": false
+          },
+          "targets": [
+            {
+              "editorMode": "code",
+              "refId": "A",
+              "legendFormat": "Job {{job_id}}",
+              "exemplar": false,
+              "instant": true,
+              "format": "table",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "range": false,
+              "expr": "label_replace(slurm_job_epoch_gpu_util_avg_pct{job_id=~\"$job_ids\"}, \"job_name\", \"Job $1\", \"job_id\", \"(.*)\")"
+            }
+          ],
+          "title": "Epoch GPU Utilization by Job (%)",
+          "type": "barchart",
+          "pluginVersion": "11.1.0",
+          "transformations": [
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "field": "epoch_label",
+                    "desc": false
+                  }
+                ]
+              }
+            },
+            {
+              "id": "groupingToMatrix",
+              "options": {
+                "rowField": "epoch_label",
+                "columnField": "job_name",
+                "valueField": "Value",
+                "emptyValue": "null"
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "renameByName": {
+                  "epoch_label": "epoch"
+                },
+                "indexByName": {
+                  "epoch_label": 0
+                },
+                "excludeByName": {
+                  "Time": true,
+                  "__name__": true,
+                  "instance": true,
+                  "job": true,
+                  "job_id": true,
+                  "epoch": true,
+                  "epoch_label": false
+                }
+              }
+            }
+          ]
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "fillOpacity": 85,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineWidth": 1,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                },
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                }
+              },
+              "color": {
+                "mode": "palette-classic"
+              },
+              "unit": "percent"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "x": 8,
+            "y": 53,
+            "w": 8,
+            "h": 9
+          },
+          "id": 23,
+          "options": {
+            "xField": "epoch",
+            "orientation": "vertical",
+            "xTickLabelRotation": 90,
+            "xTickLabelSpacing": 0,
+            "showValue": "auto",
+            "stacking": "none",
+            "tooltip": {
+              "mode": "single",
+              "sort": "none",
+              "hideZeros": false
+            },
+            "legend": {
+              "showLegend": true,
+              "displayMode": "list",
+              "placement": "bottom",
+              "calcs": []
+            },
+            "groupWidth": 0.72,
+            "barWidth": 0.18,
+            "barRadius": 0,
+            "fullHighlight": false
+          },
+          "targets": [
+            {
+              "editorMode": "code",
+              "refId": "A",
+              "legendFormat": "Job {{job_id}}",
+              "exemplar": false,
+              "instant": true,
+              "format": "table",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "range": false,
+              "expr": "label_replace((slurm_job_epoch_map50{job_id=~\"$job_ids\"} * 100), \"job_name\", \"Job $1\", \"job_id\", \"(.*)\")"
+            }
+          ],
+          "title": "mAP50 by Epoch (%)",
+          "type": "barchart",
+          "pluginVersion": "11.1.0",
+          "transformations": [
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "field": "epoch_label",
+                    "desc": false
+                  }
+                ]
+              }
+            },
+            {
+              "id": "groupingToMatrix",
+              "options": {
+                "rowField": "epoch_label",
+                "columnField": "job_name",
+                "valueField": "Value",
+                "emptyValue": "null"
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "renameByName": {
+                  "epoch_label": "epoch"
+                },
+                "indexByName": {
+                  "epoch_label": 0
+                },
+                "excludeByName": {
+                  "Time": true,
+                  "__name__": true,
+                  "instance": true,
+                  "job": true,
+                  "job_id": true,
+                  "epoch": true,
+                  "epoch_label": false
+                }
+              }
+            }
+          ]
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "fillOpacity": 85,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineWidth": 1,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                },
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                }
+              },
+              "color": {
+                "mode": "palette-classic"
+              },
+              "unit": "percent"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "x": 16,
+            "y": 53,
+            "w": 8,
+            "h": 9
+          },
+          "id": 24,
+          "options": {
+            "xField": "epoch",
+            "orientation": "vertical",
+            "xTickLabelRotation": 90,
+            "xTickLabelSpacing": 0,
+            "showValue": "auto",
+            "stacking": "none",
+            "tooltip": {
+              "mode": "single",
+              "sort": "none",
+              "hideZeros": false
+            },
+            "legend": {
+              "showLegend": true,
+              "displayMode": "list",
+              "placement": "bottom",
+              "calcs": []
+            },
+            "groupWidth": 0.72,
+            "barWidth": 0.18,
+            "barRadius": 0,
+            "fullHighlight": false
+          },
+          "targets": [
+            {
+              "editorMode": "code",
+              "refId": "A",
+              "legendFormat": "Job {{job_id}}",
+              "exemplar": false,
+              "instant": true,
+              "format": "table",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "range": false,
+              "expr": "label_replace((slurm_job_epoch_map50_95{job_id=~\"$job_ids\"} * 100), \"job_name\", \"Job $1\", \"job_id\", \"(.*)\")"
+            }
+          ],
+          "title": "mAP50-95 by Epoch (%)",
+          "type": "barchart",
+          "pluginVersion": "11.1.0",
+          "transformations": [
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "field": "epoch_label",
+                    "desc": false
+                  }
+                ]
+              }
+            },
+            {
+              "id": "groupingToMatrix",
+              "options": {
+                "rowField": "epoch_label",
+                "columnField": "job_name",
+                "valueField": "Value",
+                "emptyValue": "null"
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "renameByName": {
+                  "epoch_label": "epoch"
+                },
+                "indexByName": {
+                  "epoch_label": 0
+                },
+                "excludeByName": {
+                  "Time": true,
+                  "__name__": true,
+                  "instance": true,
+                  "job": true,
+                  "job_id": true,
+                  "epoch": true,
+                  "epoch_label": false
+                }
+              }
+            }
+          ]
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "fillOpacity": 85,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineWidth": 1,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                },
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                }
+              },
+              "color": {
+                "mode": "palette-classic"
+              },
+              "unit": "percent"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "x": 0,
+            "y": 62,
+            "w": 8,
+            "h": 9
+          },
+          "id": 25,
+          "options": {
+            "xField": "epoch",
+            "orientation": "vertical",
+            "xTickLabelRotation": 90,
+            "xTickLabelSpacing": 0,
+            "showValue": "auto",
+            "stacking": "none",
+            "tooltip": {
+              "mode": "single",
+              "sort": "none",
+              "hideZeros": false
+            },
+            "legend": {
+              "showLegend": true,
+              "displayMode": "list",
+              "placement": "bottom",
+              "calcs": []
+            },
+            "groupWidth": 0.72,
+            "barWidth": 0.18,
+            "barRadius": 0,
+            "fullHighlight": false
+          },
+          "targets": [
+            {
+              "editorMode": "code",
+              "refId": "A",
+              "legendFormat": "Job {{job_id}}",
+              "exemplar": false,
+              "instant": true,
+              "format": "table",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "range": false,
+              "expr": "label_replace((slurm_job_epoch_precision{job_id=~\"$job_ids\"} * 100), \"job_name\", \"Job $1\", \"job_id\", \"(.*)\")"
+            }
+          ],
+          "title": "Precision by Epoch (%)",
+          "type": "barchart",
+          "pluginVersion": "11.1.0",
+          "transformations": [
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "field": "epoch_label",
+                    "desc": false
+                  }
+                ]
+              }
+            },
+            {
+              "id": "groupingToMatrix",
+              "options": {
+                "rowField": "epoch_label",
+                "columnField": "job_name",
+                "valueField": "Value",
+                "emptyValue": "null"
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "renameByName": {
+                  "epoch_label": "epoch"
+                },
+                "indexByName": {
+                  "epoch_label": 0
+                },
+                "excludeByName": {
+                  "Time": true,
+                  "__name__": true,
+                  "instance": true,
+                  "job": true,
+                  "job_id": true,
+                  "epoch": true,
+                  "epoch_label": false
+                }
+              }
+            }
+          ]
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "fillOpacity": 85,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineWidth": 1,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                },
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                }
+              },
+              "color": {
+                "mode": "palette-classic"
+              },
+              "unit": "percent"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "x": 8,
+            "y": 62,
+            "w": 8,
+            "h": 9
+          },
+          "id": 26,
+          "options": {
+            "xField": "epoch",
+            "orientation": "vertical",
+            "xTickLabelRotation": 90,
+            "xTickLabelSpacing": 0,
+            "showValue": "auto",
+            "stacking": "none",
+            "tooltip": {
+              "mode": "single",
+              "sort": "none",
+              "hideZeros": false
+            },
+            "legend": {
+              "showLegend": true,
+              "displayMode": "list",
+              "placement": "bottom",
+              "calcs": []
+            },
+            "groupWidth": 0.72,
+            "barWidth": 0.18,
+            "barRadius": 0,
+            "fullHighlight": false
+          },
+          "targets": [
+            {
+              "editorMode": "code",
+              "refId": "A",
+              "legendFormat": "Job {{job_id}}",
+              "exemplar": false,
+              "instant": true,
+              "format": "table",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "range": false,
+              "expr": "label_replace((slurm_job_epoch_recall{job_id=~\"$job_ids\"} * 100), \"job_name\", \"Job $1\", \"job_id\", \"(.*)\")"
+            }
+          ],
+          "title": "Recall by Epoch (%)",
+          "type": "barchart",
+          "pluginVersion": "11.1.0",
+          "transformations": [
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "field": "epoch_label",
+                    "desc": false
+                  }
+                ]
+              }
+            },
+            {
+              "id": "groupingToMatrix",
+              "options": {
+                "rowField": "epoch_label",
+                "columnField": "job_name",
+                "valueField": "Value",
+                "emptyValue": "null"
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "renameByName": {
+                  "epoch_label": "epoch"
+                },
+                "indexByName": {
+                  "epoch_label": 0
+                },
+                "excludeByName": {
+                  "Time": true,
+                  "__name__": true,
+                  "instance": true,
+                  "job": true,
+                  "job_id": true,
+                  "epoch": true,
+                  "epoch_label": false
+                }
+              }
+            }
+          ]
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "fillOpacity": 85,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineWidth": 1,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                },
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                }
+              },
+              "color": {
+                "mode": "palette-classic"
+              },
+              "unit": "watth"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "x": 8,
+            "y": 71,
+            "w": 8,
+            "h": 9
+          },
+          "id": 29,
+          "options": {
+            "xField": "epoch",
+            "orientation": "vertical",
+            "xTickLabelRotation": 90,
+            "xTickLabelSpacing": 0,
+            "showValue": "auto",
+            "stacking": "none",
+            "tooltip": {
+              "mode": "single",
+              "sort": "none",
+              "hideZeros": false
+            },
+            "legend": {
+              "showLegend": true,
+              "displayMode": "list",
+              "placement": "bottom",
+              "calcs": []
+            },
+            "groupWidth": 0.72,
+            "barWidth": 0.18,
+            "barRadius": 0,
+            "fullHighlight": false
+          },
+          "targets": [
+            {
+              "editorMode": "code",
+              "refId": "A",
+              "legendFormat": "Job {{job_id}}",
+              "exemplar": false,
+              "instant": true,
+              "format": "table",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "range": false,
+              "expr": "label_replace((slurm_job_epoch_cumulative_energy_kwh{job_id=~\"$job_ids\"} * 1000), \"job_name\", \"Job $1\", \"job_id\", \"(.*)\")"
+            }
+          ],
+          "title": "Cumulative Energy by Epoch (Wh)",
+          "type": "barchart",
+          "pluginVersion": "11.1.0",
+          "transformations": [
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "field": "epoch_label",
+                    "desc": false
+                  }
+                ]
+              }
+            },
+            {
+              "id": "groupingToMatrix",
+              "options": {
+                "rowField": "epoch_label",
+                "columnField": "job_name",
+                "valueField": "Value",
+                "emptyValue": "null"
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "renameByName": {
+                  "epoch_label": "epoch"
+                },
+                "indexByName": {
+                  "epoch_label": 0
+                },
+                "excludeByName": {
+                  "Time": true,
+                  "__name__": true,
+                  "instance": true,
+                  "job": true,
+                  "job_id": true,
+                  "epoch": true,
+                  "epoch_label": false
+                }
+              }
+            }
+          ]
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "fillOpacity": 85,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineWidth": 1,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                },
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                }
+              },
+              "color": {
+                "mode": "palette-classic"
+              },
+              "unit": "currencyEUR"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "x": 16,
+            "y": 71,
+            "w": 8,
+            "h": 9
+          },
+          "id": 30,
+          "options": {
+            "xField": "epoch",
+            "orientation": "vertical",
+            "xTickLabelRotation": 90,
+            "xTickLabelSpacing": 0,
+            "showValue": "auto",
+            "stacking": "none",
+            "tooltip": {
+              "mode": "single",
+              "sort": "none",
+              "hideZeros": false
+            },
+            "legend": {
+              "showLegend": true,
+              "displayMode": "list",
+              "placement": "bottom",
+              "calcs": []
+            },
+            "groupWidth": 0.72,
+            "barWidth": 0.18,
+            "barRadius": 0,
+            "fullHighlight": false
+          },
+          "targets": [
+            {
+              "editorMode": "code",
+              "refId": "A",
+              "legendFormat": "Job {{job_id}}",
+              "exemplar": false,
+              "instant": true,
+              "format": "table",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "range": false,
+              "expr": "label_replace(slurm_job_epoch_estimated_electricity_cost_eur{job_id=~\"$job_ids\"}, \"job_name\", \"Job $1\", \"job_id\", \"(.*)\")"
+            }
+          ],
+          "title": "Epoch Cost by Job (EUR)",
+          "type": "barchart",
+          "pluginVersion": "11.1.0",
+          "transformations": [
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "field": "epoch_label",
+                    "desc": false
+                  }
+                ]
+              }
+            },
+            {
+              "id": "groupingToMatrix",
+              "options": {
+                "rowField": "epoch_label",
+                "columnField": "job_name",
+                "valueField": "Value",
+                "emptyValue": "null"
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "renameByName": {
+                  "epoch_label": "epoch"
+                },
+                "indexByName": {
+                  "epoch_label": 0
+                },
+                "excludeByName": {
+                  "Time": true,
+                  "__name__": true,
+                  "instance": true,
+                  "job": true,
+                  "job_id": true,
+                  "epoch": true,
+                  "epoch_label": false
+                }
+              }
+            }
+          ]
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "fillOpacity": 85,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineWidth": 1,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                },
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                }
+              },
+              "color": {
+                "mode": "palette-classic"
+              },
+              "unit": "kg"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "x": 0,
+            "y": 80,
+            "w": 8,
+            "h": 9
+          },
+          "id": 31,
+          "options": {
+            "xField": "epoch",
+            "orientation": "vertical",
+            "xTickLabelRotation": 90,
+            "xTickLabelSpacing": 0,
+            "showValue": "auto",
+            "stacking": "none",
+            "tooltip": {
+              "mode": "single",
+              "sort": "none",
+              "hideZeros": false
+            },
+            "legend": {
+              "showLegend": true,
+              "displayMode": "list",
+              "placement": "bottom",
+              "calcs": []
+            },
+            "groupWidth": 0.72,
+            "barWidth": 0.18,
+            "barRadius": 0,
+            "fullHighlight": false
+          },
+          "targets": [
+            {
+              "editorMode": "code",
+              "refId": "A",
+              "legendFormat": "Job {{job_id}}",
+              "exemplar": false,
+              "instant": true,
+              "format": "table",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "range": false,
+              "expr": "label_replace(slurm_job_epoch_estimated_co2_kg{job_id=~\"$job_ids\"}, \"job_name\", \"Job $1\", \"job_id\", \"(.*)\")"
+            }
+          ],
+          "title": "Epoch CO2 by Job (kg)",
+          "type": "barchart",
+          "pluginVersion": "11.1.0",
+          "transformations": [
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "field": "epoch_label",
+                    "desc": false
+                  }
+                ]
+              }
+            },
+            {
+              "id": "groupingToMatrix",
+              "options": {
+                "rowField": "epoch_label",
+                "columnField": "job_name",
+                "valueField": "Value",
+                "emptyValue": "null"
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "renameByName": {
+                  "epoch_label": "epoch"
+                },
+                "indexByName": {
+                  "epoch_label": 0
+                },
+                "excludeByName": {
+                  "Time": true,
+                  "__name__": true,
+                  "instance": true,
+                  "job": true,
+                  "job_id": true,
+                  "epoch": true,
+                  "epoch_label": false
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": 90,
+          "title": "Job Model Inference",
+          "type": "text",
+          "gridPos": {
+            "x": 0,
+            "y": 89,
+            "w": 24,
+            "h": 14
+          },
+          "pluginVersion": "11.1.0",
+          "options": {
+            "mode": "html",
+            "content": "<div style=\"height:100%;min-height:760px;border-radius:16px;overflow:hidden;border:1px solid #d8cfbf;background:#f7f4ec;\"><iframe src=\"${inference_api_base}/ui?job_id=${inference_job_id}\" style=\"width:100%;height:100%;min-height:760px;border:0;\" loading=\"lazy\"></iframe></div>"
+          },
+          "transparent": true
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "fillOpacity": 85,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineWidth": 1,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                },
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                }
+              },
+              "color": {
+                "mode": "palette-classic"
+              },
+              "unit": "percent"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "x": 16,
+            "y": 62,
+            "w": 8,
+            "h": 9
+          },
+          "id": 27,
+          "options": {
+            "xField": "epoch",
+            "orientation": "vertical",
+            "xTickLabelRotation": 90,
+            "xTickLabelSpacing": 0,
+            "showValue": "auto",
+            "stacking": "none",
+            "tooltip": {
+              "mode": "single",
+              "sort": "none",
+              "hideZeros": false
+            },
+            "legend": {
+              "showLegend": true,
+              "displayMode": "list",
+              "placement": "bottom",
+              "calcs": []
+            },
+            "groupWidth": 0.72,
+            "barWidth": 0.18,
+            "barRadius": 0,
+            "fullHighlight": false
+          },
+          "targets": [
+            {
+              "editorMode": "code",
+              "refId": "A",
+              "legendFormat": "Job {{job_id}}",
+              "exemplar": false,
+              "instant": true,
+              "format": "table",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "range": false,
+              "expr": "label_replace((slurm_job_epoch_delta_map50_95{job_id=~\"$job_ids\"} * 100), \"job_name\", \"Job $1\", \"job_id\", \"(.*)\")"
+            }
+          ],
+          "title": "Delta mAP50-95 by Epoch (pp)",
+          "type": "barchart",
+          "pluginVersion": "11.1.0",
+          "transformations": [
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "field": "epoch_label",
+                    "desc": false
+                  }
+                ]
+              }
+            },
+            {
+              "id": "groupingToMatrix",
+              "options": {
+                "rowField": "epoch_label",
+                "columnField": "job_name",
+                "valueField": "Value",
+                "emptyValue": "null"
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "renameByName": {
+                  "epoch_label": "epoch"
+                },
+                "indexByName": {
+                  "epoch_label": 0
+                },
+                "excludeByName": {
+                  "Time": true,
+                  "__name__": true,
+                  "instance": true,
+                  "job": true,
+                  "job_id": true,
+                  "epoch": true,
+                  "epoch_label": false
+                }
+              }
+            }
+          ]
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "fillOpacity": 85,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineWidth": 1,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                },
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                }
+              },
+              "color": {
+                "mode": "palette-classic"
+              },
+              "unit": "none"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "x": 0,
+            "y": 71,
+            "w": 8,
+            "h": 9
+          },
+          "id": 28,
+          "options": {
+            "xField": "epoch",
+            "orientation": "vertical",
+            "xTickLabelRotation": 90,
+            "xTickLabelSpacing": 0,
+            "showValue": "auto",
+            "stacking": "none",
+            "tooltip": {
+              "mode": "single",
+              "sort": "none",
+              "hideZeros": false
+            },
+            "legend": {
+              "showLegend": true,
+              "displayMode": "list",
+              "placement": "bottom",
+              "calcs": []
+            },
+            "groupWidth": 0.72,
+            "barWidth": 0.18,
+            "barRadius": 0,
+            "fullHighlight": false
+          },
+          "targets": [
+            {
+              "editorMode": "code",
+              "refId": "A",
+              "legendFormat": "Job {{job_id}}",
+              "exemplar": false,
+              "instant": true,
+              "format": "table",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "range": false,
+              "expr": "label_replace((slurm_job_epoch_mape_map50_95_per_wh{job_id=~\"$job_ids\"} * 100), \"job_name\", \"Job $1\", \"job_id\", \"(.*)\")"
+            }
+          ],
+          "title": "MAPE (Delta mAP50-95 pp/Wh) by Epoch",
+          "type": "barchart",
+          "pluginVersion": "11.1.0",
+          "transformations": [
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "field": "epoch_label",
+                    "desc": false
+                  }
+                ]
+              }
+            },
+            {
+              "id": "groupingToMatrix",
+              "options": {
+                "rowField": "epoch_label",
+                "columnField": "job_name",
+                "valueField": "Value",
+                "emptyValue": "null"
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "renameByName": {
+                  "epoch_label": "epoch"
+                },
+                "indexByName": {
+                  "epoch_label": 0
+                },
+                "excludeByName": {
+                  "Time": true,
+                  "__name__": true,
+                  "instance": true,
+                  "job": true,
+                  "job_id": true,
+                  "epoch": true,
+                  "epoch_label": false
+                }
+              }
+            }
+          ]
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "fillOpacity": 85,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineWidth": 1,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                },
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                }
+              },
+              "color": {
+                "mode": "palette-classic"
+              },
+              "unit": "none"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "x": 8,
+            "y": 80,
+            "w": 8,
+            "h": 9
+          },
+          "id": 32,
+          "options": {
+            "xField": "epoch",
+            "orientation": "vertical",
+            "xTickLabelRotation": 90,
+            "xTickLabelSpacing": 0,
+            "showValue": "auto",
+            "stacking": "none",
+            "tooltip": {
+              "mode": "single",
+              "sort": "none",
+              "hideZeros": false
+            },
+            "legend": {
+              "showLegend": true,
+              "displayMode": "list",
+              "placement": "bottom",
+              "calcs": []
+            },
+            "groupWidth": 0.72,
+            "barWidth": 0.18,
+            "barRadius": 0,
+            "fullHighlight": false
+          },
+          "targets": [
+            {
+              "editorMode": "code",
+              "refId": "A",
+              "legendFormat": "Job {{job_id}}",
+              "exemplar": false,
+              "instant": true,
+              "format": "table",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "range": false,
+              "expr": "label_replace(slurm_job_epoch_should_stop{job_id=~\"$job_ids\"}, \"job_name\", \"Job $1\", \"job_id\", \"(.*)\")"
+            }
+          ],
+          "title": "Adaptive Stop Signal by Epoch (0/1)",
+          "type": "barchart",
+          "pluginVersion": "11.1.0",
+          "transformations": [
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "field": "epoch_label",
+                    "desc": false
+                  }
+                ]
+              }
+            },
+            {
+              "id": "groupingToMatrix",
+              "options": {
+                "rowField": "epoch_label",
+                "columnField": "job_name",
+                "valueField": "Value",
+                "emptyValue": "null"
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "renameByName": {
+                  "epoch_label": "epoch"
+                },
+                "indexByName": {
+                  "epoch_label": 0
+                },
+                "excludeByName": {
+                  "Time": true,
+                  "__name__": true,
+                  "instance": true,
+                  "job": true,
+                  "job_id": true,
+                  "epoch": true,
+                  "epoch_label": false
+                }
+              }
+            }
+          ]
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "fillOpacity": 85,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineWidth": 1,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                },
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                }
+              },
+              "color": {
+                "mode": "palette-classic"
+              },
+              "unit": "none"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "x": 16,
+            "y": 80,
+            "w": 8,
+            "h": 9
+          },
+          "id": 91,
+          "options": {
+            "xField": "epoch",
+            "orientation": "vertical",
+            "xTickLabelRotation": 90,
+            "xTickLabelSpacing": 0,
+            "showValue": "auto",
+            "stacking": "none",
+            "tooltip": {
+              "mode": "single",
+              "sort": "none",
+              "hideZeros": false
+            },
+            "legend": {
+              "showLegend": true,
+              "displayMode": "list",
+              "placement": "bottom",
+              "calcs": []
+            },
+            "groupWidth": 0.72,
+            "barWidth": 0.18,
+            "barRadius": 0,
+            "fullHighlight": false
+          },
+          "targets": [
+            {
+              "editorMode": "code",
+              "refId": "A",
+              "legendFormat": "Job {{job_id}}",
+              "exemplar": false,
+              "instant": true,
+              "format": "table",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "range": false,
+              "expr": "label_replace(slurm_job_epoch_low_gain_streak{job_id=~\"$job_ids\"}, \"job_name\", \"Job $1\", \"job_id\", \"(.*)\")"
+            }
+          ],
+          "title": "Adaptive Low-Gain Streak by Epoch",
+          "type": "barchart",
+          "pluginVersion": "11.1.0",
+          "transformations": [
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "field": "epoch_label",
+                    "desc": false
+                  }
+                ]
+              }
+            },
+            {
+              "id": "groupingToMatrix",
+              "options": {
+                "rowField": "epoch_label",
+                "columnField": "job_name",
+                "valueField": "Value",
+                "emptyValue": "null"
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "renameByName": {
+                  "epoch_label": "epoch"
+                },
+                "indexByName": {
+                  "epoch_label": 0
+                },
+                "excludeByName": {
+                  "Time": true,
+                  "__name__": true,
+                  "instance": true,
+                  "job": true,
+                  "job_id": true,
+                  "epoch": true,
+                  "epoch_label": false
+                }
+              }
+            }
+          ]
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "fillOpacity": 85,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineWidth": 1,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                },
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                }
+              },
+              "color": {
+                "mode": "palette-classic"
+              },
+              "unit": "percent"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "x": 0,
+            "y": 103,
+            "w": 12,
+            "h": 9
+          },
+          "id": 92,
+          "options": {
+            "xField": "epoch",
+            "orientation": "vertical",
+            "xTickLabelRotation": 90,
+            "xTickLabelSpacing": 0,
+            "showValue": "auto",
+            "stacking": "none",
+            "tooltip": {
+              "mode": "single",
+              "sort": "none",
+              "hideZeros": false
+            },
+            "legend": {
+              "showLegend": true,
+              "displayMode": "list",
+              "placement": "bottom",
+              "calcs": []
+            },
+            "groupWidth": 0.72,
+            "barWidth": 0.18,
+            "barRadius": 0,
+            "fullHighlight": false
+          },
+          "targets": [
+            {
+              "editorMode": "code",
+              "refId": "A",
+              "legendFormat": "Job {{job_id}}",
+              "exemplar": false,
+              "instant": true,
+              "format": "table",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "range": false,
+              "expr": "label_replace((slurm_job_epoch_smoothed_delta_map50_95{job_id=~\"$job_ids\"} * 100), \"job_name\", \"Job $1\", \"job_id\", \"(.*)\")"
+            }
+          ],
+          "title": "Smoothed Delta mAP50-95 by Epoch (pp)",
+          "type": "barchart",
+          "pluginVersion": "11.1.0",
+          "transformations": [
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "field": "epoch_label",
+                    "desc": false
+                  }
+                ]
+              }
+            },
+            {
+              "id": "groupingToMatrix",
+              "options": {
+                "rowField": "epoch_label",
+                "columnField": "job_name",
+                "valueField": "Value",
+                "emptyValue": "null"
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "renameByName": {
+                  "epoch_label": "epoch"
+                },
+                "indexByName": {
+                  "epoch_label": 0
+                },
+                "excludeByName": {
+                  "Time": true,
+                  "__name__": true,
+                  "instance": true,
+                  "job": true,
+                  "job_id": true,
+                  "epoch": true,
+                  "epoch_label": false
+                }
+              }
+            }
+          ]
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "fillOpacity": 85,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineWidth": 1,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                },
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                }
+              },
+              "color": {
+                "mode": "palette-classic"
+              },
+              "unit": "none"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "x": 12,
+            "y": 103,
+            "w": 12,
+            "h": 9
+          },
+          "id": 93,
+          "options": {
+            "xField": "epoch",
+            "orientation": "vertical",
+            "xTickLabelRotation": 90,
+            "xTickLabelSpacing": 0,
+            "showValue": "auto",
+            "stacking": "none",
+            "tooltip": {
+              "mode": "single",
+              "sort": "none",
+              "hideZeros": false
+            },
+            "legend": {
+              "showLegend": true,
+              "displayMode": "list",
+              "placement": "bottom",
+              "calcs": []
+            },
+            "groupWidth": 0.72,
+            "barWidth": 0.18,
+            "barRadius": 0,
+            "fullHighlight": false
+          },
+          "targets": [
+            {
+              "editorMode": "code",
+              "refId": "A",
+              "legendFormat": "Job {{job_id}}",
+              "exemplar": false,
+              "instant": true,
+              "format": "table",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "range": false,
+              "expr": "label_replace((slurm_job_epoch_smoothed_mape_map50_95_per_wh{job_id=~\"$job_ids\"} * 100), \"job_name\", \"Job $1\", \"job_id\", \"(.*)\")"
+            }
+          ],
+          "title": "Smoothed MAPE mAP50-95 by Epoch (pp/Wh)",
+          "type": "barchart",
+          "pluginVersion": "11.1.0",
+          "transformations": [
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "field": "epoch_label",
+                    "desc": false
+                  }
+                ]
+              }
+            },
+            {
+              "id": "groupingToMatrix",
+              "options": {
+                "rowField": "epoch_label",
+                "columnField": "job_name",
+                "valueField": "Value",
+                "emptyValue": "null"
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "renameByName": {
+                  "epoch_label": "epoch"
+                },
+                "indexByName": {
+                  "epoch_label": 0
+                },
+                "excludeByName": {
+                  "Time": true,
+                  "__name__": true,
+                  "instance": true,
+                  "job": true,
+                  "job_id": true,
+                  "epoch": true,
+                  "epoch_label": false
+                }
+              }
+            }
+          ]
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "fillOpacity": 85,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineWidth": 1,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                },
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                }
+              },
+              "color": {
+                "mode": "palette-classic"
+              },
+              "unit": "percent"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "x": 0,
+            "y": 112,
+            "w": 8,
+            "h": 9
+          },
+          "id": 94,
+          "options": {
+            "xField": "epoch",
+            "orientation": "vertical",
+            "xTickLabelRotation": 90,
+            "xTickLabelSpacing": 0,
+            "showValue": "auto",
+            "stacking": "none",
+            "tooltip": {
+              "mode": "single",
+              "sort": "none",
+              "hideZeros": false
+            },
+            "legend": {
+              "showLegend": true,
+              "displayMode": "list",
+              "placement": "bottom",
+              "calcs": []
+            },
+            "groupWidth": 0.72,
+            "barWidth": 0.18,
+            "barRadius": 0,
+            "fullHighlight": false
+          },
+          "targets": [
+            {
+              "editorMode": "code",
+              "refId": "A",
+              "legendFormat": "Job {{job_id}}",
+              "exemplar": false,
+              "instant": true,
+              "format": "table",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "range": false,
+              "expr": "label_replace((slurm_job_epoch_predicted_final_metric_mean{job_id=~\"$job_ids\",controller_mode=\"uncertainty_aware\"} * 100), \"job_name\", \"Job $1\", \"job_id\", \"(.*)\")"
+            }
+          ],
+          "title": "Predicted Final mAP50-95 Mean by Epoch (%)",
+          "type": "barchart",
+          "pluginVersion": "11.1.0",
+          "transformations": [
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "field": "epoch_label",
+                    "desc": false
+                  }
+                ]
+              }
+            },
+            {
+              "id": "groupingToMatrix",
+              "options": {
+                "rowField": "epoch_label",
+                "columnField": "job_name",
+                "valueField": "Value",
+                "emptyValue": "null"
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "renameByName": {
+                  "epoch_label": "epoch"
+                },
+                "indexByName": {
+                  "epoch_label": 0
+                },
+                "excludeByName": {
+                  "Time": true,
+                  "__name__": true,
+                  "instance": true,
+                  "job": true,
+                  "job_id": true,
+                  "epoch": true,
+                  "epoch_label": false
+                }
+              }
+            }
+          ]
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "fillOpacity": 85,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineWidth": 1,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                },
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                }
+              },
+              "color": {
+                "mode": "palette-classic"
+              },
+              "unit": "percent"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "x": 8,
+            "y": 112,
+            "w": 8,
+            "h": 9
+          },
+          "id": 95,
+          "options": {
+            "xField": "epoch",
+            "orientation": "vertical",
+            "xTickLabelRotation": 90,
+            "xTickLabelSpacing": 0,
+            "showValue": "auto",
+            "stacking": "none",
+            "tooltip": {
+              "mode": "single",
+              "sort": "none",
+              "hideZeros": false
+            },
+            "legend": {
+              "showLegend": true,
+              "displayMode": "list",
+              "placement": "bottom",
+              "calcs": []
+            },
+            "groupWidth": 0.72,
+            "barWidth": 0.18,
+            "barRadius": 0,
+            "fullHighlight": false
+          },
+          "targets": [
+            {
+              "editorMode": "code",
+              "refId": "A",
+              "legendFormat": "Job {{job_id}}",
+              "exemplar": false,
+              "instant": true,
+              "format": "table",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "range": false,
+              "expr": "label_replace((slurm_job_epoch_predicted_final_metric_upper{job_id=~\"$job_ids\",controller_mode=\"uncertainty_aware\"} * 100), \"job_name\", \"Job $1\", \"job_id\", \"(.*)\")"
+            }
+          ],
+          "title": "Predicted Final mAP50-95 Upper Bound by Epoch (%)",
+          "type": "barchart",
+          "pluginVersion": "11.1.0",
+          "transformations": [
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "field": "epoch_label",
+                    "desc": false
+                  }
+                ]
+              }
+            },
+            {
+              "id": "groupingToMatrix",
+              "options": {
+                "rowField": "epoch_label",
+                "columnField": "job_name",
+                "valueField": "Value",
+                "emptyValue": "null"
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "renameByName": {
+                  "epoch_label": "epoch"
+                },
+                "indexByName": {
+                  "epoch_label": 0
+                },
+                "excludeByName": {
+                  "Time": true,
+                  "__name__": true,
+                  "instance": true,
+                  "job": true,
+                  "job_id": true,
+                  "epoch": true,
+                  "epoch_label": false
+                }
+              }
+            }
+          ]
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "fillOpacity": 85,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineWidth": 1,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                },
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                }
+              },
+              "color": {
+                "mode": "palette-classic"
+              },
+              "unit": "percentpoint"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "x": 16,
+            "y": 112,
+            "w": 8,
+            "h": 9
+          },
+          "id": 96,
+          "options": {
+            "xField": "epoch",
+            "orientation": "vertical",
+            "xTickLabelRotation": 90,
+            "xTickLabelSpacing": 0,
+            "showValue": "auto",
+            "stacking": "none",
+            "tooltip": {
+              "mode": "single",
+              "sort": "none",
+              "hideZeros": false
+            },
+            "legend": {
+              "showLegend": true,
+              "displayMode": "list",
+              "placement": "bottom",
+              "calcs": []
+            },
+            "groupWidth": 0.72,
+            "barWidth": 0.18,
+            "barRadius": 0,
+            "fullHighlight": false
+          },
+          "targets": [
+            {
+              "editorMode": "code",
+              "refId": "A",
+              "legendFormat": "Job {{job_id}}",
+              "exemplar": false,
+              "instant": true,
+              "format": "table",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "range": false,
+              "expr": "label_replace((slurm_job_epoch_predicted_remaining_gain_upper{job_id=~\"$job_ids\",controller_mode=\"uncertainty_aware\"} * 100), \"job_name\", \"Job $1\", \"job_id\", \"(.*)\")"
+            }
+          ],
+          "title": "Predicted Remaining Gain Upper by Epoch (pp)",
+          "type": "barchart",
+          "pluginVersion": "11.1.0",
+          "transformations": [
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "field": "epoch_label",
+                    "desc": false
+                  }
+                ]
+              }
+            },
+            {
+              "id": "groupingToMatrix",
+              "options": {
+                "rowField": "epoch_label",
+                "columnField": "job_name",
+                "valueField": "Value",
+                "emptyValue": "null"
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "renameByName": {
+                  "epoch_label": "epoch"
+                },
+                "indexByName": {
+                  "epoch_label": 0
+                },
+                "excludeByName": {
+                  "Time": true,
+                  "__name__": true,
+                  "instance": true,
+                  "job": true,
+                  "job_id": true,
+                  "epoch": true,
+                  "epoch_label": false
+                }
+              }
+            }
+          ]
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "fillOpacity": 85,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineWidth": 1,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                },
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                }
+              },
+              "color": {
+                "mode": "palette-classic"
+              },
+              "unit": "percent"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "x": 0,
+            "y": 121,
+            "w": 12,
+            "h": 9
+          },
+          "id": 97,
+          "options": {
+            "xField": "epoch",
+            "orientation": "vertical",
+            "xTickLabelRotation": 90,
+            "xTickLabelSpacing": 0,
+            "showValue": "auto",
+            "stacking": "none",
+            "tooltip": {
+              "mode": "single",
+              "sort": "none",
+              "hideZeros": false
+            },
+            "legend": {
+              "showLegend": true,
+              "displayMode": "list",
+              "placement": "bottom",
+              "calcs": []
+            },
+            "groupWidth": 0.72,
+            "barWidth": 0.18,
+            "barRadius": 0,
+            "fullHighlight": false
+          },
+          "targets": [
+            {
+              "editorMode": "code",
+              "refId": "A",
+              "legendFormat": "Job {{job_id}}",
+              "exemplar": false,
+              "instant": true,
+              "format": "table",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "range": false,
+              "expr": "label_replace((slurm_job_epoch_predicted_prob_gain_gt_epsilon{job_id=~\"$job_ids\",controller_mode=\"uncertainty_aware\"} * 100), \"job_name\", \"Job $1\", \"job_id\", \"(.*)\")"
+            }
+          ],
+          "title": "Predicted Probability Gain > Epsilon by Epoch (%)",
+          "type": "barchart",
+          "pluginVersion": "11.1.0",
+          "transformations": [
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "field": "epoch_label",
+                    "desc": false
+                  }
+                ]
+              }
+            },
+            {
+              "id": "groupingToMatrix",
+              "options": {
+                "rowField": "epoch_label",
+                "columnField": "job_name",
+                "valueField": "Value",
+                "emptyValue": "null"
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "renameByName": {
+                  "epoch_label": "epoch"
+                },
+                "indexByName": {
+                  "epoch_label": 0
+                },
+                "excludeByName": {
+                  "Time": true,
+                  "__name__": true,
+                  "instance": true,
+                  "job": true,
+                  "job_id": true,
+                  "epoch": true,
+                  "epoch_label": false
+                }
+              }
+            }
+          ]
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "fillOpacity": 85,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineWidth": 1,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                },
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                }
+              },
+              "color": {
+                "mode": "palette-classic"
+              },
+              "unit": "percentpoint"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "x": 12,
+            "y": 121,
+            "w": 12,
+            "h": 9
+          },
+          "id": 98,
+          "options": {
+            "xField": "epoch",
+            "orientation": "vertical",
+            "xTickLabelRotation": 90,
+            "xTickLabelSpacing": 0,
+            "showValue": "auto",
+            "stacking": "none",
+            "tooltip": {
+              "mode": "single",
+              "sort": "none",
+              "hideZeros": false
+            },
+            "legend": {
+              "showLegend": true,
+              "displayMode": "list",
+              "placement": "bottom",
+              "calcs": []
+            },
+            "groupWidth": 0.72,
+            "barWidth": 0.18,
+            "barRadius": 0,
+            "fullHighlight": false
+          },
+          "targets": [
+            {
+              "editorMode": "code",
+              "refId": "A",
+              "legendFormat": "Job {{job_id}}",
+              "exemplar": false,
+              "instant": true,
+              "format": "table",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "range": false,
+              "expr": "label_replace((slurm_job_epoch_uncertainty_interval_width{job_id=~\"$job_ids\",controller_mode=\"uncertainty_aware\"} * 100), \"job_name\", \"Job $1\", \"job_id\", \"(.*)\")"
+            }
+          ],
+          "title": "Uncertainty Interval Width by Epoch (pp)",
+          "type": "barchart",
+          "pluginVersion": "11.1.0",
+          "transformations": [
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "field": "epoch_label",
+                    "desc": false
+                  }
+                ]
+              }
+            },
+            {
+              "id": "groupingToMatrix",
+              "options": {
+                "rowField": "epoch_label",
+                "columnField": "job_name",
+                "valueField": "Value",
+                "emptyValue": "null"
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "renameByName": {
+                  "epoch_label": "epoch"
+                },
+                "indexByName": {
+                  "epoch_label": 0
+                },
+                "excludeByName": {
+                  "Time": true,
+                  "__name__": true,
+                  "instance": true,
+                  "job": true,
+                  "job_id": true,
+                  "epoch": true,
+                  "epoch_label": false
+                }
+              }
+            }
+          ]
         }
       ],
       "refresh": "5s",
@@ -2187,7 +5605,82 @@ data:
         "gpu"
       ],
       "templating": {
-        "list": []
+        "list": [
+          {
+            "name": "job_ids",
+            "label": "Jobs",
+            "type": "query",
+            "hide": 0,
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            },
+            "definition": "label_values(slurm_job_info, job_id)",
+            "query": {
+              "query": "label_values(slurm_job_info, job_id)",
+              "refId": "StandardVariableQuery"
+            },
+            "refresh": 1,
+            "sort": 1,
+            "multi": true,
+            "includeAll": true,
+            "allValue": ".*",
+            "current": {
+              "selected": true,
+              "text": [
+                "All"
+              ],
+              "value": [
+                "$__all"
+              ]
+            },
+            "options": []
+          },
+          {
+            "name": "inference_job_id",
+            "label": "Inference Job",
+            "type": "query",
+            "hide": 0,
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            },
+            "definition": "label_values(slurm_job_info, job_id)",
+            "query": {
+              "query": "label_values(slurm_job_info, job_id)",
+              "refId": "StandardVariableQuery"
+            },
+            "refresh": 1,
+            "sort": 1,
+            "multi": false,
+            "includeAll": false,
+            "current": {
+              "selected": false,
+              "text": "1",
+              "value": "1"
+            },
+            "options": []
+          },
+          {
+            "name": "inference_api_base",
+            "label": "Inference API",
+            "type": "custom",
+            "hide": 0,
+            "query": "http://localhost:7860",
+            "current": {
+              "selected": true,
+              "text": "http://localhost:7860",
+              "value": "http://localhost:7860"
+            },
+            "options": [
+              {
+                "selected": true,
+                "text": "http://localhost:7860",
+                "value": "http://localhost:7860"
+              }
+            ]
+          }
+        ]
       },
       "time": {
         "from": "now-6h",
@@ -2223,6 +5716,8 @@ spec:
           env:
             - name: GF_SECURITY_ADMIN_PASSWORD
               value: admin
+            - name: GF_PANELS_DISABLE_SANITIZE_HTML
+              value: "true"
           ports:
             - containerPort: 3000
           volumeMounts:

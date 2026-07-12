@@ -1,7 +1,5 @@
 import logging
-import os
 import re
-import shutil
 from pathlib import Path
 from typing import cast, no_type_check
 
@@ -9,11 +7,8 @@ import mlflow
 import pandas as pd
 import torch
 from omegaconf import ListConfig
-from torch.utils.data import DataLoader
 from torchmetrics.detection import IntersectionOverUnion
 from torchmetrics.detection.mean_ap import MeanAveragePrecision
-from torchvision.transforms import v2
-from torchvision.utils import save_image
 from tqdm import tqdm
 from ultralytics import YOLO, settings
 from ultralytics.utils.plotting import plot_results
@@ -21,56 +16,6 @@ from ultralytics.utils.plotting import plot_results
 from config.auth_mgr import AuthMgr
 from countcv.core.data import CountingDataset
 from countcv.core.experiment_utils import calc_energy_efficiency, calc_metrics, experiment_run
-
-
-def save_cropped_images(data_dir: Path, transform: v2.Compose | None = None, num_worker: int = 12):
-	"""
-	Workaround to make data and labels conform with strict yolo/ultralytics requirements.
-
-	Loads dataset and creating yolo labels.
-	Copies yolo labels and transformed (cropped) images to data_dir.
-
-	Args:
-		data_dir (Path): the yolo data directory (cropped); original data is expected in parent dir
-	"""
-	if os.path.exists(data_dir):
-		shutil.rmtree(data_dir)
-	train_output_dir = data_dir / "images" / "train"
-	val_output_dir = data_dir / "images" / "val"
-	test_output_dir = data_dir / "images" / "test"
-	if transform is None:
-		transform = v2.Compose(
-			[
-				v2.ToImage(),
-				v2.CenterCrop((220, 220)),
-				v2.ToDtype(torch.float32, scale=True),
-				v2.Lambda(lambda t: t[0:1, ...]),
-			]
-		)
-	train_dataset = CountingDataset(
-		data_dir=data_dir.parent, set_type="train", transform=transform, return_format="image_only"
-	)
-	val_dataset = CountingDataset(
-		data_dir=data_dir.parent, set_type="val", transform=transform, return_format="image_only"
-	)
-	test_dataset = CountingDataset(
-		data_dir=data_dir.parent, set_type="test", transform=transform, return_format="image_only"
-	)
-
-	def save_images(dataset, out_dir):
-		loader = DataLoader(dataset, batch_size=1, num_workers=num_worker, pin_memory=False, persistent_workers=True)
-		out_dir.mkdir(exist_ok=True, parents=True)
-		for idx, img_tensor in tqdm(enumerate(loader), total=len(dataset)):
-			img_name = os.path.basename(dataset.paths[idx])
-			out_path = out_dir / f"{img_name}"
-			save_image(img_tensor, out_path)
-
-	save_images(train_dataset, train_output_dir)
-	save_images(val_dataset, val_output_dir)
-	save_images(test_dataset, test_output_dir)
-
-	# yolo expects labels in same dir as images
-	shutil.copytree(data_dir.parent / "labels", data_dir / "labels", dirs_exist_ok=True)
 
 
 def run_experiment_ultralytics(

@@ -2,6 +2,7 @@ import argparse
 import json
 import logging
 import os
+import shutil
 import sys
 import time
 from contextlib import contextmanager
@@ -64,6 +65,64 @@ def _write_json(path: Path, payload: dict):
         f.write(json.dumps(payload) + "\n")
 
 
+def _export_job_model_artifacts(
+    *,
+    model,
+    model_name: str,
+    model_version: str,
+    dataset_name: str,
+    job_id: str,
+    run_id: str | None,
+):
+    trainer = getattr(model, "trainer", None)
+    if trainer is None:
+        LOGGER.warning("Kein Trainer am YOLO-Modell gefunden. Ueberspringe Modellexport fuer Job %s.", job_id)
+        return
+
+    best_path_raw = getattr(trainer, "best", None)
+    save_dir_raw = getattr(trainer, "save_dir", None)
+    if not best_path_raw:
+        LOGGER.warning("Keine best.pt fuer Job %s gefunden. Ueberspringe Modellexport.", job_id)
+        return
+
+    best_path = Path(best_path_raw)
+    if not best_path.exists():
+        LOGGER.warning("best.pt existiert nicht fuer Job %s unter %s.", job_id, best_path)
+        return
+
+    save_dir = Path(save_dir_raw) if save_dir_raw else best_path.parent.parent
+    registry_root = Path(os.environ.get("JOB_MODEL_REGISTRY_DIR", "/workspace-cache/model_registry"))
+    target_dir = registry_root / f"job_{job_id}"
+    target_dir.mkdir(parents=True, exist_ok=True)
+
+    shutil.copy2(best_path, target_dir / "best.pt")
+
+    last_path = best_path.parent / "last.pt"
+    if last_path.exists():
+        shutil.copy2(last_path, target_dir / "last.pt")
+
+    results_csv = save_dir / "results.csv"
+    if results_csv.exists():
+        shutil.copy2(results_csv, target_dir / "results.csv")
+
+    args_yaml = save_dir / "args.yaml"
+    if args_yaml.exists():
+        shutil.copy2(args_yaml, target_dir / "args.yaml")
+
+    metadata = {
+        "job_id": job_id,
+        "run_id": run_id,
+        "dataset": dataset_name,
+        "model": model_name,
+        "model_version": model_version,
+        "best_weights_path": str(target_dir / "best.pt"),
+        "exported_at_epoch": int(getattr(trainer, "epoch", -1)) + 1,
+        "save_dir": str(save_dir),
+    }
+    (target_dir / "metadata.json").write_text(json.dumps(metadata, indent=2), encoding="utf-8")
+    LOGGER.info("Job-Modell exportiert nach %s", target_dir)
+
+
 @contextmanager
 def tracked_phase(name: str, timeline_path: Path, metrics_path: Path, country_iso: str = "DEU"):
     start = time.time()
@@ -109,11 +168,19 @@ def parse_args():
     p.add_argument("--co2-kg-kwh", type=float, default=0.4)
     p.add_argument("--pue-factor", type=float, default=1.0)
     p.add_argument("--adaptive-enabled", action="store_true")
+    p.add_argument("--controller-mode", choices=["none", "delta_mape", "uncertainty_aware"], default="none")
+    p.add_argument("--comparison-strategy", default="unspecified")
+    p.add_argument("--adaptive-monitor-metric", choices=["map50", "map50_95"], default="map50")
     p.add_argument("--adaptive-min-epochs", type=int, default=20)
     p.add_argument("--adaptive-patience", type=int, default=3)
     p.add_argument("--adaptive-smoothing-window", type=int, default=3)
     p.add_argument("--adaptive-min-delta-map50", type=float, default=0.001)
     p.add_argument("--adaptive-min-mape-map50-per-wh", type=float, default=0.0001)
+    p.add_argument("--uncertainty-target-epoch", type=int, default=100)
+    p.add_argument("--uncertainty-epsilon", type=float, default=0.01)
+    p.add_argument("--uncertainty-alpha", type=float, default=0.05)
+    p.add_argument("--uncertainty-bootstrap-samples", type=int, default=24)
+    p.add_argument("--uncertainty-min-fit-points", type=int, default=8)
     p.add_argument("--override", action="append", default=[])
     return p.parse_args()
 
@@ -133,12 +200,26 @@ def _log_epoch_summary_metrics(epoch_summary: dict):
         "estimated_electricity_cost_eur",
         "estimated_co2_kg",
         "best_mape_map50_per_wh",
+        "best_mape_map50_95_per_wh",
+        "predicted_final_metric_mean",
+        "predicted_final_metric_lower",
+        "predicted_final_metric_upper",
+        "predicted_remaining_gain_upper",
+        "predicted_prob_gain_gt_epsilon",
     ):
         value = epoch_summary.get(key)
         if value is not None:
             mlflow.log_metric(key, float(value))
     if epoch_summary.get("stop_epoch") is not None:
         mlflow.log_metric("energy_adaptive_stop_epoch", float(epoch_summary["stop_epoch"]))
+    if epoch_summary.get("adaptive_monitor_metric"):
+        mlflow.set_tag("energy_adaptive_monitor_metric", str(epoch_summary["adaptive_monitor_metric"]))
+    if epoch_summary.get("controller_mode"):
+        mlflow.set_tag("controller_mode", str(epoch_summary["controller_mode"]))
+    if epoch_summary.get("comparison_strategy"):
+        mlflow.set_tag("comparison_strategy", str(epoch_summary["comparison_strategy"]))
+    if epoch_summary.get("stop_reason"):
+        mlflow.set_tag("controller_stop_reason", str(epoch_summary["stop_reason"]))
 
 
 def main():
@@ -189,19 +270,28 @@ def main():
     epoch_timeline_path = Path(args.epoch_timeline_path) if args.epoch_timeline_path else None
     epoch_summary_path = Path(args.epoch_summary_path) if args.epoch_summary_path else None
     adaptive_config = EnergyAdaptiveConfig(
-        enabled=args.adaptive_enabled,
+        enabled=args.adaptive_enabled or args.controller_mode != "none",
+        controller_mode=("delta_mape" if args.adaptive_enabled and args.controller_mode == "none" else args.controller_mode),
+        comparison_strategy=args.comparison_strategy,
+        monitor_metric=args.adaptive_monitor_metric,
         min_epochs=args.adaptive_min_epochs,
         patience=args.adaptive_patience,
         smoothing_window=args.adaptive_smoothing_window,
         min_delta_map50=args.adaptive_min_delta_map50,
         min_mape_map50_per_wh=args.adaptive_min_mape_map50_per_wh,
+        uncertainty_target_epoch=args.uncertainty_target_epoch,
+        uncertainty_epsilon=args.uncertainty_epsilon,
+        uncertainty_alpha=args.uncertainty_alpha,
+        uncertainty_bootstrap_samples=args.uncertainty_bootstrap_samples,
+        uncertainty_min_fit_points=args.uncertainty_min_fit_points,
     )
 
     LOGGER.info("Using config: dataset=%s model=%s experiment=%s", args.dataset, args.model, cfg["experiment"])
     LOGGER.info(
-        "Epoch energy tracking: enabled=%s adaptive_stop=%s",
+        "Epoch energy tracking: enabled=%s controller_mode=%s comparison_strategy=%s",
         bool(epoch_timeline_path and args.gpu_csv),
-        args.adaptive_enabled,
+        adaptive_config.controller_mode,
+        args.comparison_strategy,
     )
 
     job_start = time.time()
@@ -213,6 +303,7 @@ def main():
     )
     job_tracker.start()
     try:
+        current_job_id = os.environ.get("SLURM_JOB_ID", "unknown")
         with tracked_phase("preprocessing_labels", timeline_path, phase_metrics_dir / "codecarbon_preprocessing_labels.csv"):
             creator = get_label_creator(dataset=cfg["dataset"]["dataset_name"], dataset_root=data_dir)
             creator.create_labels()
@@ -252,11 +343,19 @@ def main():
                         for k, v in flat_param_dict.items():
                             mlflow.log_param(k, v)
                         mlflow.log_param("adaptive_enabled", args.adaptive_enabled)
+                        mlflow.log_param("controller_mode", adaptive_config.controller_mode)
+                        mlflow.log_param("comparison_strategy", args.comparison_strategy)
+                        mlflow.log_param("adaptive_monitor_metric", args.adaptive_monitor_metric)
                         mlflow.log_param("adaptive_min_epochs", args.adaptive_min_epochs)
                         mlflow.log_param("adaptive_patience", args.adaptive_patience)
                         mlflow.log_param("adaptive_smoothing_window", args.adaptive_smoothing_window)
                         mlflow.log_param("adaptive_min_delta_map50", args.adaptive_min_delta_map50)
                         mlflow.log_param("adaptive_min_mape_map50_per_wh", args.adaptive_min_mape_map50_per_wh)
+                        mlflow.log_param("uncertainty_target_epoch", args.uncertainty_target_epoch)
+                        mlflow.log_param("uncertainty_epsilon", args.uncertainty_epsilon)
+                        mlflow.log_param("uncertainty_alpha", args.uncertainty_alpha)
+                        mlflow.log_param("uncertainty_bootstrap_samples", args.uncertainty_bootstrap_samples)
+                        mlflow.log_param("uncertainty_min_fit_points", args.uncertainty_min_fit_points)
 
                         model = YOLO(cfg["model"]["version"])
                         if epoch_timeline_path and args.gpu_csv:
@@ -295,6 +394,15 @@ def main():
                             workers=0,
                         )
 
+                        _export_job_model_artifacts(
+                            model=model,
+                            model_name=cfg["model"].get("model_name", args.model),
+                            model_version=str(cfg["model"]["version"]),
+                            dataset_name=cfg["dataset"]["dataset_name"],
+                            job_id=current_job_id,
+                            run_id=run_id,
+                        )
+
                         if epoch_timeline_path and epoch_summary_path:
                             epoch_summary = build_epoch_summary(
                                 epoch_timeline_path=epoch_timeline_path,
@@ -302,7 +410,10 @@ def main():
                                 job_id=os.environ.get("SLURM_JOB_ID", "unknown"),
                                 price_eur_kwh=args.price_eur_kwh,
                                 co2_kg_kwh=args.co2_kg_kwh,
-                                adaptive_enabled=args.adaptive_enabled,
+                                adaptive_enabled=adaptive_config.enabled,
+                                adaptive_monitor_metric=args.adaptive_monitor_metric,
+                                controller_mode=adaptive_config.controller_mode,
+                                comparison_strategy=args.comparison_strategy,
                             )
                             _log_epoch_summary_metrics(epoch_summary)
                             if not auth:

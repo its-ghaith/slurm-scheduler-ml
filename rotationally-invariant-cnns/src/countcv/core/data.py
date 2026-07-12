@@ -66,7 +66,7 @@ class DatasetSplitter(ABC):
 		limit_train_size: int | bool = False,
 	):
 		"""
-		Splits synthetic cell data into train/val/test folders for Ultralytics YOLO compatibility.
+		Splits a counting dataset into train/val/test folders for Ultralytics YOLO compatibility.
 		- Test set: Always the same 20% test images
 		- Train and val sets: Randomly split from the remaining data based on and `seed` parameter, stratified by count.
 		Args:
@@ -409,12 +409,12 @@ class SyncedTransform(torch.nn.Module):
 			return image_transformed, density_map
 
 
-# Usecase: Zellschädigung. Read dataset, make dataloaders and if necessary, produce labels
+# Read dataset splits and expose labels/images for CARPK training and evaluation.
 ReturnFormat = Literal["image_label", "image_only", "path_label", "path_only", "label_only"]
 
 
 def collect_paths(image_path: Path) -> list[Path]:
-	"Finds all files ending with .png or .RB.TIF (usecase)"
+	"Find all supported image files below a split directory."
 	files = sorted([p for p in image_path.rglob("*") if any(p.match(pat) for pat in ("*.png", "*.RB.TIF"))])
 	return files
 
@@ -440,7 +440,7 @@ class CountingDataset(Dataset):
 
 		self.fetch_dot_labels = fetch_dot_labels
 
-		# Collect all image file paths ending in .RB.TIF or png recursively
+		# Collect all image paths below the selected split.
 		self.paths = collect_paths(image_path)
 		# set transformation that converts to tensor to ensure correct type
 		if self.fetch_dot_labels:
@@ -588,5 +588,6 @@ def infer_normalisation_constants(
 	std = torch.sqrt(variance / (total_pixels * img.shape[2] * img.shape[3]))
 
 	return tuple(mean.tolist()), tuple(std.tolist())
+
 
 

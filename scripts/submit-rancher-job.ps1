@@ -6,10 +6,20 @@ param(
     [ValidateSet("carpk")]
     [string]$Dataset = "carpk",
     [string]$Model = "yolov8",
+    [string]$ModelVersion = "",
     [int]$Epochs = 1,
     [int]$BatchSize = 2,
     [int]$ImageSize = 640,
     [int]$Patience = 1,
+    [int]$TrainSize = 0,
+    [ValidateSet("auto", "true", "false")]
+    [string]$Pretrained = "auto",
+    [int]$Seed = 0,
+    [ValidateSet("none", "delta_mape", "uncertainty_aware")]
+    [string]$ControllerMode = "none",
+    [string]$ComparisonStrategy = "unspecified",
+    [ValidateSet("map50", "map50_95")]
+    [string]$AdaptiveMonitorMetric = "map50",
     [int]$TimeoutSeconds = 1800,
     [switch]$AdaptiveEnabled,
     [int]$AdaptiveMinEpochs = 20,
@@ -17,7 +27,14 @@ param(
     [int]$AdaptiveSmoothingWindow = 3,
     [double]$AdaptiveMinDeltaMap50 = 0.001,
     [double]$AdaptiveMinMapeMap50PerWh = 0.0001,
+    [int]$UncertaintyTargetEpoch = 100,
+    [double]$UncertaintyEpsilon = 0.01,
+    [double]$UncertaintyAlpha = 0.05,
+    [int]$UncertaintyBootstrapSamples = 24,
+    [int]$UncertaintyMinFitPoints = 8,
     [switch]$SkipDependencyInstall,
+    [switch]$ForceWorkspaceSync,
+    [switch]$ForceDatasetSync,
     [switch]$WaitForCompletion
 )
 
@@ -54,13 +71,30 @@ function Get-PodName {
         [string]$Label
     )
 
-    return Get-KubectlOutput -Arguments @(
+    $json = Get-KubectlOutput -Arguments @(
         "--kubeconfig", $Kubeconfig,
         "-n", $Namespace,
         "get", "pod",
         "-l", $Label,
-        "-o", "jsonpath={.items[0].metadata.name}"
+        "-o", "json"
     )
+
+    $podList = $json | ConvertFrom-Json
+    $candidate = $podList.items |
+        Where-Object {
+            $_.status.phase -eq "Running" -and
+            -not $_.metadata.deletionTimestamp -and
+            $_.status.containerStatuses -and
+            @(($_.status.containerStatuses | Where-Object { -not $_.ready })).Count -eq 0
+        } |
+        Sort-Object { $_.metadata.creationTimestamp } -Descending |
+        Select-Object -First 1
+
+    if (-not $candidate) {
+        throw "Kein laufender und bereiter Pod fuer Label '$Label' gefunden."
+    }
+
+    return $candidate.metadata.name
 }
 
 function Copy-ToPod {
@@ -77,14 +111,122 @@ function Copy-ToPod {
     $args = @(
         "--kubeconfig", $Kubeconfig,
         "-n", $Namespace,
-        "cp", $Source, "${Pod}:$Destination"
+        "cp"
     )
 
     if ($Container) {
         $args += @("-c", $Container)
     }
 
+    $args += @($Source, "${Pod}:$Destination")
+
     Invoke-Kubectl -Arguments $args
+}
+
+function Copy-DirectoryToPod {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Source,
+        [Parameter(Mandatory = $true)]
+        [string]$Pod,
+        [Parameter(Mandatory = $true)]
+        [string]$Destination,
+        [string]$Container
+    )
+
+    $resolvedSource = (Resolve-Path $Source).Path
+    $repoRoot = (Get-Location).Path
+    $rootUri = New-Object System.Uri(($repoRoot.TrimEnd('\') + '\'))
+    $sourceUri = New-Object System.Uri($resolvedSource)
+    $relativeSource = [System.Uri]::UnescapeDataString($rootUri.MakeRelativeUri($sourceUri).ToString()).Replace('/', '\')
+
+    if ([System.IO.Path]::IsPathRooted($relativeSource)) {
+        throw "Konnte keinen relativen Pfad fuer kubectl cp aus $Source ableiten."
+    }
+
+    Invoke-Kubectl -Arguments @(
+        "--kubeconfig", $Kubeconfig,
+        "-n", $Namespace,
+        "cp",
+        "-c", $Container,
+        $relativeSource,
+        "${Pod}:$Destination"
+    )
+}
+
+function Get-LocalFileCount {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Path
+    )
+
+    return (Get-ChildItem -Path $Path -Recurse -File | Measure-Object).Count
+}
+
+function Get-RemoteFileCount {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Deployment,
+        [Parameter(Mandatory = $true)]
+        [string]$Container,
+        [Parameter(Mandatory = $true)]
+        [string]$Path
+    )
+
+    $output = Get-KubectlOutput -Arguments @(
+        "--kubeconfig", $Kubeconfig,
+        "-n", $Namespace,
+        "exec", "deploy/$Deployment",
+        "-c", $Container,
+        "--", "bash", "-lc",
+        "if [ -d '$Path' ]; then find '$Path' -type f | wc -l; else echo 0; fi"
+    )
+
+    return [int]($output.Trim())
+}
+
+function Test-RemotePathExists {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Deployment,
+        [Parameter(Mandatory = $true)]
+        [string]$Container,
+        [Parameter(Mandatory = $true)]
+        [string]$Path
+    )
+
+    $output = Get-KubectlOutput -Arguments @(
+        "--kubeconfig", $Kubeconfig,
+        "-n", $Namespace,
+        "exec", "deploy/$Deployment",
+        "-c", $Container,
+        "--", "bash", "-lc",
+        "if [ -e '$Path' ]; then echo exists; else echo missing; fi"
+    )
+
+    return $output.Trim() -eq "exists"
+}
+
+function New-WorkspaceBundle {
+    $bundleRootRelative = Join-Path ".tmp_rancher_workspace" ("rancher-workspace-" + [guid]::NewGuid().ToString("N"))
+    $bundleDirRelative = Join-Path $bundleRootRelative "workspace_bundle"
+    $repoDir = Join-Path $bundleDirRelative "rotationally-invariant-cnns"
+    $slurmDir = Join-Path $bundleDirRelative "slurm"
+
+    New-Item -ItemType Directory -Force -Path $repoDir, $slurmDir | Out-Null
+    Copy-Item -Recurse -Force "rotationally-invariant-cnns/src" $repoDir
+    if (Test-Path "rotationally-invariant-cnns/pyproject.toml") {
+        Copy-Item -Force "rotationally-invariant-cnns/pyproject.toml" $repoDir
+    }
+    if (Test-Path "rotationally-invariant-cnns/uv.lock") {
+        Copy-Item -Force "rotationally-invariant-cnns/uv.lock" $repoDir
+    }
+    Copy-Item -Recurse -Force "slurm/*" $slurmDir
+
+    return @{
+        Root = $bundleRootRelative
+        Bundle = $bundleDirRelative
+    }
 }
 
 function Normalize-UnixLines {
@@ -129,13 +271,46 @@ function Assert-PathExistsInPod {
 }
 
 function Test-SlurmdDependencies {
-    $pythonCode = "import importlib, sys`nrequired = ['codecarbon', 'mlflow', 'torch', 'ultralytics', 'cv2']`nmissing = []`nfor name in required:`n    try:`n        importlib.import_module(name)`n    except Exception:`n        missing.append(name)`nprint('missing=' + ','.join(missing) if missing else 'deps-ok')`nsys.exit(1 if missing else 0)"
-    $output = & kubectl --kubeconfig $Kubeconfig -n $Namespace exec deploy/slurmd -c slurmd -- python -c $pythonCode 2>&1
-    if ($LASTEXITCODE -eq 0) {
+    $dependencyCheck = @'
+python - <<'PY' 2>/dev/null
+import importlib
+import importlib.util
+import sys
+
+required_imports = ['codecarbon', 'mlflow', 'torch', 'ultralytics', 'cv2', 'hydra', 'omegaconf', 'pandas']
+required_specs = ['torchmetrics', 'tqdm']
+missing = []
+
+for name in required_imports:
+    try:
+        importlib.import_module(name)
+    except Exception:
+        missing.append(name)
+
+for name in required_specs:
+    if importlib.util.find_spec(name) is None:
+        missing.append(name)
+
+print('missing=' + ','.join(missing) if missing else 'deps-ok')
+sys.exit(1 if missing else 0)
+PY
+status=$?
+echo "__DEP_EXIT__${status}"
+exit 0
+'@
+    $output = & kubectl --kubeconfig $Kubeconfig -n $Namespace exec deploy/slurmd -c slurmd -- bash -lc $dependencyCheck 2>&1
+    $outputText = ($output | Out-String).Trim()
+    $exitMatch = [regex]::Match($outputText, "__DEP_EXIT__(\d+)")
+    $exitCode = if ($exitMatch.Success) { [int]$exitMatch.Groups[1].Value } else { 1 }
+    $cleanOutput = ($outputText -replace "__DEP_EXIT__\d+", "").Trim()
+
+    if ($exitCode -eq 0) {
         return $true
     }
 
-    Write-Host ($output | Out-String) -ForegroundColor Yellow
+    if ($cleanOutput) {
+        Write-Host $cleanOutput -ForegroundColor Yellow
+    }
     return $false
 }
 
@@ -159,14 +334,89 @@ mkdir -p /workspace/rotationally-invariant-cnns
 mkdir -p /workspace/rotationally-invariant-cnns/data
 mkdir -p /workspace/slurm
 mkdir -p /workspace/logs
+mkdir -p /workspace-cache
 '@
 )
 
-Copy-ToPod -Source "rotationally-invariant-cnns/src" -Pod $slurmdPod -Destination "/workspace/rotationally-invariant-cnns" -Container "slurmd"
-Copy-ToPod -Source "rotationally-invariant-cnns/data/carpk" -Pod $slurmdPod -Destination "/workspace/rotationally-invariant-cnns/data" -Container "slurmd"
-Copy-ToPod -Source "rotationally-invariant-cnns/pyproject.toml" -Pod $slurmdPod -Destination "/workspace/rotationally-invariant-cnns" -Container "slurmd"
-Copy-ToPod -Source "rotationally-invariant-cnns/uv.lock" -Pod $slurmdPod -Destination "/workspace/rotationally-invariant-cnns" -Container "slurmd"
-Copy-ToPod -Source "slurm" -Pod $slurmdPod -Destination "/workspace" -Container "slurmd"
+$bundle = New-WorkspaceBundle
+try {
+    if ($ForceWorkspaceSync) {
+        Write-Host "Erzwinge frische Code-/SLURM-Synchronisierung ..." -ForegroundColor Yellow
+        Invoke-Kubectl -Arguments @(
+            "--kubeconfig", $Kubeconfig,
+            "-n", $Namespace,
+            "exec", $slurmdPod,
+            "-c", "slurmd",
+            "--", "bash", "-lc",
+            "rm -rf /workspace/workspace_bundle /workspace/rotationally-invariant-cnns/src /workspace/slurm/*"
+        )
+    }
+
+    $optionalConfigFiles = @("rotationally-invariant-cnns/pyproject.toml", "rotationally-invariant-cnns/uv.lock") |
+        Where-Object { Test-Path $_ }
+    $codeFileCount = (Get-LocalFileCount "rotationally-invariant-cnns/src") + (Get-LocalFileCount "slurm") + $optionalConfigFiles.Count
+    Write-Host "Synchronisiere Code und SLURM-Skripte gebuendelt ($codeFileCount Dateien) ..." -ForegroundColor Cyan
+    Copy-DirectoryToPod -Source $bundle.Bundle -Pod $slurmdPod -Destination "/workspace" -Container "slurmd"
+
+    Invoke-Kubectl -Arguments @(
+        "--kubeconfig", $Kubeconfig,
+        "-n", $Namespace,
+        "exec", "deploy/slurmd",
+        "-c", "slurmd",
+        "--", "bash", "-lc",
+        @'
+mkdir -p /workspace/rotationally-invariant-cnns /workspace/slurm
+cp -a /workspace/workspace_bundle/rotationally-invariant-cnns/. /workspace/rotationally-invariant-cnns/
+cp -a /workspace/workspace_bundle/slurm/. /workspace/slurm/
+rm -rf /workspace/workspace_bundle
+'@
+    )
+}
+finally {
+    if ($bundle -and (Test-Path $bundle.Root)) {
+        Remove-Item -Recurse -Force $bundle.Root
+    }
+}
+
+$localDatasetRawFiles = Get-LocalFileCount "rotationally-invariant-cnns/data/carpk/raw"
+$remoteDatasetRawFiles = if ($ForceDatasetSync) { 0 } else { Get-RemoteFileCount -Deployment "slurmd" -Container "slurmd" -Path "/workspace-cache/carpk/raw" }
+$remoteDatasetYamlExists = if ($ForceDatasetSync) { $false } else { Test-RemotePathExists -Deployment "slurmd" -Container "slurmd" -Path "/workspace-cache/carpk/data.yaml" }
+
+if ($ForceDatasetSync -or $remoteDatasetRawFiles -ne $localDatasetRawFiles -or -not $remoteDatasetYamlExists) {
+    if ($ForceDatasetSync) {
+        Write-Host "Erzwinge frische Dataset-Synchronisierung ..." -ForegroundColor Yellow
+    }
+    else {
+        Write-Host "Synchronisiere CARPK-Rohdataset in den persistenten slurmd-Cache (raw=$localDatasetRawFiles Dateien; cacheRaw=$remoteDatasetRawFiles; dataYaml=$remoteDatasetYamlExists) ..." -ForegroundColor Cyan
+    }
+
+    Invoke-Kubectl -Arguments @(
+        "--kubeconfig", $Kubeconfig,
+        "-n", $Namespace,
+        "exec", $slurmdPod,
+        "-c", "slurmd",
+        "--", "bash", "-lc",
+        "rm -rf /workspace-cache/carpk/raw && rm -f /workspace-cache/carpk/data.yaml && mkdir -p /workspace-cache/carpk"
+    )
+
+    Copy-DirectoryToPod -Source "rotationally-invariant-cnns/data/carpk" -Pod $slurmdPod -Destination "/workspace-cache" -Container "slurmd"
+}
+else {
+    Write-Host "CARPK-Rohdataset bereits im persistenten Pod-Cache vorhanden (raw=$remoteDatasetRawFiles Dateien). Ueberspringe erneutes Kopieren." -ForegroundColor Green
+}
+
+Invoke-Kubectl -Arguments @(
+    "--kubeconfig", $Kubeconfig,
+    "-n", $Namespace,
+    "exec", $slurmdPod,
+    "-c", "slurmd",
+    "--", "bash", "-lc",
+    @'
+mkdir -p /workspace/rotationally-invariant-cnns/data
+rm -rf /workspace/rotationally-invariant-cnns/data/carpk
+ln -s /workspace-cache/carpk /workspace/rotationally-invariant-cnns/data/carpk
+'@
+)
 
 Invoke-Kubectl -Arguments @(
     "--kubeconfig", $Kubeconfig,
@@ -197,19 +447,24 @@ Normalize-UnixLines -Deployment "slurmctld" -Container "slurmctld" -Paths @(
 )
 
 if (-not $SkipDependencyInstall) {
-    Write-Host "Pruefe und installiere Laufzeitabhaengigkeiten im slurmd-Pod ..." -ForegroundColor Cyan
-    Invoke-Kubectl -Arguments @(
-        "--kubeconfig", $Kubeconfig,
-        "-n", $Namespace,
-        "exec", "deploy/slurmd",
-        "-c", "slurmd",
-        "--", "bash", "-lc",
-        @'
+    if (Test-SlurmdDependencies) {
+        Write-Host "Laufzeitabhaengigkeiten bereits vorhanden. Ueberspringe Installation." -ForegroundColor Green
+    }
+    else {
+        Write-Host "Installiere fehlende Laufzeitabhaengigkeiten im slurmd-Pod ..." -ForegroundColor Cyan
+        Invoke-Kubectl -Arguments @(
+            "--kubeconfig", $Kubeconfig,
+            "-n", $Namespace,
+            "exec", "deploy/slurmd",
+            "-c", "slurmd",
+            "--", "bash", "-lc",
+            @'
 apt-get update >/dev/null
 apt-get install -y -qq libgl1 libglib2.0-0 >/dev/null
-python -m pip install -q 'numpy<2' ultralytics codecarbon mlflow hydra-core matplotlib pandas scikit-image seaborn tensorboard torchmetrics transformers tqdm albumentations opencv-python optuna plyer groundingdino-py jwt
+python -m pip install -q --prefer-binary 'numpy<2' ultralytics codecarbon mlflow hydra-core omegaconf matplotlib pandas scikit-image seaborn tensorboard torchmetrics transformers tqdm albumentations opencv-python-headless optuna plyer groundingdino-py jwt
 '@
-    )
+        )
+    }
 }
 elseif (-not (Test-SlurmdDependencies)) {
     throw "Im slurmd-Pod fehlen Laufzeitabhaengigkeiten. Starte das Skript ohne -SkipDependencyInstall oder installiere die benoetigten Pakete zuerst."
@@ -226,29 +481,55 @@ Assert-PathExistsInPod -Deployment "slurmd" -Container "slurmd" -Path "/workspac
 Assert-PathExistsInPod -Deployment "slurmd" -Container "slurmd" -Path "/workspace/slurm/train_repro_rotacnn_job.slurm"
 Assert-PathExistsInPod -Deployment "slurmctld" -Container "slurmctld" -Path "/workspace/slurm/train_repro_rotacnn_job.slurm"
 
-$overrideString = @(
+$trainSizeOverride = if ($TrainSize -gt 0) { "$TrainSize" } else { "False" }
+$overrideItems = @(
     "experiment=$ExperimentName"
-    "seeds=0"
+    "seeds=$Seed"
     "dataset.path=/workspace/rotationally-invariant-cnns/data/carpk"
     "dataset.data_yaml=/workspace/rotationally-invariant-cnns/data/carpk/data.yaml"
+    "dataset.train_size=$trainSizeOverride"
     "model.epochs=$Epochs"
     "model.batch_size=$BatchSize"
     "model.img_size=$ImageSize"
     "model.patience=$Patience"
-) -join ";"
+)
+
+if (-not [string]::IsNullOrWhiteSpace($ModelVersion)) {
+    $overrideItems += "model.version=$ModelVersion"
+}
+
+if ($Pretrained -ne "auto") {
+    $overrideItems += "model.pretrained=$Pretrained"
+}
+
+$overrideString = $overrideItems -join ";"
+
+$effectiveModelVersion = if ([string]::IsNullOrWhiteSpace($ModelVersion)) { "default" } else { $ModelVersion }
+$effectiveControllerMode = if ($ControllerMode -eq "none" -and $AdaptiveEnabled.IsPresent) { "delta_mape" } else { $ControllerMode }
+Write-Host "Verwende CARPK-Setting: train_size=$trainSizeOverride, model=$Model, model_version=$effectiveModelVersion, pretrained=$Pretrained, seed=$Seed" -ForegroundColor DarkCyan
+Write-Host "ControllerMode: $effectiveControllerMode, ComparisonStrategy: $ComparisonStrategy, MonitorMetric: $AdaptiveMonitorMetric" -ForegroundColor DarkCyan
 
 Write-Host "Reiche Job ein ..." -ForegroundColor Cyan
+$controllerEnabled = $AdaptiveEnabled.IsPresent -or $effectiveControllerMode -ne "none"
 $submitPairs = @(
     "REPRO_DATASET=$Dataset",
     "REPRO_MODEL=$Model",
     "REPRO_OVERRIDES='$overrideString'",
     "MLFLOW_JOB_ENERGY_EXPERIMENT=$ExperimentName",
-    "ENERGY_ADAPTIVE_ENABLED=$($AdaptiveEnabled.IsPresent.ToString().ToLower())",
+    "ENERGY_ADAPTIVE_ENABLED=$($controllerEnabled.ToString().ToLower())",
+    "EARLY_STOP_CONTROLLER_MODE=$effectiveControllerMode",
+    "COMPARISON_STRATEGY=$ComparisonStrategy",
+    "ENERGY_ADAPTIVE_MONITOR_METRIC=$AdaptiveMonitorMetric",
     "ENERGY_ADAPTIVE_MIN_EPOCHS=$AdaptiveMinEpochs",
     "ENERGY_ADAPTIVE_PATIENCE=$AdaptivePatience",
     "ENERGY_ADAPTIVE_SMOOTHING_WINDOW=$AdaptiveSmoothingWindow",
     "ENERGY_ADAPTIVE_MIN_DELTA_MAP50=$AdaptiveMinDeltaMap50",
-    "ENERGY_ADAPTIVE_MIN_MAPE_MAP50_PER_WH=$AdaptiveMinMapeMap50PerWh"
+    "ENERGY_ADAPTIVE_MIN_MAPE_MAP50_PER_WH=$AdaptiveMinMapeMap50PerWh",
+    "UNCERTAINTY_TARGET_EPOCH=$UncertaintyTargetEpoch",
+    "UNCERTAINTY_EPSILON=$UncertaintyEpsilon",
+    "UNCERTAINTY_ALPHA=$UncertaintyAlpha",
+    "UNCERTAINTY_BOOTSTRAP_SAMPLES=$UncertaintyBootstrapSamples",
+    "UNCERTAINTY_MIN_FIT_POINTS=$UncertaintyMinFitPoints"
 )
 $submitCommand = ($submitPairs -join " ") + " sbatch /workspace/slurm/train_repro_rotacnn_job.slurm"
 $submitOutput = Get-KubectlOutput -Arguments @(

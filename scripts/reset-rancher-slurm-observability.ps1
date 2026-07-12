@@ -105,14 +105,7 @@ Invoke-Kubectl -Arguments @(
     "-n", $Namespace,
     "exec", "deploy/slurmd", "-c", "slurmd",
     "--", "bash", "-lc",
-    @'
-mkdir -p /workspace/energy_metrics/node_exporter /workspace/logs
-find /workspace/energy_metrics -mindepth 1 -maxdepth 1 -type f -delete
-rm -f /workspace/energy_metrics/node_exporter/*
-rm -f /workspace/logs/*
-rm -f /workspace/slurm-*.out /workspace/job-*.out
-echo 'slurmd cleanup complete'
-'@
+    "mkdir -p /workspace/energy_metrics/node_exporter /workspace/logs; rm -f /workspace/energy_metrics/*.json /workspace/energy_metrics/*.jsonl /workspace/energy_metrics/*.csv /workspace/energy_metrics/*.prom 2>/dev/null || true; rm -f /workspace/energy_metrics/node_exporter/* 2>/dev/null || true; rm -f /workspace/logs/* 2>/dev/null || true; rm -f /workspace/slurm-*.out /workspace/job-*.out 2>/dev/null || true; echo 'slurmd cleanup complete'"
 )
 
 if (-not $SkipMlflowReset) {
@@ -122,12 +115,7 @@ if (-not $SkipMlflowReset) {
         "-n", $Namespace,
         "exec", "deploy/mlflow",
         "--", "bash", "-lc",
-        @'
-mkdir -p /mlflow /mlruns
-rm -rf /mlflow/*
-rm -rf /mlruns/*
-echo 'mlflow cleanup complete'
-'@
+        "mkdir -p /mlflow /mlruns; rm -rf /mlflow/*; rm -rf /mlruns/*; echo 'mlflow cleanup complete'"
     )
 }
 else {

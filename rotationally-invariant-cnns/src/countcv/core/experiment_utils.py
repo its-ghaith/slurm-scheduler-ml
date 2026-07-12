@@ -2,12 +2,10 @@ import logging
 import os
 import random
 import sys
-import tempfile
 import warnings
 from contextlib import contextmanager
 from datetime import datetime
 from pathlib import Path
-from typing import Any
 
 import mlflow
 import numpy as np
@@ -16,7 +14,6 @@ import yaml
 from codecarbon import OfflineEmissionsTracker
 
 from config.auth_mgr import AuthMgr
-from countcv.core.data import SyncedTransform, SyncedTransformConfig
 
 
 @contextmanager
@@ -186,31 +183,3 @@ def calc_entropy_gain(t: np.ndarray, p: np.ndarray) -> float:
 	mse = np.mean((p - t) ** 2)
 	info_gain = 0.5 * np.log2((var_prior + eps) / (mse + eps))
 	return info_gain
-
-
-def load_mlflow_model(tracking_uri: str, run_id: str) -> tuple[Any, SyncedTransform] | Any:
-	mlflow.set_tracking_uri(tracking_uri)
-	model = mlflow.pyfunc.load_model(f"runs:/{run_id}/model").get_raw_model()
-	try:
-		with tempfile.TemporaryDirectory() as tmpdir:
-			filename = mlflow.artifacts.download_artifacts(
-				artifact_uri=f"runs:/{run_id}/configs/transform_config.yaml",
-				dst_path=tmpdir,
-			)
-			with open(filename) as f:
-				config_dict = yaml.safe_load(f)
-				config = SyncedTransformConfig(config_dict)
-		transform = SyncedTransform(config)
-	except Exception as e:
-		logging.warning(e, exc_info=True)
-		return model
-	return model, transform
-
-
-def get_models(
-	model_directory: Path, device: str, load_density: bool = True, load_yolo: bool = True
-) -> tuple[Path | None, Any | None, SyncedTransform | None]:
-	yolo_model_path = model_directory / "yolo" / "best.pt" if load_yolo else None
-	dens_model = None
-	dens_transform = None
-	return yolo_model_path, dens_model, dens_transform

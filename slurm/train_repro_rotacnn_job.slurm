@@ -30,11 +30,19 @@ export REPRO_MODEL="${REPRO_MODEL:-yolov8}"
 # format: key=value;key2=value2
 export REPRO_OVERRIDES="${REPRO_OVERRIDES:-}"
 export ENERGY_ADAPTIVE_ENABLED="${ENERGY_ADAPTIVE_ENABLED:-0}"
+export EARLY_STOP_CONTROLLER_MODE="${EARLY_STOP_CONTROLLER_MODE:-none}"
+export COMPARISON_STRATEGY="${COMPARISON_STRATEGY:-unspecified}"
+export ENERGY_ADAPTIVE_MONITOR_METRIC="${ENERGY_ADAPTIVE_MONITOR_METRIC:-map50}"
 export ENERGY_ADAPTIVE_MIN_EPOCHS="${ENERGY_ADAPTIVE_MIN_EPOCHS:-20}"
 export ENERGY_ADAPTIVE_PATIENCE="${ENERGY_ADAPTIVE_PATIENCE:-3}"
 export ENERGY_ADAPTIVE_SMOOTHING_WINDOW="${ENERGY_ADAPTIVE_SMOOTHING_WINDOW:-3}"
 export ENERGY_ADAPTIVE_MIN_DELTA_MAP50="${ENERGY_ADAPTIVE_MIN_DELTA_MAP50:-0.001}"
 export ENERGY_ADAPTIVE_MIN_MAPE_MAP50_PER_WH="${ENERGY_ADAPTIVE_MIN_MAPE_MAP50_PER_WH:-0.0001}"
+export UNCERTAINTY_TARGET_EPOCH="${UNCERTAINTY_TARGET_EPOCH:-100}"
+export UNCERTAINTY_EPSILON="${UNCERTAINTY_EPSILON:-0.01}"
+export UNCERTAINTY_ALPHA="${UNCERTAINTY_ALPHA:-0.05}"
+export UNCERTAINTY_BOOTSTRAP_SAMPLES="${UNCERTAINTY_BOOTSTRAP_SAMPLES:-24}"
+export UNCERTAINTY_MIN_FIT_POINTS="${UNCERTAINTY_MIN_FIT_POINTS:-8}"
 
 mkdir -p "${GPU_METRICS_DIR}" "${PROM_TEXTFILE_DIR}" /workspace/logs
 
@@ -85,11 +93,19 @@ python "${REPRO_SCRIPT}" \
   --price-eur-kwh "${ELECTRICITY_PRICE_EUR_PER_KWH}" \
   --co2-kg-kwh "${GRID_CO2_KG_PER_KWH}" \
   --pue-factor "${PUE_FACTOR}" \
+  --controller-mode "${EARLY_STOP_CONTROLLER_MODE}" \
+  --comparison-strategy "${COMPARISON_STRATEGY}" \
+  --adaptive-monitor-metric "${ENERGY_ADAPTIVE_MONITOR_METRIC}" \
   --adaptive-min-epochs "${ENERGY_ADAPTIVE_MIN_EPOCHS}" \
   --adaptive-patience "${ENERGY_ADAPTIVE_PATIENCE}" \
   --adaptive-smoothing-window "${ENERGY_ADAPTIVE_SMOOTHING_WINDOW}" \
   --adaptive-min-delta-map50 "${ENERGY_ADAPTIVE_MIN_DELTA_MAP50}" \
   --adaptive-min-mape-map50-per-wh "${ENERGY_ADAPTIVE_MIN_MAPE_MAP50_PER_WH}" \
+  --uncertainty-target-epoch "${UNCERTAINTY_TARGET_EPOCH}" \
+  --uncertainty-epsilon "${UNCERTAINTY_EPSILON}" \
+  --uncertainty-alpha "${UNCERTAINTY_ALPHA}" \
+  --uncertainty-bootstrap-samples "${UNCERTAINTY_BOOTSTRAP_SAMPLES}" \
+  --uncertainty-min-fit-points "${UNCERTAINTY_MIN_FIT_POINTS}" \
   "${ADAPTIVE_FLAG[@]}" \
   "${OVR_ARR[@]}"
 TRAIN_EXIT=$?
@@ -122,6 +138,9 @@ python slurm/summarize_gpu_metrics_epochs.py \
   --job-id "${JOB_ID}" \
   --price-eur-kwh "${ELECTRICITY_PRICE_EUR_PER_KWH}" \
   --co2-kg-kwh "${GRID_CO2_KG_PER_KWH}" \
+  --controller-mode "${EARLY_STOP_CONTROLLER_MODE}" \
+  --comparison-strategy "${COMPARISON_STRATEGY}" \
+  --adaptive-monitor-metric "${ENERGY_ADAPTIVE_MONITOR_METRIC}" \
   "${ADAPTIVE_FLAG[@]}"
 
 if [ "${MLFLOW_LOG_JOB_ENERGY}" = "1" ] || [ "${MLFLOW_LOG_JOB_ENERGY,,}" = "true" ] || [ "${MLFLOW_LOG_JOB_ENERGY,,}" = "yes" ]; then
