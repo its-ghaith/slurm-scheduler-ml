@@ -517,7 +517,7 @@ spec:
         - name: ghcr-pull-secret
       containers:
         - name: mlflow
-          image: ghcr.io/its-ghaith/slurm-scheduler-ml/mlops-slurm-runtime@sha256:9860fb053abe12aa909e735d6e2854cb2cb156b814b1287037be5c946de2688a
+          image: ghcr.io/its-ghaith/slurm-scheduler-ml/mlops-slurm-runtime@sha256:579d927d427b8f5fa677780db338bae740eb1c0c012a133d529c06bf24ad3b55
           imagePullPolicy: IfNotPresent
           env:
             - name: MLFLOW_SERVER_ALLOWED_HOSTS
@@ -590,7 +590,7 @@ spec:
         - name: ghcr-pull-secret
       containers:
         - name: slurmctld
-          image: ghcr.io/its-ghaith/slurm-scheduler-ml/mlops-slurm-runtime@sha256:9860fb053abe12aa909e735d6e2854cb2cb156b814b1287037be5c946de2688a
+          image: ghcr.io/its-ghaith/slurm-scheduler-ml/mlops-slurm-runtime@sha256:579d927d427b8f5fa677780db338bae740eb1c0c012a133d529c06bf24ad3b55
           imagePullPolicy: IfNotPresent
           command: ["/bin/bash", "-lc"]
           args:
@@ -661,7 +661,7 @@ spec:
         - name: ghcr-pull-secret
       containers:
         - name: slurmd
-          image: ghcr.io/its-ghaith/slurm-scheduler-ml/mlops-slurm-runtime@sha256:9860fb053abe12aa909e735d6e2854cb2cb156b814b1287037be5c946de2688a
+          image: ghcr.io/its-ghaith/slurm-scheduler-ml/mlops-slurm-runtime@sha256:579d927d427b8f5fa677780db338bae740eb1c0c012a133d529c06bf24ad3b55
           imagePullPolicy: IfNotPresent
           securityContext:
             privileged: true
@@ -701,7 +701,7 @@ spec:
             - name: workspace-cache
               mountPath: /workspace-cache
         - name: inference-api
-          image: ghcr.io/its-ghaith/slurm-scheduler-ml/mlops-slurm-runtime@sha256:9860fb053abe12aa909e735d6e2854cb2cb156b814b1287037be5c946de2688a
+          image: ghcr.io/its-ghaith/slurm-scheduler-ml/mlops-slurm-runtime@sha256:579d927d427b8f5fa677780db338bae740eb1c0c012a133d529c06bf24ad3b55
           imagePullPolicy: IfNotPresent
           env:
             - name: JOB_MODEL_REGISTRY_DIR
