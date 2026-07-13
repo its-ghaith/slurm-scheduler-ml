@@ -122,7 +122,7 @@ function Copy-DirectoryToPod {
     $relativeSource = [System.Uri]::UnescapeDataString($rootUri.MakeRelativeUri($sourceUri).ToString()).Replace('/', '\')
 
     if ([System.IO.Path]::IsPathRooted($relativeSource)) {
-        throw "Konnte keinen relativen Pfad fuer kubectl cp aus $Source ableiten."
+        throw "Konnte keinen relativen Pfad für kubectl cp aus $Source ableiten."
     }
 
     Invoke-Kubectl -Arguments @(
@@ -342,7 +342,7 @@ try {
     $optionalConfigFiles = @("rotationally-invariant-cnns/pyproject.toml", "rotationally-invariant-cnns/uv.lock") |
         Where-Object { Test-Path $_ }
     $codeFileCount = (Get-LocalFileCount "rotationally-invariant-cnns/src") + (Get-LocalFileCount "slurm") + $optionalConfigFiles.Count
-    Write-Host "Synchronisiere Code und SLURM-Skripte gebuendelt ($codeFileCount Dateien) ..." -ForegroundColor Cyan
+    Write-Host "Synchronisiere Code und SLURM-Skripte gebündelt ($codeFileCount Dateien) ..." -ForegroundColor Cyan
     Copy-DirectoryToPod -Source $bundle.Bundle -Pod $slurmdPod -Destination "/workspace" -Container "slurmd"
 
     Invoke-Kubectl -Arguments @(
@@ -389,7 +389,7 @@ if ($ForceDatasetSync -or $remoteDatasetRawFiles -ne $localDatasetRawFiles -or -
     Copy-DirectoryToPod -Source "rotationally-invariant-cnns/data/carpk" -Pod $slurmdPod -Destination "/workspace-cache" -Container "slurmd"
 }
 else {
-    Write-Host "CARPK-Rohdataset bereits im persistenten Pod-Cache vorhanden (raw=$remoteDatasetRawFiles Dateien). Ueberspringe erneutes Kopieren." -ForegroundColor Green
+    Write-Host "CARPK-Rohdataset bereits im persistenten Pod-Cache vorhanden (raw=$remoteDatasetRawFiles Dateien). Überspringe erneutes Kopieren." -ForegroundColor Green
 }
 
 Invoke-Kubectl -Arguments @(
@@ -435,10 +435,10 @@ Normalize-UnixLines -Deployment "slurmctld" -Container "slurmctld" -Paths @(
 
 if (-not $SkipDependencyInstall) {
     if (Test-SlurmdDependencies) {
-        Write-Host "Laufzeitabhaengigkeiten bereits vorhanden. Ueberspringe Installation." -ForegroundColor Green
+        Write-Host "Laufzeitabhängigkeiten bereits vorhanden. Überspringe Installation." -ForegroundColor Green
     }
     else {
-        Write-Host "Installiere fehlende Laufzeitabhaengigkeiten im slurmd-Pod ..." -ForegroundColor Cyan
+        Write-Host "Installiere fehlende Laufzeitabhängigkeiten im slurmd-Pod ..." -ForegroundColor Cyan
         Invoke-Kubectl -Arguments @(
             "--kubeconfig", $Kubeconfig,
             "-n", $Namespace,
@@ -454,11 +454,11 @@ python -m pip install -q 'numpy<2' ultralytics codecarbon mlflow hydra-core matp
     }
 }
 elseif (-not (Test-SlurmdDependencies)) {
-    throw "Im slurmd-Pod fehlen Laufzeitabhaengigkeiten. Starte das Skript ohne -SkipDependencyInstall oder installiere die benoetigten Pakete zuerst."
+    throw "Im slurmd-Pod fehlen Laufzeitabhängigkeiten. Starte das Skript ohne -SkipDependencyInstall oder installiere die benötigten Pakete zuerst."
 }
 
 if (-not (Test-SlurmdDependencies)) {
-    throw "Abhaengigkeitspruefung nach der Vorbereitung fehlgeschlagen."
+    throw "Abhängigkeitsprüfung nach der Vorbereitung fehlgeschlagen."
 }
 
 Write-Host "Validiere vorbereiteten Workspace ..." -ForegroundColor Cyan
@@ -552,7 +552,7 @@ if ($finalState -ne "COMPLETED") {
     throw "E2E-Job $jobId endete mit Status $finalState.`n$jobLogs"
 }
 
-Write-Host "Pruefe, dass nur ein Job-Metrics-Satz existiert ..." -ForegroundColor Cyan
+Write-Host "Prüfe, dass nur ein Job-Metrics-Satz existiert ..." -ForegroundColor Cyan
 $promFiles = Get-KubectlOutput -Arguments @(
     "--kubeconfig", $Kubeconfig,
     "-n", $Namespace,
@@ -572,10 +572,10 @@ $jobPromFiles = @(
 )
 
 if ($jobPromFiles.Count -ne 1 -or $jobPromFiles[0] -notmatch "/job_$jobId\.prom$") {
-    throw "Es sollte genau eine Job-Prometheus-Datei fuer Job $jobId geben. Gefunden: $($jobPromFiles -join ', ')"
+    throw "Es sollte genau eine Job-Prometheus-Datei für Job $jobId geben. Gefunden: $($jobPromFiles -join ', ')"
 }
 
-Write-Host "Validiere Prometheus-Metriken fuer Job $jobId ..." -ForegroundColor Cyan
+Write-Host "Validiere Prometheus-Metriken für Job $jobId ..." -ForegroundColor Cyan
 $promQuery = Get-KubectlOutput -Arguments @(
     "--kubeconfig", $Kubeconfig,
     "-n", $Namespace,
@@ -585,7 +585,7 @@ $promQuery = Get-KubectlOutput -Arguments @(
 )
 
 if ($promQuery -notmatch '"result":\[\{') {
-    throw "Prometheus liefert keine Metriken fuer Job $jobId.`n$promQuery"
+    throw "Prometheus liefert keine Metriken für Job $jobId.`n$promQuery"
 }
 
 Write-Host "Validiere MLflow-Run ..." -ForegroundColor Cyan
@@ -598,7 +598,7 @@ $mlflowCheck = Get-KubectlOutput -Arguments @(
 )
 
 if ($mlflowCheck -notmatch 'status=FINISHED') {
-    throw "MLflow-Run fuer Job $jobId ist nicht erfolgreich.`n$mlflowCheck"
+    throw "MLflow-Run für Job $jobId ist nicht erfolgreich.`n$mlflowCheck"
 }
 
 $summary = Get-KubectlOutput -Arguments @(

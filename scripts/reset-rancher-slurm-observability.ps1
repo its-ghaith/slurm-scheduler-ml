@@ -48,21 +48,21 @@ function Wait-Rollout {
     )
 }
 
-Write-Host "Pruefe Zugriff auf Namespace $Namespace ..." -ForegroundColor Cyan
+Write-Host "Prüfe Zugriff auf Namespace $Namespace ..." -ForegroundColor Cyan
 Invoke-Kubectl -Arguments @("--kubeconfig", $Kubeconfig, "-n", $Namespace, "get", "pods")
 
 $summary = @"
-Dieses Reset-Skript fuehrt folgende Schritte aus:
+Dieses Reset-Skript führt folgende Schritte aus:
 1. Laufende oder wartende SLURM-Jobs abbrechen.
-2. Energy-/Prometheus-Textdateien und SLURM-Logs im slurmd-Pod loeschen.
-3. Optional MLflow-DB und Artefakte im mlflow-Pod loeschen.
+2. Energy-/Prometheus-Textdateien und SLURM-Logs im slurmd-Pod löschen.
+3. Optional MLflow-DB und Artefakte im mlflow-Pod löschen.
 4. Optional slurmctld, slurmd, prometheus, grafana und mlflow neu starten.
 "@
 
 Write-Host $summary -ForegroundColor Yellow
 
 if ($WhatIfPreference) {
-    Write-Host "WhatIf aktiv: Es werden keine Aenderungen ausgefuehrt." -ForegroundColor Yellow
+    Write-Host "WhatIf aktiv: Es werden keine Änderungen ausgeführt." -ForegroundColor Yellow
     return
 }
 
@@ -119,7 +119,7 @@ if (-not $SkipMlflowReset) {
     )
 }
 else {
-    Write-Host "MLflow-Reset uebersprungen." -ForegroundColor Yellow
+    Write-Host "MLflow-Reset übersprungen." -ForegroundColor Yellow
 }
 
 if (-not $SkipRestart) {
@@ -143,12 +143,12 @@ if (-not $SkipRestart) {
     }
 }
 else {
-    Write-Host "Deployment-Neustarts uebersprungen." -ForegroundColor Yellow
+    Write-Host "Deployment-Neustarts übersprungen." -ForegroundColor Yellow
 }
 
 Write-Host ""
 Write-Host "Reset abgeschlossen." -ForegroundColor Green
-Write-Host "Naechste Schritte:" -ForegroundColor Green
-Write-Host "1. Grafana neu laden und Zeitfenster auf 'Last 6 hours' pruefen."
-Write-Host "2. MLflow neu oeffnen; bei MLflow-Reset ist die Run-Historie jetzt leer."
-Write-Host "3. Danach neuen Smoke-Test-Job ueber SLURM starten."
+Write-Host "Nächste Schritte:" -ForegroundColor Green
+Write-Host "1. Grafana neu laden und Zeitfenster auf 'Last 6 hours' prüfen."
+Write-Host "2. MLflow neu öffnen; bei MLflow-Reset ist die Run-Historie jetzt leer."
+Write-Host "3. Danach neuen Smoke-Test-Job über SLURM starten."

@@ -91,7 +91,7 @@ function Get-PodName {
         Select-Object -First 1
 
     if (-not $candidate) {
-        throw "Kein laufender und bereiter Pod fuer Label '$Label' gefunden."
+        throw "Kein laufender und bereiter Pod für Label '$Label' gefunden."
     }
 
     return $candidate.metadata.name
@@ -141,7 +141,7 @@ function Copy-DirectoryToPod {
     $relativeSource = [System.Uri]::UnescapeDataString($rootUri.MakeRelativeUri($sourceUri).ToString()).Replace('/', '\')
 
     if ([System.IO.Path]::IsPathRooted($relativeSource)) {
-        throw "Konnte keinen relativen Pfad fuer kubectl cp aus $Source ableiten."
+        throw "Konnte keinen relativen Pfad für kubectl cp aus $Source ableiten."
     }
 
     Invoke-Kubectl -Arguments @(
@@ -271,40 +271,19 @@ function Assert-PathExistsInPod {
 }
 
 function Test-SlurmdDependencies {
-    $dependencyCheck = @'
-python - <<'PY' 2>/dev/null
-import importlib
-import importlib.util
-import sys
+    $pythonCheck = "import importlib.util, sys; required=['codecarbon','mlflow','torch','ultralytics','cv2','hydra','omegaconf','pandas','torchmetrics','tqdm']; missing=[name for name in required if importlib.util.find_spec(name) is None]; print('missing=' + ','.join(missing) if missing else 'deps-ok'); sys.exit(1 if missing else 0)"
+    $wrappedCheck = "python -c ""$($pythonCheck.Replace('"', '\"'))"" 2>/dev/null || true"
+    $output = Get-KubectlOutput -Arguments @(
+        "--kubeconfig", $Kubeconfig,
+        "-n", $Namespace,
+        "exec", "deploy/slurmd",
+        "-c", "slurmd",
+        "--", "bash", "-lc",
+        $wrappedCheck
+    )
+    $cleanOutput = ($output | Out-String).Trim()
 
-required_imports = ['codecarbon', 'mlflow', 'torch', 'ultralytics', 'cv2', 'hydra', 'omegaconf', 'pandas']
-required_specs = ['torchmetrics', 'tqdm']
-missing = []
-
-for name in required_imports:
-    try:
-        importlib.import_module(name)
-    except Exception:
-        missing.append(name)
-
-for name in required_specs:
-    if importlib.util.find_spec(name) is None:
-        missing.append(name)
-
-print('missing=' + ','.join(missing) if missing else 'deps-ok')
-sys.exit(1 if missing else 0)
-PY
-status=$?
-echo "__DEP_EXIT__${status}"
-exit 0
-'@
-    $output = & kubectl --kubeconfig $Kubeconfig -n $Namespace exec deploy/slurmd -c slurmd -- bash -lc $dependencyCheck 2>&1
-    $outputText = ($output | Out-String).Trim()
-    $exitMatch = [regex]::Match($outputText, "__DEP_EXIT__(\d+)")
-    $exitCode = if ($exitMatch.Success) { [int]$exitMatch.Groups[1].Value } else { 1 }
-    $cleanOutput = ($outputText -replace "__DEP_EXIT__\d+", "").Trim()
-
-    if ($exitCode -eq 0) {
+    if ($cleanOutput -eq "deps-ok") {
         return $true
     }
 
@@ -329,13 +308,7 @@ Invoke-Kubectl -Arguments @(
     "exec", $slurmdPod,
     "-c", "slurmd",
     "--", "bash", "-lc",
-    @'
-mkdir -p /workspace/rotationally-invariant-cnns
-mkdir -p /workspace/rotationally-invariant-cnns/data
-mkdir -p /workspace/slurm
-mkdir -p /workspace/logs
-mkdir -p /workspace-cache
-'@
+    "mkdir -p /workspace/rotationally-invariant-cnns /workspace/rotationally-invariant-cnns/data /workspace/slurm /workspace/logs /workspace-cache"
 )
 
 $bundle = New-WorkspaceBundle
@@ -355,7 +328,7 @@ try {
     $optionalConfigFiles = @("rotationally-invariant-cnns/pyproject.toml", "rotationally-invariant-cnns/uv.lock") |
         Where-Object { Test-Path $_ }
     $codeFileCount = (Get-LocalFileCount "rotationally-invariant-cnns/src") + (Get-LocalFileCount "slurm") + $optionalConfigFiles.Count
-    Write-Host "Synchronisiere Code und SLURM-Skripte gebuendelt ($codeFileCount Dateien) ..." -ForegroundColor Cyan
+    Write-Host "Synchronisiere Code und SLURM-Skripte gebündelt ($codeFileCount Dateien) ..." -ForegroundColor Cyan
     Copy-DirectoryToPod -Source $bundle.Bundle -Pod $slurmdPod -Destination "/workspace" -Container "slurmd"
 
     Invoke-Kubectl -Arguments @(
@@ -364,12 +337,7 @@ try {
         "exec", "deploy/slurmd",
         "-c", "slurmd",
         "--", "bash", "-lc",
-        @'
-mkdir -p /workspace/rotationally-invariant-cnns /workspace/slurm
-cp -a /workspace/workspace_bundle/rotationally-invariant-cnns/. /workspace/rotationally-invariant-cnns/
-cp -a /workspace/workspace_bundle/slurm/. /workspace/slurm/
-rm -rf /workspace/workspace_bundle
-'@
+        "mkdir -p /workspace/rotationally-invariant-cnns /workspace/slurm && cp -a /workspace/workspace_bundle/rotationally-invariant-cnns/. /workspace/rotationally-invariant-cnns/ && cp -a /workspace/workspace_bundle/slurm/. /workspace/slurm/ && rm -rf /workspace/workspace_bundle"
     )
 }
 finally {
@@ -402,7 +370,7 @@ if ($ForceDatasetSync -or $remoteDatasetRawFiles -ne $localDatasetRawFiles -or -
     Copy-DirectoryToPod -Source "rotationally-invariant-cnns/data/carpk" -Pod $slurmdPod -Destination "/workspace-cache" -Container "slurmd"
 }
 else {
-    Write-Host "CARPK-Rohdataset bereits im persistenten Pod-Cache vorhanden (raw=$remoteDatasetRawFiles Dateien). Ueberspringe erneutes Kopieren." -ForegroundColor Green
+    Write-Host "CARPK-Rohdataset bereits im persistenten Pod-Cache vorhanden (raw=$remoteDatasetRawFiles Dateien). Überspringe erneutes Kopieren." -ForegroundColor Green
 }
 
 Invoke-Kubectl -Arguments @(
@@ -411,11 +379,7 @@ Invoke-Kubectl -Arguments @(
     "exec", $slurmdPod,
     "-c", "slurmd",
     "--", "bash", "-lc",
-    @'
-mkdir -p /workspace/rotationally-invariant-cnns/data
-rm -rf /workspace/rotationally-invariant-cnns/data/carpk
-ln -s /workspace-cache/carpk /workspace/rotationally-invariant-cnns/data/carpk
-'@
+    "mkdir -p /workspace/rotationally-invariant-cnns/data && rm -rf /workspace/rotationally-invariant-cnns/data/carpk && ln -s /workspace-cache/carpk /workspace/rotationally-invariant-cnns/data/carpk"
 )
 
 Invoke-Kubectl -Arguments @(
@@ -447,31 +411,18 @@ Normalize-UnixLines -Deployment "slurmctld" -Container "slurmctld" -Paths @(
 )
 
 if (-not $SkipDependencyInstall) {
-    if (Test-SlurmdDependencies) {
-        Write-Host "Laufzeitabhaengigkeiten bereits vorhanden. Ueberspringe Installation." -ForegroundColor Green
-    }
-    else {
-        Write-Host "Installiere fehlende Laufzeitabhaengigkeiten im slurmd-Pod ..." -ForegroundColor Cyan
-        Invoke-Kubectl -Arguments @(
-            "--kubeconfig", $Kubeconfig,
-            "-n", $Namespace,
-            "exec", "deploy/slurmd",
-            "-c", "slurmd",
-            "--", "bash", "-lc",
-            @'
-apt-get update >/dev/null
-apt-get install -y -qq libgl1 libglib2.0-0 >/dev/null
-python -m pip install -q --prefer-binary 'numpy<2' ultralytics codecarbon mlflow hydra-core omegaconf matplotlib pandas scikit-image seaborn tensorboard torchmetrics transformers tqdm albumentations opencv-python-headless optuna plyer groundingdino-py jwt
-'@
-        )
-    }
+    Write-Host "Installiere bzw. aktualisiere Laufzeitabhängigkeiten im slurmd-Pod ..." -ForegroundColor Cyan
+    Invoke-Kubectl -Arguments @(
+        "--kubeconfig", $Kubeconfig,
+        "-n", $Namespace,
+        "exec", "deploy/slurmd",
+        "-c", "slurmd",
+        "--", "bash", "-lc",
+        "apt-get update >/dev/null && apt-get install -y -qq libgl1 libglib2.0-0 >/dev/null && python -m pip install -q --prefer-binary 'numpy<2' ultralytics codecarbon mlflow hydra-core omegaconf matplotlib pandas scikit-image seaborn tensorboard torchmetrics transformers tqdm albumentations opencv-python-headless optuna plyer groundingdino-py jwt"
+    )
 }
-elseif (-not (Test-SlurmdDependencies)) {
-    throw "Im slurmd-Pod fehlen Laufzeitabhaengigkeiten. Starte das Skript ohne -SkipDependencyInstall oder installiere die benoetigten Pakete zuerst."
-}
-
-if (-not (Test-SlurmdDependencies)) {
-    throw "Abhaengigkeitspruefung nach der Vorbereitung fehlgeschlagen."
+else {
+    Write-Host "Abhängigkeitsinstallation wurde übersprungen." -ForegroundColor Yellow
 }
 
 Write-Host "Validiere vorbereiteten Workspace ..." -ForegroundColor Cyan

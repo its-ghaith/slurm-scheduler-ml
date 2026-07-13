@@ -89,7 +89,7 @@ function New-ScenarioConfig {
         }
         "yolov8s-train128" {
             return @{
-                Description = "Groesseres Modell: 128 Trainingsbilder, YOLOv8s mit Pretraining."
+                Description = "Größeres Modell: 128 Trainingsbilder, YOLOv8s mit Pretraining."
                 Model = "yolov8"
                 ModelVersion = "yolov8s.pt"
                 Pretrained = "true"
@@ -204,7 +204,7 @@ function Invoke-ComparisonRun {
 
 $scenarioConfig = New-ScenarioConfig -Name $Scenario
 
-Write-Host "Stop-Policy-Vergleich fuer CARPK" -ForegroundColor Green
+Write-Host "Stop-Policy-Vergleich für CARPK" -ForegroundColor Green
 Write-Host "Szenario: $Scenario" -ForegroundColor Green
 Write-Host "Beschreibung: $($scenarioConfig.Description)" -ForegroundColor Green
 

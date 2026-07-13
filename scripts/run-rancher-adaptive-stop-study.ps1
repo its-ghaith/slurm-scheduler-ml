@@ -77,7 +77,7 @@ function New-ScenarioConfig {
         }
         "yolov8s-train128" {
             return @{
-                Description  = "Groesseres Modell: 128 Trainingsbilder, YOLOv8s mit Pretraining."
+                Description  = "Größeres Modell: 128 Trainingsbilder, YOLOv8s mit Pretraining."
                 Model        = "yolov8"
                 ModelVersion = "yolov8s.pt"
                 Pretrained   = "true"
@@ -165,13 +165,13 @@ function Invoke-StudyRun {
 
     & powershell @argList
     if ($LASTEXITCODE -ne 0) {
-        throw "Submit fuer $experimentName fehlgeschlagen."
+        throw "Submit für $experimentName fehlgeschlagen."
     }
 }
 
 $scenarioConfig = New-ScenarioConfig -Name $Scenario
 
-Write-Host "Adaptive-Stop-Studie fuer CARPK" -ForegroundColor Green
+Write-Host "Adaptive-Stop-Studie für CARPK" -ForegroundColor Green
 Write-Host "Szenario: $Scenario" -ForegroundColor Green
 Write-Host "Beschreibung: $($scenarioConfig.Description)" -ForegroundColor Green
 Write-Host "Ziel: YOLO auf CARPK schwieriger machen, damit Adaptive Stop einen echten Trade-off sieht." -ForegroundColor Green
