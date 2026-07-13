@@ -3936,12 +3936,868 @@
       ]
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 85,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 148,
+        "w": 8,
+        "h": 9
+      },
+      "id": 116,
+      "options": {
+        "xField": "job",
+        "orientation": "vertical",
+        "xTickLabelRotation": 30,
+        "xTickLabelSpacing": 0,
+        "showValue": "always",
+        "stacking": "none",
+        "groupWidth": 0.75,
+        "barWidth": 0.18,
+        "barRadius": 0,
+        "fullHighlight": false,
+        "tooltip": {
+          "mode": "single",
+          "sort": "none",
+          "hideZeros": false
+        },
+        "legend": {
+          "showLegend": false,
+          "displayMode": "list",
+          "placement": "bottom",
+          "calcs": []
+        }
+      },
+      "targets": [
+        {
+          "expr": "(slurm_study_test_best_map50_95{job_id=~\"$job_ids\",scenario=~\"$scenarios\",comparison_strategy=~\"$strategies\",training_seed=~\"$training_seeds\"} * 100)",
+          "legendFormat": "Job {{job_id}} | {{comparison_strategy}} | seed {{training_seed}}",
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "instant": true,
+          "range": false,
+          "format": "time_series"
+        }
+      ],
+      "title": "Best Checkpoint Test mAP50-95 by Job (%)",
+      "type": "barchart",
+      "pluginVersion": "11.1.0",
+      "transformations": [
+        {
+          "id": "seriesToRows",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "renameByName": {
+              "Metric": "job",
+              "Value": "value"
+            },
+            "indexByName": {
+              "job": 0,
+              "value": 1
+            },
+            "excludeByName": {
+              "Time": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 85,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 148,
+        "w": 8,
+        "h": 9
+      },
+      "id": 117,
+      "options": {
+        "xField": "job",
+        "orientation": "vertical",
+        "xTickLabelRotation": 30,
+        "xTickLabelSpacing": 0,
+        "showValue": "always",
+        "stacking": "none",
+        "groupWidth": 0.75,
+        "barWidth": 0.18,
+        "barRadius": 0,
+        "fullHighlight": false,
+        "tooltip": {
+          "mode": "single",
+          "sort": "none",
+          "hideZeros": false
+        },
+        "legend": {
+          "showLegend": false,
+          "displayMode": "list",
+          "placement": "bottom",
+          "calcs": []
+        }
+      },
+      "targets": [
+        {
+          "expr": "(slurm_study_accuracy_regret_map50_95_pp{job_id=~\"$job_ids\",scenario=~\"$scenarios\",comparison_strategy=~\"$strategies\",training_seed=~\"$training_seeds\"})",
+          "legendFormat": "Job {{job_id}} | {{comparison_strategy}} | seed {{training_seed}}",
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "instant": true,
+          "range": false,
+          "format": "time_series"
+        }
+      ],
+      "title": "Accuracy Regret vs Full100 (pp)",
+      "type": "barchart",
+      "pluginVersion": "11.1.0",
+      "transformations": [
+        {
+          "id": "seriesToRows",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "renameByName": {
+              "Metric": "job",
+              "Value": "value"
+            },
+            "indexByName": {
+              "job": 0,
+              "value": 1
+            },
+            "excludeByName": {
+              "Time": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 85,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 148,
+        "w": 8,
+        "h": 9
+      },
+      "id": 118,
+      "options": {
+        "xField": "job",
+        "orientation": "vertical",
+        "xTickLabelRotation": 30,
+        "xTickLabelSpacing": 0,
+        "showValue": "always",
+        "stacking": "none",
+        "groupWidth": 0.75,
+        "barWidth": 0.18,
+        "barRadius": 0,
+        "fullHighlight": false,
+        "tooltip": {
+          "mode": "single",
+          "sort": "none",
+          "hideZeros": false
+        },
+        "legend": {
+          "showLegend": false,
+          "displayMode": "list",
+          "placement": "bottom",
+          "calcs": []
+        }
+      },
+      "targets": [
+        {
+          "expr": "(slurm_study_pareto_dominated{job_id=~\"$job_ids\",scenario=~\"$scenarios\",comparison_strategy=~\"$strategies\",training_seed=~\"$training_seeds\"})",
+          "legendFormat": "Job {{job_id}} | {{comparison_strategy}} | seed {{training_seed}}",
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "instant": true,
+          "range": false,
+          "format": "time_series"
+        }
+      ],
+      "title": "Pareto Dominated by Job (0/1)",
+      "type": "barchart",
+      "pluginVersion": "11.1.0",
+      "transformations": [
+        {
+          "id": "seriesToRows",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "renameByName": {
+              "Metric": "job",
+              "Value": "value"
+            },
+            "indexByName": {
+              "job": 0,
+              "value": 1
+            },
+            "excludeByName": {
+              "Time": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 85,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "unit": "watth"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 157,
+        "w": 12,
+        "h": 9
+      },
+      "id": 119,
+      "options": {
+        "xField": "job",
+        "orientation": "vertical",
+        "xTickLabelRotation": 30,
+        "xTickLabelSpacing": 0,
+        "showValue": "always",
+        "stacking": "none",
+        "groupWidth": 0.75,
+        "barWidth": 0.18,
+        "barRadius": 0,
+        "fullHighlight": false,
+        "tooltip": {
+          "mode": "single",
+          "sort": "none",
+          "hideZeros": false
+        },
+        "legend": {
+          "showLegend": false,
+          "displayMode": "list",
+          "placement": "bottom",
+          "calcs": []
+        }
+      },
+      "targets": [
+        {
+          "expr": "(slurm_study_job_gpu_energy_wh{job_id=~\"$job_ids\",scenario=~\"$scenarios\",comparison_strategy=~\"$strategies\",training_seed=~\"$training_seeds\"})",
+          "legendFormat": "Job {{job_id}} | {{comparison_strategy}} | seed {{training_seed}}",
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "instant": true,
+          "range": false,
+          "format": "time_series"
+        }
+      ],
+      "title": "Gross Job GPU Energy (Wh)",
+      "type": "barchart",
+      "pluginVersion": "11.1.0",
+      "transformations": [
+        {
+          "id": "seriesToRows",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "renameByName": {
+              "Metric": "job",
+              "Value": "value"
+            },
+            "indexByName": {
+              "job": 0,
+              "value": 1
+            },
+            "excludeByName": {
+              "Time": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 85,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "unit": "watth"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 157,
+        "w": 12,
+        "h": 9
+      },
+      "id": 120,
+      "options": {
+        "xField": "job",
+        "orientation": "vertical",
+        "xTickLabelRotation": 30,
+        "xTickLabelSpacing": 0,
+        "showValue": "always",
+        "stacking": "none",
+        "groupWidth": 0.75,
+        "barWidth": 0.18,
+        "barRadius": 0,
+        "fullHighlight": false,
+        "tooltip": {
+          "mode": "single",
+          "sort": "none",
+          "hideZeros": false
+        },
+        "legend": {
+          "showLegend": false,
+          "displayMode": "list",
+          "placement": "bottom",
+          "calcs": []
+        }
+      },
+      "targets": [
+        {
+          "expr": "(slurm_study_job_net_gpu_energy_wh{job_id=~\"$job_ids\",scenario=~\"$scenarios\",comparison_strategy=~\"$strategies\",training_seed=~\"$training_seeds\"})",
+          "legendFormat": "Job {{job_id}} | {{comparison_strategy}} | seed {{training_seed}}",
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "instant": true,
+          "range": false,
+          "format": "time_series"
+        }
+      ],
+      "title": "Net Job GPU Energy above Idle (Wh)",
+      "type": "barchart",
+      "pluginVersion": "11.1.0",
+      "transformations": [
+        {
+          "id": "seriesToRows",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "renameByName": {
+              "Metric": "job",
+              "Value": "value"
+            },
+            "indexByName": {
+              "job": 0,
+              "value": 1
+            },
+            "excludeByName": {
+              "Time": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 85,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "unit": "watth"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 166,
+        "w": 8,
+        "h": 9
+      },
+      "id": 121,
+      "options": {
+        "xField": "job",
+        "orientation": "vertical",
+        "xTickLabelRotation": 30,
+        "xTickLabelSpacing": 0,
+        "showValue": "always",
+        "stacking": "none",
+        "groupWidth": 0.75,
+        "barWidth": 0.18,
+        "barRadius": 0,
+        "fullHighlight": false,
+        "tooltip": {
+          "mode": "single",
+          "sort": "none",
+          "hideZeros": false
+        },
+        "legend": {
+          "showLegend": false,
+          "displayMode": "list",
+          "placement": "bottom",
+          "calcs": []
+        }
+      },
+      "targets": [
+        {
+          "expr": "(slurm_study_energy_to_map50_95_50_wh{job_id=~\"$job_ids\",scenario=~\"$scenarios\",comparison_strategy=~\"$strategies\",training_seed=~\"$training_seeds\"})",
+          "legendFormat": "Job {{job_id}} | {{comparison_strategy}} | seed {{training_seed}}",
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "instant": true,
+          "range": false,
+          "format": "time_series"
+        }
+      ],
+      "title": "Energy to Validation mAP50-95 50% (Wh)",
+      "type": "barchart",
+      "pluginVersion": "11.1.0",
+      "transformations": [
+        {
+          "id": "seriesToRows",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "renameByName": {
+              "Metric": "job",
+              "Value": "value"
+            },
+            "indexByName": {
+              "job": 0,
+              "value": 1
+            },
+            "excludeByName": {
+              "Time": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 85,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "unit": "watth"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 166,
+        "w": 8,
+        "h": 9
+      },
+      "id": 122,
+      "options": {
+        "xField": "job",
+        "orientation": "vertical",
+        "xTickLabelRotation": 30,
+        "xTickLabelSpacing": 0,
+        "showValue": "always",
+        "stacking": "none",
+        "groupWidth": 0.75,
+        "barWidth": 0.18,
+        "barRadius": 0,
+        "fullHighlight": false,
+        "tooltip": {
+          "mode": "single",
+          "sort": "none",
+          "hideZeros": false
+        },
+        "legend": {
+          "showLegend": false,
+          "displayMode": "list",
+          "placement": "bottom",
+          "calcs": []
+        }
+      },
+      "targets": [
+        {
+          "expr": "(slurm_study_energy_to_map50_95_60_wh{job_id=~\"$job_ids\",scenario=~\"$scenarios\",comparison_strategy=~\"$strategies\",training_seed=~\"$training_seeds\"})",
+          "legendFormat": "Job {{job_id}} | {{comparison_strategy}} | seed {{training_seed}}",
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "instant": true,
+          "range": false,
+          "format": "time_series"
+        }
+      ],
+      "title": "Energy to Validation mAP50-95 60% (Wh)",
+      "type": "barchart",
+      "pluginVersion": "11.1.0",
+      "transformations": [
+        {
+          "id": "seriesToRows",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "renameByName": {
+              "Metric": "job",
+              "Value": "value"
+            },
+            "indexByName": {
+              "job": 0,
+              "value": 1
+            },
+            "excludeByName": {
+              "Time": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 85,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "unit": "watth"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 166,
+        "w": 8,
+        "h": 9
+      },
+      "id": 123,
+      "options": {
+        "xField": "job",
+        "orientation": "vertical",
+        "xTickLabelRotation": 30,
+        "xTickLabelSpacing": 0,
+        "showValue": "always",
+        "stacking": "none",
+        "groupWidth": 0.75,
+        "barWidth": 0.18,
+        "barRadius": 0,
+        "fullHighlight": false,
+        "tooltip": {
+          "mode": "single",
+          "sort": "none",
+          "hideZeros": false
+        },
+        "legend": {
+          "showLegend": false,
+          "displayMode": "list",
+          "placement": "bottom",
+          "calcs": []
+        }
+      },
+      "targets": [
+        {
+          "expr": "(slurm_study_energy_to_map50_95_68_wh{job_id=~\"$job_ids\",scenario=~\"$scenarios\",comparison_strategy=~\"$strategies\",training_seed=~\"$training_seeds\"})",
+          "legendFormat": "Job {{job_id}} | {{comparison_strategy}} | seed {{training_seed}}",
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "instant": true,
+          "range": false,
+          "format": "time_series"
+        }
+      ],
+      "title": "Energy to Validation mAP50-95 68% (Wh)",
+      "type": "barchart",
+      "pluginVersion": "11.1.0",
+      "transformations": [
+        {
+          "id": "seriesToRows",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "renameByName": {
+              "Metric": "job",
+              "Value": "value"
+            },
+            "indexByName": {
+              "job": 0,
+              "value": 1
+            },
+            "excludeByName": {
+              "Time": true
+            }
+          }
+        }
+      ]
+    },
+    {
       "id": 90,
       "title": "Model Inference by Job",
       "type": "text",
       "gridPos": {
         "x": 0,
-        "y": 148,
+        "y": 175,
         "w": 24,
         "h": 14
       },
@@ -3964,6 +4820,96 @@
   "templating": {
     "list": [
       {
+        "name": "scenarios",
+        "label": "Scenarios",
+        "type": "query",
+        "hide": 0,
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "definition": "label_values(slurm_job_info, scenario)",
+        "query": {
+          "query": "label_values(slurm_job_info, scenario)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 1,
+        "sort": 1,
+        "multi": true,
+        "includeAll": true,
+        "allValue": ".*",
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "options": []
+      },
+      {
+        "name": "strategies",
+        "label": "Strategies",
+        "type": "query",
+        "hide": 0,
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "definition": "label_values(slurm_job_info{scenario=~\"$scenarios\"}, comparison_strategy)",
+        "query": {
+          "query": "label_values(slurm_job_info{scenario=~\"$scenarios\"}, comparison_strategy)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 1,
+        "sort": 1,
+        "multi": true,
+        "includeAll": true,
+        "allValue": ".*",
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "options": []
+      },
+      {
+        "name": "training_seeds",
+        "label": "Training Seeds",
+        "type": "query",
+        "hide": 0,
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "definition": "label_values(slurm_job_info{scenario=~\"$scenarios\",comparison_strategy=~\"$strategies\"}, training_seed)",
+        "query": {
+          "query": "label_values(slurm_job_info{scenario=~\"$scenarios\",comparison_strategy=~\"$strategies\"}, training_seed)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 1,
+        "sort": 1,
+        "multi": true,
+        "includeAll": true,
+        "allValue": ".*",
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "options": []
+      },
+      {
         "name": "job_ids",
         "label": "Job IDs",
         "type": "query",
@@ -3972,9 +4918,9 @@
           "type": "prometheus",
           "uid": "prometheus"
         },
-        "definition": "label_values(slurm_job_info, job_id)",
+        "definition": "label_values(slurm_job_info{scenario=~\"$scenarios\",comparison_strategy=~\"$strategies\",training_seed=~\"$training_seeds\"}, job_id)",
         "query": {
-          "query": "label_values(slurm_job_info, job_id)",
+          "query": "label_values(slurm_job_info{scenario=~\"$scenarios\",comparison_strategy=~\"$strategies\",training_seed=~\"$training_seeds\"}, job_id)",
           "refId": "StandardVariableQuery"
         },
         "refresh": 1,
@@ -4115,6 +5061,6 @@
   "timezone": "browser",
   "title": "SLURM Energy Overview",
   "uid": "slurm-energy-overview",
-  "version": 74,
+  "version": 76,
   "weekStart": ""
 }

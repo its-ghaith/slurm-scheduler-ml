@@ -11,7 +11,7 @@ from pathlib import Path
 import mlflow
 import yaml
 from codecarbon import OfflineEmissionsTracker
-from ultralytics import YOLO
+from ultralytics import YOLO, settings
 
 
 LOGGER = logging.getLogger("repro_rotacnn")
@@ -63,6 +63,44 @@ def _write_json(path: Path, payload: dict):
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("a", encoding="utf-8") as f:
         f.write(json.dumps(payload) + "\n")
+
+
+def _parse_bool(value: str | bool) -> bool:
+    if isinstance(value, bool):
+        return value
+    return str(value).strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _update_json(path: Path, updates: dict):
+    payload = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
+    payload.update(updates)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+
+
+def _evaluate_best_checkpoint(model, data_yaml_path: Path, image_size: int, batch_size: int) -> dict:
+    trainer = getattr(model, "trainer", None)
+    best_path = Path(getattr(trainer, "best", "")) if trainer is not None else None
+    if not best_path or not best_path.exists():
+        raise FileNotFoundError("best.pt was not produced; independent test evaluation is impossible")
+
+    result = YOLO(str(best_path)).val(
+        data=str(data_yaml_path),
+        split="test",
+        imgsz=image_size,
+        batch=batch_size,
+        workers=0,
+        cache=False,
+        verbose=False,
+    )
+    box = result.box
+    return {
+        "test_best_map50": float(box.map50),
+        "test_best_map50_95": float(box.map),
+        "test_best_precision": float(box.mp),
+        "test_best_recall": float(box.mr),
+        "test_evaluated_checkpoint": str(best_path),
+    }
 
 
 def _export_job_model_artifacts(
@@ -168,8 +206,17 @@ def parse_args():
     p.add_argument("--co2-kg-kwh", type=float, default=0.4)
     p.add_argument("--pue-factor", type=float, default=1.0)
     p.add_argument("--adaptive-enabled", action="store_true")
-    p.add_argument("--controller-mode", choices=["none", "delta_mape", "uncertainty_aware"], default="none")
+    p.add_argument(
+        "--controller-mode",
+        choices=["none", "metric_early_stopping", "delta_mape", "uncertainty_aware"],
+        default="none",
+    )
     p.add_argument("--comparison-strategy", default="unspecified")
+    p.add_argument("--scenario", default="unspecified")
+    p.add_argument("--training-seed", type=int, default=0)
+    p.add_argument("--split-seed", type=int, default=42)
+    p.add_argument("--cache-policy", choices=["none", "ram", "disk"], default="ram")
+    p.add_argument("--idle-power-w", type=float, default=0.0)
     p.add_argument("--adaptive-monitor-metric", choices=["map50", "map50_95"], default="map50")
     p.add_argument("--adaptive-min-epochs", type=int, default=20)
     p.add_argument("--adaptive-patience", type=int, default=3)
@@ -181,6 +228,9 @@ def parse_args():
     p.add_argument("--uncertainty-alpha", type=float, default=0.05)
     p.add_argument("--uncertainty-bootstrap-samples", type=int, default=24)
     p.add_argument("--uncertainty-min-fit-points", type=int, default=8)
+    p.add_argument("--standard-min-delta", type=float, default=0.0005)
+    p.add_argument("--uncertainty-min-quality", type=float, default=0.55)
+    p.add_argument("--uncertainty-require-low-mape", default="true")
     p.add_argument("--override", action="append", default=[])
     return p.parse_args()
 
@@ -225,6 +275,8 @@ def _log_epoch_summary_metrics(epoch_summary: dict):
 def main():
     logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
     args = parse_args()
+    # Keep one controlled MLflow run per SLURM job; Ultralytics autologging starts a second run otherwise.
+    settings.update({"mlflow": False})
 
     project_root = Path(__file__).resolve().parent.parent
     repo_root = Path(args.repo_root).resolve()
@@ -253,6 +305,8 @@ def main():
         "model": model_cfg,
     }
     _apply_overrides(cfg, args.override)
+    # One SLURM job represents exactly one training seed; the data split stays fixed.
+    cfg["seeds"] = [args.training_seed]
     tracking_uri = os.environ.get("MLFLOW_TRACKING_URI", "").strip()
     use_direct_tracking_uri = tracking_uri.startswith("http://") or tracking_uri.startswith("https://")
     if not isinstance(cfg["seeds"], list):
@@ -279,11 +333,14 @@ def main():
         smoothing_window=args.adaptive_smoothing_window,
         min_delta_map50=args.adaptive_min_delta_map50,
         min_mape_map50_per_wh=args.adaptive_min_mape_map50_per_wh,
+        standard_min_delta=args.standard_min_delta,
         uncertainty_target_epoch=args.uncertainty_target_epoch,
         uncertainty_epsilon=args.uncertainty_epsilon,
         uncertainty_alpha=args.uncertainty_alpha,
         uncertainty_bootstrap_samples=args.uncertainty_bootstrap_samples,
         uncertainty_min_fit_points=args.uncertainty_min_fit_points,
+        uncertainty_min_quality=args.uncertainty_min_quality,
+        uncertainty_require_low_mape=_parse_bool(args.uncertainty_require_low_mape),
     )
 
     LOGGER.info("Using config: dataset=%s model=%s experiment=%s", args.dataset, args.model, cfg["experiment"])
@@ -314,6 +371,10 @@ def main():
                 **dict(cfg["dataset"]),
                 **dict(cfg["model"]),
                 "seed": seed,
+                "training_seed": seed,
+                "split_seed": args.split_seed,
+                "scenario": args.scenario,
+                "cache_policy": args.cache_policy,
                 "num_worker": cfg["num_worker"],
             }
             if use_direct_tracking_uri:
@@ -328,7 +389,11 @@ def main():
                 phase_metrics_dir / f"codecarbon_preprocessing_split_seed_{seed}.csv",
             ):
                 splitter = get_data_splitter(dataset=cfg["dataset"]["dataset_name"], dataset_root=data_dir)
-                splitter.split(train_size=0.8, seed=seed, limit_train_size=flat_param_dict.get("train_size", False))
+                splitter.split(
+                    train_size=0.8,
+                    seed=args.split_seed,
+                    limit_train_size=flat_param_dict.get("train_size", False),
+                )
 
             if cfg["model"].get("approach") == "objectdetection":
                 with tracked_phase("training", timeline_path, phase_metrics_dir / f"codecarbon_training_seed_{seed}.csv"):
@@ -342,7 +407,7 @@ def main():
                             Path(run_id_file).write_text(run_id, encoding="utf-8")
                         for k, v in flat_param_dict.items():
                             mlflow.log_param(k, v)
-                        mlflow.log_param("adaptive_enabled", args.adaptive_enabled)
+                        mlflow.log_param("adaptive_enabled", adaptive_config.enabled)
                         mlflow.log_param("controller_mode", adaptive_config.controller_mode)
                         mlflow.log_param("comparison_strategy", args.comparison_strategy)
                         mlflow.log_param("adaptive_monitor_metric", args.adaptive_monitor_metric)
@@ -356,6 +421,13 @@ def main():
                         mlflow.log_param("uncertainty_alpha", args.uncertainty_alpha)
                         mlflow.log_param("uncertainty_bootstrap_samples", args.uncertainty_bootstrap_samples)
                         mlflow.log_param("uncertainty_min_fit_points", args.uncertainty_min_fit_points)
+                        mlflow.log_param("standard_min_delta", args.standard_min_delta)
+                        mlflow.log_param("uncertainty_min_quality", args.uncertainty_min_quality)
+                        mlflow.log_param("uncertainty_require_low_mape", adaptive_config.uncertainty_require_low_mape)
+                        mlflow.log_param("idle_power_w", args.idle_power_w)
+                        run_metadata_path = Path(os.environ.get("RUN_METADATA_JSON", ""))
+                        if run_metadata_path.exists():
+                            mlflow.log_artifact(str(run_metadata_path), artifact_path="provenance")
 
                         model = YOLO(cfg["model"]["version"])
                         if epoch_timeline_path and args.gpu_csv:
@@ -365,6 +437,7 @@ def main():
                                 pue_factor=args.pue_factor,
                                 price_eur_kwh=args.price_eur_kwh,
                                 co2_kg_kwh=args.co2_kg_kwh,
+                                idle_power_w=args.idle_power_w,
                                 config=adaptive_config,
                             )
                             model.add_callback("on_train_epoch_start", controller.on_train_epoch_start)
@@ -379,7 +452,7 @@ def main():
                             patience=int(flat_param_dict.get("patience", 8)),
                             pretrained=bool(flat_param_dict.get("pretrained", True)),
                             single_cls=True,
-                            cache="ram",
+                            cache={"none": False, "ram": "ram", "disk": "disk"}[args.cache_policy],
                             hsv_h=float(flat_param_dict.get("hsv_h", 0.015)),
                             hsv_s=float(flat_param_dict.get("hsv_s", 0.12)),
                             hsv_v=float(flat_param_dict.get("hsv_v", 0.2)),
@@ -414,11 +487,44 @@ def main():
                                 adaptive_monitor_metric=args.adaptive_monitor_metric,
                                 controller_mode=adaptive_config.controller_mode,
                                 comparison_strategy=args.comparison_strategy,
+                                scenario=args.scenario,
+                                training_seed=args.training_seed,
+                                split_seed=args.split_seed,
+                                cache_policy=args.cache_policy,
                             )
                             _log_epoch_summary_metrics(epoch_summary)
                             if not auth:
                                 mlflow.log_artifact(str(epoch_timeline_path), artifact_path="energy")
                                 mlflow.log_artifact(str(epoch_summary_path), artifact_path="energy")
+
+                # The controller never sees test data. best.pt is evaluated once after training.
+                with tracked_phase(
+                    "test_evaluation",
+                    timeline_path,
+                    phase_metrics_dir / f"codecarbon_test_evaluation_seed_{seed}.csv",
+                ):
+                    with mlflow.start_run(run_id=run_id):
+                        test_metrics = _evaluate_best_checkpoint(
+                            model=model,
+                            data_yaml_path=data_yaml_path,
+                            image_size=int(flat_param_dict.get("img_size", 640)),
+                            batch_size=int(flat_param_dict.get("batch_size", 8)),
+                        )
+                        for key, value in test_metrics.items():
+                            if isinstance(value, (int, float)):
+                                mlflow.log_metric(key, float(value))
+                            else:
+                                mlflow.set_tag(key, str(value))
+                        if epoch_summary_path:
+                            _update_json(epoch_summary_path, test_metrics)
+                            if not auth:
+                                mlflow.log_artifact(str(epoch_summary_path), artifact_path="energy")
+                        model_metadata_path = (
+                            Path(os.environ.get("JOB_MODEL_REGISTRY_DIR", "/workspace-cache/model_registry"))
+                            / f"job_{current_job_id}"
+                            / "metadata.json"
+                        )
+                        _update_json(model_metadata_path, test_metrics)
             else:
                 raise ValueError("Only object detection models are supported in the CARPK-only workflow.")
     finally:

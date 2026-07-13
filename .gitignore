@@ -16,3 +16,6 @@ mlflow_data/*.db
 rancherConfigs/main.yaml
 rancherConfigs/*.local.yaml
 rancherConfigs/*.secret.yaml
+
+# Downloaded/generated research outputs (the versioned run matrix stays tracked)
+results/**/raw-metrics/

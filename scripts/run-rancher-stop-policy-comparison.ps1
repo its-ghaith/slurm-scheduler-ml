@@ -2,242 +2,227 @@
 param(
     [string]$Kubeconfig = "rancherConfigs/main.yaml",
     [string]$Namespace = "mlops-energy",
-    [ValidateSet("train64-scratch", "train128-scratch", "train256-pretrained", "yolov8s-train128", "yolo11n-train128")]
-    [string]$Scenario = "train128-scratch",
-    [string]$ExperimentPrefix = "carpk-stop-policy",
+    [ValidateSet("train128-scratch", "train256-pretrained")]
+    [string[]]$Scenarios = @("train128-scratch", "train256-pretrained"),
+    [int[]]$TrainingSeeds = @(0, 1, 2, 3, 4),
+    [int]$SplitSeed = 42,
+    [string]$ExperimentPrefix = "carpk-stop-policy-v2",
     [int]$MaxEpochs = 100,
     [int]$StandardEarlyStoppingPatience = 20,
-    [int[]]$FixedEpochBudgets = @(20, 30, 50),
-    [int]$Seed = 0,
-    [switch]$WaitForCompletion,
-    [switch]$SkipDependencyInstall,
+    [double]$StandardEarlyStoppingMinDelta = 0.0005,
+    [ValidateSet("none", "ram", "disk")]
+    [string]$CachePolicy = "ram",
+    [int]$IdleSampleSeconds = 10,
+    [int]$CooldownSeconds = 30,
+    [string]$PlanPath = "results/stop-policy-study/run_matrix.csv",
+    [switch]$PlanOnly,
     [switch]$ForceWorkspaceSync,
     [switch]$ForceDatasetSync
 )
 
 $ErrorActionPreference = "Stop"
 
-function New-ScenarioConfig {
-    param([string]$Name)
+function Import-DotEnv {
+    param([string]$Path = (Join-Path (Split-Path -Parent $PSScriptRoot) ".env"))
+    if (-not (Test-Path $Path)) { return }
+    Get-Content $Path | ForEach-Object {
+        $line = $_.Trim()
+        if (-not $line -or $line.StartsWith("#")) { return }
+        $separator = $line.IndexOf("=")
+        if ($separator -lt 1) { return }
+        $name = $line.Substring(0, $separator).Trim()
+        $value = $line.Substring($separator + 1).Trim().Trim("'`"")
+        Set-Item -Path "Env:$name" -Value $value
+    }
+}
+
+Import-DotEnv
+if (-not $PSBoundParameters.ContainsKey("Scenarios") -and $env:STUDY_SCENARIOS) {
+    $Scenarios = @($env:STUDY_SCENARIOS -split "," | ForEach-Object { $_.Trim() } | Where-Object { $_ })
+}
+if (-not $PSBoundParameters.ContainsKey("TrainingSeeds") -and $env:TRAINING_SEEDS) {
+    $TrainingSeeds = @($env:TRAINING_SEEDS -split "," | ForEach-Object { [int]$_.Trim() })
+}
+if (-not $PSBoundParameters.ContainsKey("SplitSeed") -and $env:SPLIT_SEED) { $SplitSeed = [int]$env:SPLIT_SEED }
+if (-not $PSBoundParameters.ContainsKey("CachePolicy") -and $env:CACHE_POLICY) { $CachePolicy = $env:CACHE_POLICY }
+if (-not $PSBoundParameters.ContainsKey("IdleSampleSeconds") -and $env:GPU_IDLE_SAMPLE_SECONDS) {
+    $IdleSampleSeconds = [int]$env:GPU_IDLE_SAMPLE_SECONDS
+}
+
+function Get-ScenarioConfig {
+    param([Parameter(Mandatory = $true)][string]$Name)
 
     switch ($Name) {
-        "train64-scratch" {
-            return @{
-                Description = "Sehr hart: nur 64 Trainingsbilder, YOLOv8n ohne Pretraining."
-                Model = "yolov8"
-                ModelVersion = "yolov8n.yaml"
-                Pretrained = "false"
-                TrainSize = 64
-                BatchSize = 8
-                ImageSize = 640
-                MonitorMetric = "map50_95"
-                DeltaMinEpochs = 12
-                DeltaPatience = 3
-                DeltaSmoothingWindow = 3
-                DeltaMinDelta = 0.0005
-                DeltaMinMape = 0.00005
-                UncertaintyWarmup = 15
-                UncertaintyPatience = 3
-                UncertaintyEpsilon = 0.02
-                UncertaintyAlpha = 0.10
-                UncertaintyBootstrapSamples = 28
-            }
-        }
         "train128-scratch" {
             return @{
-                Description = "Empfohlen: 128 Trainingsbilder, YOLOv8n ohne Pretraining."
                 Model = "yolov8"
                 ModelVersion = "yolov8n.yaml"
                 Pretrained = "false"
                 TrainSize = 128
                 BatchSize = 8
                 ImageSize = 640
-                MonitorMetric = "map50_95"
-                DeltaMinEpochs = 15
+                DeltaMinEpochs = 20
                 DeltaPatience = 3
-                DeltaSmoothingWindow = 3
+                DeltaWindow = 5
                 DeltaMinDelta = 0.0005
                 DeltaMinMape = 0.00005
-                UncertaintyWarmup = 18
-                UncertaintyPatience = 3
-                UncertaintyEpsilon = 0.02
-                UncertaintyAlpha = 0.10
-                UncertaintyBootstrapSamples = 32
+                UncertaintyWarmup = 35
+                UncertaintyPatience = 5
+                UncertaintyEpsilon = 0.005
+                UncertaintyAlpha = 0.05
+                UncertaintyBootstrapSamples = 128
+                UncertaintyMinQuality = 0.55
             }
         }
         "train256-pretrained" {
             return @{
-                Description = "Mittel: 256 Trainingsbilder, YOLOv8n mit Pretraining."
                 Model = "yolov8"
                 ModelVersion = "yolov8n.pt"
                 Pretrained = "true"
                 TrainSize = 256
                 BatchSize = 8
                 ImageSize = 640
-                MonitorMetric = "map50_95"
-                DeltaMinEpochs = 15
+                DeltaMinEpochs = 20
                 DeltaPatience = 3
-                DeltaSmoothingWindow = 3
+                DeltaWindow = 5
                 DeltaMinDelta = 0.0003
                 DeltaMinMape = 0.00003
-                UncertaintyWarmup = 20
-                UncertaintyPatience = 3
-                UncertaintyEpsilon = 0.01
+                UncertaintyWarmup = 30
+                UncertaintyPatience = 5
+                UncertaintyEpsilon = 0.003
                 UncertaintyAlpha = 0.05
-                UncertaintyBootstrapSamples = 32
+                UncertaintyBootstrapSamples = 128
+                UncertaintyMinQuality = 0.70
             }
         }
-        "yolov8s-train128" {
-            return @{
-                Description = "Größeres Modell: 128 Trainingsbilder, YOLOv8s mit Pretraining."
-                Model = "yolov8"
-                ModelVersion = "yolov8s.pt"
-                Pretrained = "true"
-                TrainSize = 128
-                BatchSize = 6
-                ImageSize = 640
-                MonitorMetric = "map50_95"
-                DeltaMinEpochs = 15
-                DeltaPatience = 3
-                DeltaSmoothingWindow = 3
-                DeltaMinDelta = 0.0004
-                DeltaMinMape = 0.00004
-                UncertaintyWarmup = 20
-                UncertaintyPatience = 3
-                UncertaintyEpsilon = 0.01
-                UncertaintyAlpha = 0.05
-                UncertaintyBootstrapSamples = 32
-            }
-        }
-        "yolo11n-train128" {
-            return @{
-                Description = "Alternatives Modell: 128 Trainingsbilder, YOLO11n mit Pretraining."
-                Model = "yolov11"
-                ModelVersion = "yolo11n.pt"
-                Pretrained = "true"
-                TrainSize = 128
-                BatchSize = 8
-                ImageSize = 640
-                MonitorMetric = "map50_95"
-                DeltaMinEpochs = 15
-                DeltaPatience = 3
-                DeltaSmoothingWindow = 3
-                DeltaMinDelta = 0.0004
-                DeltaMinMape = 0.00004
-                UncertaintyWarmup = 20
-                UncertaintyPatience = 3
-                UncertaintyEpsilon = 0.01
-                UncertaintyAlpha = 0.05
-                UncertaintyBootstrapSamples = 32
-            }
-        }
-        default {
-            throw "Unbekanntes Szenario: $Name"
-        }
+        default { throw "Unknown scenario: $Name" }
     }
 }
 
-function Invoke-ComparisonRun {
+function Get-Strategies {
+    param([Parameter(Mandatory = $true)][hashtable]$ScenarioConfig)
+
+    return @(
+        [pscustomobject]@{ Name = "full100"; Epochs = $MaxEpochs; Patience = $MaxEpochs; Controller = "none"; MinEpochs = $MaxEpochs; ControllerPatience = $MaxEpochs }
+        [pscustomobject]@{ Name = "standard_early_stopping"; Epochs = $MaxEpochs; Patience = $MaxEpochs; Controller = "metric_early_stopping"; MinEpochs = 1; ControllerPatience = $StandardEarlyStoppingPatience }
+        [pscustomobject]@{ Name = "delta_mape_controller"; Epochs = $MaxEpochs; Patience = $MaxEpochs; Controller = "delta_mape"; MinEpochs = $ScenarioConfig.DeltaMinEpochs; ControllerPatience = $ScenarioConfig.DeltaPatience }
+        [pscustomobject]@{ Name = "uncertainty_aware_controller"; Epochs = $MaxEpochs; Patience = $MaxEpochs; Controller = "uncertainty_aware"; MinEpochs = $ScenarioConfig.UncertaintyWarmup; ControllerPatience = $ScenarioConfig.UncertaintyPatience }
+        [pscustomobject]@{ Name = "fixed_epoch_30"; Epochs = 30; Patience = 30; Controller = "none"; MinEpochs = 30; ControllerPatience = 30 }
+        [pscustomobject]@{ Name = "fixed_epoch_50"; Epochs = 50; Patience = 50; Controller = "none"; MinEpochs = 50; ControllerPatience = 50 }
+    )
+}
+
+function New-StudyPlan {
+    $rows = [System.Collections.Generic.List[object]]::new()
+    foreach ($scenario in $Scenarios) {
+        $config = Get-ScenarioConfig -Name $scenario
+        foreach ($seed in $TrainingSeeds) {
+            # A stable shuffle avoids systematic cache, temperature, or cluster-load bias.
+            $scenarioOffset = if ($scenario -eq "train128-scratch") { 128 } else { 256 }
+            $random = [System.Random]::new(($SplitSeed * 1009) + ($seed * 97) + $scenarioOffset)
+            $ordered = Get-Strategies -ScenarioConfig $config | Sort-Object { $random.Next() }
+            $order = 0
+            foreach ($strategy in $ordered) {
+                $order++
+                $rows.Add([pscustomobject]@{
+                    scenario = $scenario
+                    training_seed = $seed
+                    split_seed = $SplitSeed
+                    run_order = $order
+                    strategy = $strategy.Name
+                    controller = $strategy.Controller
+                    epochs = $strategy.Epochs
+                    patience = $strategy.Patience
+                    controller_min_epochs = $strategy.MinEpochs
+                    controller_patience = $strategy.ControllerPatience
+                    cache_policy = $CachePolicy
+                    experiment = "$ExperimentPrefix-$scenario"
+                })
+            }
+        }
+    }
+    return $rows
+}
+
+function Invoke-StudyRun {
     param(
-        [hashtable]$ScenarioConfig,
-        [string]$StrategyName,
-        [int]$Epochs,
-        [int]$Patience,
-        [string]$ControllerMode = "none",
-        [double]$DeltaMinDelta = 0.001,
-        [double]$DeltaMinMape = 0.0001,
-        [int]$DeltaMinEpochs = 20,
-        [int]$DeltaPatience = 3,
-        [int]$DeltaSmoothingWindow = 3,
-        [double]$UncertaintyEpsilon = 0.01,
-        [double]$UncertaintyAlpha = 0.05,
-        [int]$UncertaintyWarmup = 20,
-        [int]$UncertaintyPatience = 3,
-        [int]$UncertaintyBootstrapSamples = 24
+        [Parameter(Mandatory = $true)]$Row,
+        [Parameter(Mandatory = $true)][hashtable]$ScenarioConfig,
+        [switch]$FirstRun
     )
 
-    $experimentName = "$ExperimentPrefix-$Scenario-$StrategyName"
-    $args = @(
+    $arguments = @(
         "-ExecutionPolicy", "Bypass",
         "-File", ".\scripts\submit-rancher-job.ps1",
         "-Kubeconfig", $Kubeconfig,
         "-Namespace", $Namespace,
-        "-ExperimentName", $experimentName,
+        "-ExperimentName", $Row.experiment,
+        "-ScenarioName", $Row.scenario,
         "-Dataset", "carpk",
         "-Model", $ScenarioConfig.Model,
         "-ModelVersion", $ScenarioConfig.ModelVersion,
-        "-Epochs", "$Epochs",
+        "-Epochs", "$($Row.epochs)",
         "-BatchSize", "$($ScenarioConfig.BatchSize)",
         "-ImageSize", "$($ScenarioConfig.ImageSize)",
-        "-Patience", "$Patience",
+        "-Patience", "$($Row.patience)",
         "-TrainSize", "$($ScenarioConfig.TrainSize)",
         "-Pretrained", $ScenarioConfig.Pretrained,
-        "-Seed", "$Seed",
-        "-ControllerMode", $ControllerMode,
-        "-ComparisonStrategy", $StrategyName,
-        "-AdaptiveMonitorMetric", "$($ScenarioConfig.MonitorMetric)",
-        "-AdaptiveMinEpochs", "$DeltaMinEpochs",
-        "-AdaptivePatience", "$DeltaPatience",
-        "-AdaptiveSmoothingWindow", "$DeltaSmoothingWindow",
-        "-AdaptiveMinDeltaMap50", "$DeltaMinDelta",
-        "-AdaptiveMinMapeMap50PerWh", "$DeltaMinMape",
+        "-TrainingSeed", "$($Row.training_seed)",
+        "-SplitSeed", "$($Row.split_seed)",
+        "-CachePolicy", $Row.cache_policy,
+        "-ControllerMode", $Row.controller,
+        "-ComparisonStrategy", $Row.strategy,
+        "-AdaptiveMonitorMetric", "map50_95",
+        "-AdaptiveMinEpochs", "$($Row.controller_min_epochs)",
+        "-AdaptivePatience", "$($Row.controller_patience)",
+        "-AdaptiveSmoothingWindow", "$($ScenarioConfig.DeltaWindow)",
+        "-AdaptiveMinDeltaMap50", "$($ScenarioConfig.DeltaMinDelta)",
+        "-AdaptiveMinMapeMap50PerWh", "$($ScenarioConfig.DeltaMinMape)",
+        "-StandardMinDelta", "$StandardEarlyStoppingMinDelta",
         "-UncertaintyTargetEpoch", "$MaxEpochs",
-        "-UncertaintyEpsilon", "$UncertaintyEpsilon",
-        "-UncertaintyAlpha", "$UncertaintyAlpha",
-        "-UncertaintyBootstrapSamples", "$UncertaintyBootstrapSamples",
-        "-UncertaintyMinFitPoints", "8"
+        "-UncertaintyEpsilon", "$($ScenarioConfig.UncertaintyEpsilon)",
+        "-UncertaintyAlpha", "$($ScenarioConfig.UncertaintyAlpha)",
+        "-UncertaintyBootstrapSamples", "$($ScenarioConfig.UncertaintyBootstrapSamples)",
+        "-UncertaintyMinFitPoints", "12",
+        "-UncertaintyMinQuality", "$($ScenarioConfig.UncertaintyMinQuality)",
+        "-UncertaintyRequireLowMape", "true",
+        "-IdleSampleSeconds", "$IdleSampleSeconds",
+        "-SkipDependencyInstall",
+        "-WaitForCompletion"
     )
+    if ($FirstRun -and $ForceWorkspaceSync) { $arguments += "-ForceWorkspaceSync" }
+    if ($FirstRun -and $ForceDatasetSync) { $arguments += "-ForceDatasetSync" }
 
-    if ($SkipDependencyInstall) { $args += "-SkipDependencyInstall" }
-    if ($ForceWorkspaceSync) { $args += "-ForceWorkspaceSync" }
-    if ($ForceDatasetSync) { $args += "-ForceDatasetSync" }
-    if ($WaitForCompletion) { $args += "-WaitForCompletion" }
-
-    Write-Host ""
-    Write-Host "Starte Vergleichslauf: $StrategyName" -ForegroundColor Cyan
-    Write-Host "  Epochen=$Epochs, Patience=$Patience, ControllerMode=$ControllerMode" -ForegroundColor DarkCyan
-    & powershell @args
+    Write-Host "[$($Row.scenario), seed $($Row.training_seed), order $($Row.run_order)] $($Row.strategy)" -ForegroundColor Cyan
+    & powershell @arguments
     if ($LASTEXITCODE -ne 0) {
-        throw "Vergleichslauf $StrategyName fehlgeschlagen."
+        throw "Study run failed: scenario=$($Row.scenario), seed=$($Row.training_seed), strategy=$($Row.strategy)"
     }
 }
 
-$scenarioConfig = New-ScenarioConfig -Name $Scenario
+$plan = @(New-StudyPlan)
+$planDirectory = Split-Path -Parent $PlanPath
+if ($planDirectory) { New-Item -ItemType Directory -Force -Path $planDirectory | Out-Null }
+$plan | Export-Csv -Path $PlanPath -NoTypeInformation -Encoding UTF8
 
-Write-Host "Stop-Policy-Vergleich für CARPK" -ForegroundColor Green
-Write-Host "Szenario: $Scenario" -ForegroundColor Green
-Write-Host "Beschreibung: $($scenarioConfig.Description)" -ForegroundColor Green
+Write-Host "CARPK stop-policy study: $($plan.Count) sequential runs" -ForegroundColor Green
+Write-Host "Scenarios: $($Scenarios -join ', '); training seeds: $($TrainingSeeds -join ', '); split seed: $SplitSeed" -ForegroundColor Green
+Write-Host "Run matrix: $PlanPath" -ForegroundColor Green
 
-Invoke-ComparisonRun -ScenarioConfig $scenarioConfig -StrategyName "full100" -Epochs $MaxEpochs -Patience $MaxEpochs -ControllerMode "none"
-Invoke-ComparisonRun -ScenarioConfig $scenarioConfig -StrategyName "standard_early_stopping" -Epochs $MaxEpochs -Patience $StandardEarlyStoppingPatience -ControllerMode "none"
-Invoke-ComparisonRun `
-    -ScenarioConfig $scenarioConfig `
-    -StrategyName "delta_mape_controller" `
-    -Epochs $MaxEpochs `
-    -Patience $MaxEpochs `
-    -ControllerMode "delta_mape" `
-    -DeltaMinDelta $scenarioConfig.DeltaMinDelta `
-    -DeltaMinMape $scenarioConfig.DeltaMinMape `
-    -DeltaMinEpochs $scenarioConfig.DeltaMinEpochs `
-    -DeltaPatience $scenarioConfig.DeltaPatience `
-    -DeltaSmoothingWindow $scenarioConfig.DeltaSmoothingWindow
-Invoke-ComparisonRun `
-    -ScenarioConfig $scenarioConfig `
-    -StrategyName "uncertainty_aware_controller" `
-    -Epochs $MaxEpochs `
-    -Patience $MaxEpochs `
-    -ControllerMode "uncertainty_aware" `
-    -DeltaMinEpochs $scenarioConfig.UncertaintyWarmup `
-    -DeltaPatience $scenarioConfig.UncertaintyPatience `
-    -UncertaintyEpsilon $scenarioConfig.UncertaintyEpsilon `
-    -UncertaintyAlpha $scenarioConfig.UncertaintyAlpha `
-    -UncertaintyWarmup $scenarioConfig.UncertaintyWarmup `
-    -UncertaintyPatience $scenarioConfig.UncertaintyPatience `
-    -UncertaintyBootstrapSamples $scenarioConfig.UncertaintyBootstrapSamples
-
-foreach ($budget in $FixedEpochBudgets) {
-    Invoke-ComparisonRun -ScenarioConfig $scenarioConfig -StrategyName "fixed_epoch_$budget" -Epochs $budget -Patience $budget -ControllerMode "none"
+if ($PlanOnly) {
+    $plan | Format-Table scenario, training_seed, run_order, strategy, epochs, controller -AutoSize
+    Write-Host "PlanOnly: no SLURM job was submitted." -ForegroundColor Yellow
+    return
 }
 
-Write-Host ""
-Write-Host "Stop-Policy-Vergleich abgeschlossen." -ForegroundColor Green
+$firstRun = $true
+foreach ($row in $plan) {
+    if (-not $firstRun -and $CooldownSeconds -gt 0) {
+        Write-Host "Cooldown for $CooldownSeconds seconds before the next measured run ..." -ForegroundColor DarkCyan
+        Start-Sleep -Seconds $CooldownSeconds
+    }
+    Invoke-StudyRun -Row $row -ScenarioConfig (Get-ScenarioConfig -Name $row.scenario) -FirstRun:$firstRun
+    $firstRun = $false
+}
+
+Write-Host "Study completed. Analyze results with slurm/analyze_stop_policy_study.py." -ForegroundColor Green

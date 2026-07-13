@@ -199,11 +199,14 @@ class EnergyAdaptiveConfig:
     smoothing_window: int = 3
     min_delta_map50: float = 0.001
     min_mape_map50_per_wh: float = 0.0001
+    standard_min_delta: float = 0.0005
     uncertainty_target_epoch: int = 100
     uncertainty_epsilon: float = 0.01
     uncertainty_alpha: float = 0.05
     uncertainty_bootstrap_samples: int = 24
     uncertainty_min_fit_points: int = 8
+    uncertainty_min_quality: float = 0.55
+    uncertainty_require_low_mape: bool = True
 
 
 class EpochEnergyAdaptiveController:
@@ -215,6 +218,7 @@ class EpochEnergyAdaptiveController:
         pue_factor: float = 1.0,
         price_eur_kwh: float = 0.30,
         co2_kg_kwh: float = 0.4,
+        idle_power_w: float = 0.0,
         config: EnergyAdaptiveConfig | None = None,
         time_fn=time.time,
     ):
@@ -223,6 +227,7 @@ class EpochEnergyAdaptiveController:
         self.pue_factor = pue_factor
         self.price_eur_kwh = price_eur_kwh
         self.co2_kg_kwh = co2_kg_kwh
+        self.idle_power_w = max(0.0, float(idle_power_w))
         self.config = config or EnergyAdaptiveConfig()
         self.time_fn = time_fn
         self.current_epoch_start_ts: float | None = None
@@ -257,6 +262,10 @@ class EpochEnergyAdaptiveController:
         start_ts = self.current_epoch_start_ts
         epoch_gpu = summarize_window(self.gpu_csv_path, start_ts=start_ts, end_ts=end_ts)
         epoch_total_energy_kwh = to_float(epoch_gpu.get("gpu_energy_kwh")) * self.pue_factor
+        epoch_duration_seconds = to_float(epoch_gpu.get("duration_seconds"), max(0.0, end_ts - start_ts))
+        idle_energy_kwh = self.idle_power_w * epoch_duration_seconds / 3_600_000.0
+        net_gpu_energy_kwh = max(0.0, to_float(epoch_gpu.get("gpu_energy_kwh")) - idle_energy_kwh)
+        net_total_energy_kwh = net_gpu_energy_kwh * self.pue_factor
         epoch_metrics = self._extract_epoch_metrics(trainer, fallback_epoch=epoch)
 
         prev = self.history[-1] if self.history else None
@@ -274,14 +283,26 @@ class EpochEnergyAdaptiveController:
         )
 
         epoch_total_energy_wh = epoch_total_energy_kwh * 1000.0
-        marginal_map50_per_wh = delta_map50 / epoch_total_energy_wh if delta_map50 is not None and epoch_total_energy_wh > 0 else None
+        net_total_energy_wh = net_total_energy_kwh * 1000.0
+        controller_energy_wh = net_total_energy_wh if net_total_energy_wh > 0 else epoch_total_energy_wh
+        marginal_map50_per_wh = delta_map50 / controller_energy_wh if delta_map50 is not None and controller_energy_wh > 0 else None
         marginal_map50_95_per_wh = (
+            delta_map50_95 / controller_energy_wh if delta_map50_95 is not None and controller_energy_wh > 0 else None
+        )
+        gross_marginal_map50_per_wh = delta_map50 / epoch_total_energy_wh if delta_map50 is not None and epoch_total_energy_wh > 0 else None
+        gross_marginal_map50_95_per_wh = (
             delta_map50_95 / epoch_total_energy_wh if delta_map50_95 is not None and epoch_total_energy_wh > 0 else None
         )
 
         cumulative_total_energy_kwh = epoch_total_energy_kwh + sum(to_float(item.get("total_energy_kwh")) for item in self.history)
         cumulative_gpu_energy_kwh = to_float(epoch_gpu.get("gpu_energy_kwh")) + sum(
             to_float(item.get("gpu_energy_kwh")) for item in self.history
+        )
+        cumulative_net_gpu_energy_kwh = net_gpu_energy_kwh + sum(
+            to_float(item.get("net_gpu_energy_kwh")) for item in self.history
+        )
+        cumulative_net_total_energy_kwh = net_total_energy_kwh + sum(
+            to_float(item.get("net_total_energy_kwh")) for item in self.history
         )
 
         lr = self._current_learning_rate(trainer)
@@ -295,7 +316,7 @@ class EpochEnergyAdaptiveController:
             "ts": end_ts,
             "start_ts": start_ts,
             "end_ts": end_ts,
-            "duration_seconds": to_float(epoch_gpu.get("duration_seconds"), max(0.0, end_ts - start_ts)),
+            "duration_seconds": epoch_duration_seconds,
             "samples": int(epoch_gpu.get("samples", 0)),
             "gpu_power_avg_w": to_float(epoch_gpu.get("gpu_power_avg_w")),
             "gpu_power_max_w": to_float(epoch_gpu.get("gpu_power_max_w")),
@@ -304,10 +325,16 @@ class EpochEnergyAdaptiveController:
             "gpu_temp_avg_c": to_float(epoch_gpu.get("gpu_temp_avg_c")),
             "gpu_energy_kwh": to_float(epoch_gpu.get("gpu_energy_kwh")),
             "total_energy_kwh": epoch_total_energy_kwh,
+            "idle_power_w": self.idle_power_w,
+            "idle_energy_kwh": idle_energy_kwh,
+            "net_gpu_energy_kwh": net_gpu_energy_kwh,
+            "net_total_energy_kwh": net_total_energy_kwh,
             "estimated_electricity_cost_eur": epoch_total_energy_kwh * self.price_eur_kwh,
             "estimated_co2_kg": epoch_total_energy_kwh * self.co2_kg_kwh,
             "cumulative_gpu_energy_kwh": cumulative_gpu_energy_kwh,
             "cumulative_total_energy_kwh": cumulative_total_energy_kwh,
+            "cumulative_net_gpu_energy_kwh": cumulative_net_gpu_energy_kwh,
+            "cumulative_net_total_energy_kwh": cumulative_net_total_energy_kwh,
             "map50": epoch_metrics.get("map50"),
             "map50_95": epoch_metrics.get("map50_95"),
             "precision": epoch_metrics.get("precision"),
@@ -320,6 +347,8 @@ class EpochEnergyAdaptiveController:
             "delta_map50_95": delta_map50_95,
             "marginal_map50_per_wh": marginal_map50_per_wh,
             "marginal_map50_95_per_wh": marginal_map50_95_per_wh,
+            "gross_marginal_map50_per_wh": gross_marginal_map50_per_wh,
+            "gross_marginal_map50_95_per_wh": gross_marginal_map50_95_per_wh,
             "energy_efficiency_gain": marginal_map50_per_wh,
             "best_map50": best_map50,
             "best_map50_95": best_map50_95,
@@ -346,6 +375,8 @@ class EpochEnergyAdaptiveController:
         self.current_epoch_number = None
 
     def _evaluate_stop(self, current_event: dict) -> tuple[bool, str | None, dict]:
+        if self.config.controller_mode == "metric_early_stopping":
+            return self._evaluate_metric_early_stopping(current_event)
         if self.config.controller_mode == "delta_mape":
             return self._evaluate_delta_mape_stop(current_event)
         if self.config.controller_mode == "uncertainty_aware":
@@ -353,6 +384,27 @@ class EpochEnergyAdaptiveController:
 
         self.low_gain_streak = 0
         return False, None, self._default_diagnostics(current_event)
+
+    def _evaluate_metric_early_stopping(self, current_event: dict) -> tuple[bool, str | None, dict]:
+        diagnostics = self._default_diagnostics(current_event)
+        metric_key = "map50_95" if self.config.monitor_metric == "map50_95" else "map50"
+        current = to_float(current_event.get(metric_key), None)
+        previous = [to_float(item.get(metric_key), None) for item in self.history]
+        previous = [value for value in previous if value is not None]
+        if not self.config.enabled or current is None or len(self.history) + 1 < self.config.min_epochs:
+            self.low_gain_streak = 0
+            return False, None, diagnostics
+
+        previous_best = max(previous) if previous else None
+        improved = previous_best is None or current > previous_best + self.config.standard_min_delta
+        self.low_gain_streak = 0 if improved else self.low_gain_streak + 1
+        if self.low_gain_streak >= self.config.patience:
+            return (
+                True,
+                f"metric_early_stop[{metric_key}]: min_delta={self.config.standard_min_delta:.6f}",
+                diagnostics,
+            )
+        return False, None, diagnostics
 
     def _default_diagnostics(self, current_event: dict) -> dict:
         monitor_metric = self.config.monitor_metric
@@ -413,6 +465,7 @@ class EpochEnergyAdaptiveController:
             self.low_gain_streak = 0
 
         if self.low_gain_streak >= self.config.patience:
+            smooth_mape_text = "unavailable" if smooth_mape is None else f"{smooth_mape:.6f}"
             return (
                 True,
                 f"energy_adaptive_stop[{self.config.monitor_metric}]: avg_delta={smooth_delta:.6f}, avg_mape_per_wh={smooth_mape:.6f}",
@@ -436,6 +489,14 @@ class EpochEnergyAdaptiveController:
         epochs = [int(item.get("epoch_index", item.get("epoch", 0))) for item in history if item.get(metric_key) is not None]
         values = [to_float(item.get(metric_key)) for item in history if item.get(metric_key) is not None]
         current_best = to_float(current_event.get(best_key))
+        _, mape_key = self._monitor_keys()
+        recent_mape = [to_float(item.get(mape_key), None) for item in history[-self.config.smoothing_window :]]
+        recent_mape = [value for value in recent_mape if value is not None]
+        smooth_mape = _mean(recent_mape)
+        if self.config.monitor_metric == "map50_95":
+            diagnostics["smoothed_mape_map50_95_per_wh"] = smooth_mape
+        else:
+            diagnostics["smoothed_mape_map50_per_wh"] = smooth_mape
         predictions = _bootstrap_prediction_distribution(
             epochs=epochs,
             values=values,
@@ -468,7 +529,14 @@ class EpochEnergyAdaptiveController:
             }
         )
 
-        low_gain = gain_upper < self.config.uncertainty_epsilon and gain_risk < self.config.uncertainty_alpha
+        minimum_quality_reached = current_best >= self.config.uncertainty_min_quality
+        low_mape = smooth_mape is not None and smooth_mape < self.config.min_mape_map50_per_wh
+        low_gain = (
+            gain_upper < self.config.uncertainty_epsilon
+            and gain_risk < self.config.uncertainty_alpha
+            and minimum_quality_reached
+            and (low_mape or not self.config.uncertainty_require_low_mape)
+        )
         if low_gain:
             self.low_gain_streak += 1
         else:
@@ -480,7 +548,8 @@ class EpochEnergyAdaptiveController:
                 (
                     f"uncertainty_stop[{self.config.monitor_metric}]: gain_upper={gain_upper:.6f}, "
                     f"prob_gain_gt_epsilon={gain_risk:.6f}, epsilon={self.config.uncertainty_epsilon:.6f}, "
-                    f"alpha={self.config.uncertainty_alpha:.6f}"
+                    f"alpha={self.config.uncertainty_alpha:.6f}, quality={current_best:.6f}, "
+                    f"smoothed_mape={smooth_mape_text}"
                 ),
                 diagnostics,
             )
@@ -673,6 +742,10 @@ def build_epoch_summary(
     adaptive_monitor_metric: str = "map50",
     controller_mode: str = "none",
     comparison_strategy: str = "unspecified",
+    scenario: str = "unspecified",
+    training_seed: int = 0,
+    split_seed: int = 0,
+    cache_policy: str = "ram",
 ) -> dict:
     events = load_epoch_events(Path(epoch_timeline_path))
     epoch_rows = [event for event in events if event.get("event") == "end"]
@@ -689,6 +762,10 @@ def build_epoch_summary(
         "adaptive_monitor_metric": adaptive_monitor_metric,
         "controller_mode": controller_mode,
         "comparison_strategy": comparison_strategy,
+        "scenario": scenario,
+        "training_seed": int(training_seed),
+        "split_seed": int(split_seed),
+        "cache_policy": cache_policy,
         "epochs": epoch_rows,
         "epochs_completed": len(epoch_rows),
         "adaptive_stopped": any(to_float(item.get("should_stop")) > 0 for item in epoch_rows),
@@ -702,6 +779,8 @@ def build_epoch_summary(
         "final_best_map50_95": None,
         "total_energy_kwh": 0.0,
         "total_gpu_energy_kwh": 0.0,
+        "total_net_energy_kwh": 0.0,
+        "total_net_gpu_energy_kwh": 0.0,
         "total_duration_seconds": 0.0,
         "estimated_electricity_cost_eur": 0.0,
         "estimated_co2_kg": 0.0,
@@ -730,6 +809,8 @@ def build_epoch_summary(
         summary["predicted_prob_gain_gt_epsilon"] = last.get("predicted_prob_gain_gt_epsilon")
         summary["total_energy_kwh"] = sum(to_float(item.get("total_energy_kwh")) for item in epoch_rows)
         summary["total_gpu_energy_kwh"] = sum(to_float(item.get("gpu_energy_kwh")) for item in epoch_rows)
+        summary["total_net_energy_kwh"] = sum(to_float(item.get("net_total_energy_kwh")) for item in epoch_rows)
+        summary["total_net_gpu_energy_kwh"] = sum(to_float(item.get("net_gpu_energy_kwh")) for item in epoch_rows)
         summary["total_duration_seconds"] = sum(to_float(item.get("duration_seconds")) for item in epoch_rows)
         summary["estimated_electricity_cost_eur"] = summary["total_energy_kwh"] * price_eur_kwh
         summary["estimated_co2_kg"] = summary["total_energy_kwh"] * co2_kg_kwh

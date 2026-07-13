@@ -43,6 +43,15 @@ export UNCERTAINTY_EPSILON="${UNCERTAINTY_EPSILON:-0.01}"
 export UNCERTAINTY_ALPHA="${UNCERTAINTY_ALPHA:-0.05}"
 export UNCERTAINTY_BOOTSTRAP_SAMPLES="${UNCERTAINTY_BOOTSTRAP_SAMPLES:-24}"
 export UNCERTAINTY_MIN_FIT_POINTS="${UNCERTAINTY_MIN_FIT_POINTS:-8}"
+export STANDARD_EARLY_STOP_MIN_DELTA="${STANDARD_EARLY_STOP_MIN_DELTA:-0.0005}"
+export UNCERTAINTY_MIN_QUALITY="${UNCERTAINTY_MIN_QUALITY:-0.55}"
+export UNCERTAINTY_REQUIRE_LOW_MAPE="${UNCERTAINTY_REQUIRE_LOW_MAPE:-true}"
+export EXPERIMENT_SCENARIO="${EXPERIMENT_SCENARIO:-unspecified}"
+export TRAINING_SEED="${TRAINING_SEED:-0}"
+export SPLIT_SEED="${SPLIT_SEED:-42}"
+export CACHE_POLICY="${CACHE_POLICY:-ram}"
+export GPU_IDLE_SAMPLE_SECONDS="${GPU_IDLE_SAMPLE_SECONDS:-10}"
+export RUNTIME_IMAGE_ID="${RUNTIME_IMAGE_ID:-unknown}"
 
 mkdir -p "${GPU_METRICS_DIR}" "${PROM_TEXTFILE_DIR}" /workspace/logs
 
@@ -58,10 +67,19 @@ JOB_CC_JSON="${GPU_METRICS_DIR}/codecarbon_job_total_job_${JOB_ID}.json"
 MLFLOW_RUN_ID_FILE="${GPU_METRICS_DIR}/mlflow_run_id_job_${JOB_ID}.txt"
 PHASE_PROM="${PROM_TEXTFILE_DIR}/job_${JOB_ID}_phases.prom"
 EPOCH_PROM="${PROM_TEXTFILE_DIR}/job_${JOB_ID}_epochs.prom"
+RUN_METADATA_JSON="${GPU_METRICS_DIR}/run_metadata_job_${JOB_ID}.json"
+export RUN_METADATA_JSON
 
 export MLFLOW_EXPERIMENT_NAME="${MLFLOW_JOB_ENERGY_EXPERIMENT}"
 export MLFLOW_RUN_NAME="job-energy-${JOB_ID}"
 export MLFLOW_RUN_ID_FILE
+
+IDLE_POWER_W="$(python slurm/capture_run_metadata.py \
+  --output "${RUN_METADATA_JSON}" \
+  --idle-sample-seconds "${GPU_IDLE_SAMPLE_SECONDS}" \
+  --print-idle-power)"
+export GPU_IDLE_POWER_W="${IDLE_POWER_W:-0}"
+echo "Measured idle GPU power: ${GPU_IDLE_POWER_W} W"
 
 bash slurm/gpu_monitor.sh "${GPU_CSV}" "${GPU_SAMPLE_INTERVAL_SEC}" &
 MONITOR_PID=$!
@@ -93,8 +111,13 @@ python "${REPRO_SCRIPT}" \
   --price-eur-kwh "${ELECTRICITY_PRICE_EUR_PER_KWH}" \
   --co2-kg-kwh "${GRID_CO2_KG_PER_KWH}" \
   --pue-factor "${PUE_FACTOR}" \
+  --idle-power-w "${GPU_IDLE_POWER_W}" \
   --controller-mode "${EARLY_STOP_CONTROLLER_MODE}" \
   --comparison-strategy "${COMPARISON_STRATEGY}" \
+  --scenario "${EXPERIMENT_SCENARIO}" \
+  --training-seed "${TRAINING_SEED}" \
+  --split-seed "${SPLIT_SEED}" \
+  --cache-policy "${CACHE_POLICY}" \
   --adaptive-monitor-metric "${ENERGY_ADAPTIVE_MONITOR_METRIC}" \
   --adaptive-min-epochs "${ENERGY_ADAPTIVE_MIN_EPOCHS}" \
   --adaptive-patience "${ENERGY_ADAPTIVE_PATIENCE}" \
@@ -106,6 +129,9 @@ python "${REPRO_SCRIPT}" \
   --uncertainty-alpha "${UNCERTAINTY_ALPHA}" \
   --uncertainty-bootstrap-samples "${UNCERTAINTY_BOOTSTRAP_SAMPLES}" \
   --uncertainty-min-fit-points "${UNCERTAINTY_MIN_FIT_POINTS}" \
+  --standard-min-delta "${STANDARD_EARLY_STOP_MIN_DELTA}" \
+  --uncertainty-min-quality "${UNCERTAINTY_MIN_QUALITY}" \
+  --uncertainty-require-low-mape "${UNCERTAINTY_REQUIRE_LOW_MAPE}" \
   "${ADAPTIVE_FLAG[@]}" \
   "${OVR_ARR[@]}"
 TRAIN_EXIT=$?
@@ -120,7 +146,9 @@ python slurm/summarize_gpu_metrics.py \
   --job-id "${JOB_ID}" \
   --price-eur-kwh "${ELECTRICITY_PRICE_EUR_PER_KWH}" \
   --co2-kg-kwh "${GRID_CO2_KG_PER_KWH}" \
-  --pue "${PUE_FACTOR}"
+  --pue "${PUE_FACTOR}" \
+  --idle-power-w "${GPU_IDLE_POWER_W}" \
+  --metadata-json "${RUN_METADATA_JSON}"
 
 python slurm/summarize_gpu_metrics_phases.py \
   --gpu-csv "${GPU_CSV}" \
@@ -130,18 +158,8 @@ python slurm/summarize_gpu_metrics_phases.py \
   --job-codecarbon-json "${JOB_CC_JSON}" \
   --price-eur-kwh "${ELECTRICITY_PRICE_EUR_PER_KWH}" \
   --co2-kg-kwh "${GRID_CO2_KG_PER_KWH}" \
-  --pue "${PUE_FACTOR}"
-
-python slurm/summarize_gpu_metrics_epochs.py \
-  --epoch-timeline-jsonl "${EPOCH_TIMELINE_JSONL}" \
-  --output-json "${EPOCH_SUMMARY_JSON}" \
-  --job-id "${JOB_ID}" \
-  --price-eur-kwh "${ELECTRICITY_PRICE_EUR_PER_KWH}" \
-  --co2-kg-kwh "${GRID_CO2_KG_PER_KWH}" \
-  --controller-mode "${EARLY_STOP_CONTROLLER_MODE}" \
-  --comparison-strategy "${COMPARISON_STRATEGY}" \
-  --adaptive-monitor-metric "${ENERGY_ADAPTIVE_MONITOR_METRIC}" \
-  "${ADAPTIVE_FLAG[@]}"
+  --pue "${PUE_FACTOR}" \
+  --idle-power-w "${GPU_IDLE_POWER_W}"
 
 if [ "${MLFLOW_LOG_JOB_ENERGY}" = "1" ] || [ "${MLFLOW_LOG_JOB_ENERGY,,}" = "true" ] || [ "${MLFLOW_LOG_JOB_ENERGY,,}" = "yes" ]; then
   RUN_ID=""
@@ -169,6 +187,10 @@ python slurm/export_job_phase_metrics_prom.py \
 python slurm/export_job_epoch_metrics_prom.py \
   --summary-json "${EPOCH_SUMMARY_JSON}" \
   --output-prom "${EPOCH_PROM}"
+
+python slurm/export_study_metrics_prom.py \
+  --metrics-dir "${GPU_METRICS_DIR}" \
+  --output-prom "${PROM_TEXTFILE_DIR}/study.prom"
 
 echo "Done: ${GPU_SUMMARY_PHASES_JSON}"
 exit "${TRAIN_EXIT}"

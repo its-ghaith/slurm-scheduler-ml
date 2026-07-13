@@ -1,0 +1,17 @@
+# Direct research-runtime dependencies. The base image already provides CUDA, PyTorch and SLURM.
+numpy==1.26.4
+mlflow==3.10.1
+# MLflow 3.10 requires cryptography >=46; upgrade the base image's old pyOpenSSL in lockstep.
+cryptography==46.0.5
+pyOpenSSL==25.3.0
+ultralytics==8.3.203
+codecarbon==3.0.5
+opencv-python-headless==4.10.0.84
+hydra-core==1.3.2
+omegaconf==2.3.0
+pandas==2.3.3
+scikit-learn==1.7.2
+albumentations==2.0.8
+torchmetrics==1.8.2
+pycocotools==2.0.10
+tqdm==4.67.1

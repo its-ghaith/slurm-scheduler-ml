@@ -68,6 +68,11 @@ class CarpkLabelCreator(LabelCreator):
 	def create_labels(self):
 		label_paths = list((self.raw_path / "labels").glob("*.txt"))
 		for lab in label_paths:
+			json_path = self.xyxy_dir / lab.with_suffix(".json").name
+			yolo_path = self.xywh_dir / lab.with_suffix(".txt").name
+			dots_path = (self.dots_dir / lab.name).with_suffix(".json")
+			if json_path.exists() and yolo_path.exists() and dots_path.exists():
+				continue
 			img = (self.raw_path / "images" / lab.stem).with_suffix(".png")
 			try:
 				with Image.open(img) as im:
@@ -75,13 +80,10 @@ class CarpkLabelCreator(LabelCreator):
 			except (FileNotFoundError, PIL.UnidentifiedImageError):
 				logging.error(f"Skipping label creation {lab} as no associated image exists.")
 				continue
-			json_path = self.xyxy_dir / lab.with_suffix(".json").name
-			yolo_path = self.xywh_dir / lab.with_suffix(".txt").name
 			centers = self.write_bbox_labels(lab, json_path, yolo_path, w, h)
 			if centers is not None:
 				dots_data = {"count": len(centers), "center": centers}
-				savepath = (self.dots_dir / lab.name).with_suffix(".json")
-				with open(savepath, "w") as f:
+				with open(dots_path, "w") as f:
 					json.dump(dots_data, f, indent=4)
 
 	def write_bbox_labels(self, txt_path: Path, json_path: Path, yolo_label_path: Path, img_w, img_h) -> list:

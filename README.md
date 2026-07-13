@@ -3,6 +3,122 @@
 Dieser Branch (`Rancher-sulrm`) enthaelt nur die Rancher/Kubernetes-Umgebung.
 Ziel: reproduzierbarer End-to-End-Workflow fuer GPU-Training ueber SLURM mit Sichtbarkeit in MLflow und Grafana.
 
+## Wissenschaftliche CARPK-Vergleichsstudie (Version 2)
+
+Der finale Workflow trennt strikt zwischen **Validierung für Controllerentscheidungen** und **Testauswertung für die Ergebnisbewertung**. Jeder SLURM-Job trainiert genau einen Trainings-Seed; alle Strategien eines Szenarios verwenden denselben Split-Seed.
+
+### Versuchsdesign
+
+- Szenarien: `train128-scratch` und `train256-pretrained`
+- Trainings-Seeds: `0, 1, 2, 3, 4`
+- fester Split-Seed: `42`
+- Strategien: `full100`, metrisches Standard-Early-Stopping, Delta-MAPE, konservativer Uncertainty-Controller, Fixed30 und Fixed50
+- Umfang: `2 × 5 × 6 = 60` sequenzielle GPU-Jobs
+- Zielmetrik aller Controller: Validierungs-`mAP50-95`
+- Finale Qualitätsmetrik: einmalige Testauswertung von `best.pt`
+- Reihenfolge: pro Szenario und Seed deterministisch randomisiert
+- Cache-Policy: für alle Runs identisch, standardmäßig `ram`
+- Cooldown: standardmäßig 30 Sekunden zwischen Runs
+- Laufzeitinstallation: deaktiviert; fehlende Abhängigkeiten führen zum Abbruch
+
+Die vorab festgelegte Matrix steht in `results/stop-policy-study/run_matrix.csv`.
+
+### Strategien
+
+1. `full100`: vollständiges Training bis Epoche 100.
+2. `standard_early_stopping`: überwacht wie die eigenen Controller `mAP50-95` und nutzt ein explizites `min_delta`.
+3. `delta_mape_controller`: stoppt bei dauerhaft geringem geglättetem Qualitätsgewinn und geringem marginalem Gewinn pro Netto-Wh.
+4. `uncertainty_aware_controller`: darf erst nach Warm-up, Mindestqualität und gleichzeitig niedrigem MAPE stoppen; die Prognose nutzt 128 Bootstrap-Samples.
+5. `fixed_epoch_30`: feste 30-Epochen-Baseline.
+6. `fixed_epoch_50`: feste 50-Epochen-Baseline.
+
+### Faire Messung
+
+Die GPU-Leistung wird mit der Trapezregel integriert. Zusätzlich wird vor jedem Job die Idle-Leistung gemessen:
+
+```text
+gross GPU energy = integral(P_gpu(t) dt)
+idle energy      = P_idle * duration
+net GPU energy   = max(0, gross GPU energy - idle energy)
+MAPE             = delta(mAP50-95) / net epoch energy in Wh
+```
+
+Getrennt berichtet werden:
+
+- Epochenenergie
+- Trainings-/Phasenenergie
+- vollständige Jobenergie einschließlich Overhead
+- Brutto- und Netto-GPU-Energie
+- CodeCarbon-GPU- und CodeCarbon-Gesamtenergie
+
+Pro Job werden außerdem GPU-Modell, Treiber, Power-Limit, Takte, Temperatur, andere GPU-Prozesse, Kubernetes-/SLURM-Knoten, Paketversionen und die tatsächlich laufende Container-Image-ID gespeichert. Die Auswertung warnt, wenn Split-Seed, Cache, GPU oder Image-Digest zwischen Runs abweichen.
+
+### Studie planen und ausführen
+
+Nur Matrix erzeugen und prüfen, ohne Jobs zu starten:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\run-rancher-stop-policy-comparison.ps1 -PlanOnly
+```
+
+Vollständige Studie starten:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\run-rancher-stop-policy-comparison.ps1
+```
+
+Vor der vollständigen Ausführung muss das Runtime-Image alle Abhängigkeiten enthalten. Für die finale Studie sollte `GHCR_IMAGE` auf einen unveränderlichen `@sha256:...`-Digest zeigen; jeder Run zeichnet zusätzlich die reale `imageID` des Pods auf.
+
+Das Forschungsimage wird aus `Dockerfile.runtime` und `containers/runtime-requirements.txt` gebaut. Der GitHub-Workflow `.github/workflows/build-runtime-image.yml` veröffentlicht `research-v2`, einen Commit-Tag und zeigt anschließend den unveränderlichen Digest in der Workflow-Zusammenfassung. Dieser neue Digest muss vor der Studie in allen Runtime-Image-Feldern von `rancherConfigs/slurm-stack.yaml` eingetragen werden.
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\set-rancher-runtime-image.ps1 `
+  -Image "ghcr.io/its-ghaith/slurm-scheduler-ml/mlops-slurm-runtime@sha256:<64-hex-digest>" `
+  -Apply
+```
+
+### Delta-MAPE-Sensitivitätsanalyse
+
+Die Profile `aggressive`, `balanced` und `conservative` variieren Mindestepochen, Patience, Glättungsfenster, Delta- und MAPE-Schwelle:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\run-rancher-delta-mape-sensitivity.ps1 -PlanOnly
+powershell -ExecutionPolicy Bypass -File .\scripts\run-rancher-delta-mape-sensitivity.ps1
+```
+
+### Ergebnisse herunterladen und analysieren
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\analyze-rancher-stop-policy-study.ps1
+```
+
+Erzeugte Dateien unter `results/stop-policy-study/analysis`:
+
+- `runs.csv`: ein Datensatz pro Job
+- `aggregates.csv`: Mittelwert, Standardabweichung und 95%-Student-t-Konfidenzintervall pro Szenario/Strategie
+- `pue_sensitivity.csv`: Kosten-/CO₂-Sensitivität für PUE `1.0`, `1.2`, `1.4`
+- `study_summary.json`: maschinenlesbare Gesamtauswertung und Provenance-Prüfung
+- `pareto_front.png`: mAP50-95 gegen GPU-Energie
+
+Zusätzlich werden berechnet:
+
+- Accuracy Regret gegenüber `Full100` desselben Szenarios und Seeds
+- Energy-to-Target für Validierungs-mAP50-95 `50 %`, `60 %` und `68 %`
+- Accuracy pro Wh
+- Pareto-Dominanz
+
+### Grafana-Forschungsbereich
+
+Das Dashboard bietet Filter für Szenario, Strategie, Trainings-Seed und Job-ID. Neue Panels zeigen:
+
+- Test-mAP50-95 des besten Checkpoints
+- Accuracy Regret gegenüber Full100
+- Pareto-Dominanz
+- Brutto- und Netto-Jobenergie
+- Energy-to-Target bei 50 %, 60 % und 68 % mAP50-95
+
+`slurm/export_study_metrics_prom.py` berechnet diese Werte nach jedem Job über alle bis dahin vorhandenen Runs neu. Dadurch erscheinen auch Regret-Werte korrekt, wenn die randomisierte `Full100`-Baseline erst später abgeschlossen wird.
+
 ## Zielbild
 
 Pro SLURM-Job soll es geben:

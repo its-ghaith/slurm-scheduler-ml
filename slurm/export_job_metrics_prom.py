@@ -12,6 +12,10 @@ JOB_METRIC_KEYS = [
     "gpu_mem_used_avg_mb",
     "gpu_temp_avg_c",
     "gpu_energy_kwh",
+    "idle_power_w",
+    "idle_energy_kwh",
+    "net_gpu_energy_kwh",
+    "net_total_energy_kwh",
     "training_energy_kwh",
     "estimated_electricity_cost_eur",
     "estimated_co2_kg",
@@ -65,10 +69,16 @@ def write_atomic(path: Path, content: str):
 def format_job_metrics(summary):
     job_id = str(summary.get("job_id", "unknown"))
     label = prom_escape(job_id)
+    labels = (
+        f'job_id="{label}",scenario="{prom_escape(str(summary.get("scenario", "unspecified")))}",'
+        f'comparison_strategy="{prom_escape(str(summary.get("comparison_strategy", "unspecified")))}",'
+        f'training_seed="{prom_escape(str(summary.get("training_seed", 0)))}",'
+        f'split_seed="{prom_escape(str(summary.get("split_seed", 0)))}"'
+    )
     lines = [
         "# HELP slurm_job_info Static metadata for a SLURM job summary.",
         "# TYPE slurm_job_info gauge",
-        f'slurm_job_info{{job_id="{label}"}} 1',
+        f'slurm_job_info{{{labels}}} 1',
     ]
 
     for key in JOB_METRIC_KEYS:
@@ -76,7 +86,7 @@ def format_job_metrics(summary):
         metric_name = f"slurm_job_{key}"
         lines.append(f"# HELP {metric_name} Job metric derived from GPU summary JSON.")
         lines.append(f"# TYPE {metric_name} gauge")
-        lines.append(f'{metric_name}{{job_id="{label}"}} {value:.12g}')
+        lines.append(f'{metric_name}{{{labels}}} {value:.12g}')
 
     return "\n".join(lines) + "\n"
 

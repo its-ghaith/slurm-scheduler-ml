@@ -1,0 +1,14 @@
+FROM ghcr.io/its-ghaith/slurm-scheduler-ml/mlops-slurm-runtime@sha256:9860fb053abe12aa909e735d6e2854cb2cb156b814b1287037be5c946de2688a
+
+ARG DEBIAN_FRONTEND=noninteractive
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends libgl1 libglib2.0-0 \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY containers/runtime-requirements.txt /tmp/runtime-requirements.txt
+RUN python -m pip install --no-cache-dir --prefer-binary -r /tmp/runtime-requirements.txt \
+    && python -m pip check \
+    && python -c "import albumentations, codecarbon, cv2, hydra, mlflow, numpy, omegaconf, pandas, sklearn, torch, torchmetrics, ultralytics"
+
+LABEL org.opencontainers.image.title="CARPK SLURM research runtime" \
+      org.opencontainers.image.description="Pinned runtime for energy-adaptive YOLO training"

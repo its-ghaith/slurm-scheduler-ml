@@ -15,6 +15,7 @@ def parse_args():
     p.add_argument("--price-eur-kwh", type=float, default=0.30)
     p.add_argument("--co2-kg-kwh", type=float, default=0.4)
     p.add_argument("--pue", type=float, default=1.0)
+    p.add_argument("--idle-power-w", type=float, default=0.0)
     return p.parse_args()
 
 
@@ -68,11 +69,17 @@ def main():
             continue
         gpu_kwh = summarize_window(gpu_csv, rec["start"], rec["end"]).get("gpu_energy_kwh", 0.0)
         total_kwh = gpu_kwh * args.pue
+        duration_seconds = rec.get("duration_seconds", rec["end"] - rec["start"])
+        idle_kwh = max(0.0, args.idle_power_w) * duration_seconds / 3_600_000.0
+        net_gpu_kwh = max(0.0, gpu_kwh - idle_kwh)
         phase_metrics[phase] = add_phase_rollups(
             {
-                "duration_seconds": rec.get("duration_seconds", rec["end"] - rec["start"]),
+                "duration_seconds": duration_seconds,
                 "gpu_energy_kwh": gpu_kwh,
                 "total_energy_kwh": total_kwh,
+                "idle_energy_kwh": idle_kwh,
+                "net_gpu_energy_kwh": net_gpu_kwh,
+                "net_total_energy_kwh": net_gpu_kwh * args.pue,
                 "codecarbon_energy_kwh": rec.get("codecarbon_energy_kwh", 0.0),
                 "codecarbon_gpu_energy_kwh": rec.get("codecarbon_gpu_energy_kwh", 0.0),
                 "codecarbon_cpu_energy_kwh": rec.get("codecarbon_cpu_energy_kwh", 0.0),
@@ -108,6 +115,13 @@ def main():
         args.price_eur_kwh,
         args.co2_kg_kwh,
     )
+    other_phase["idle_energy_kwh"] = (
+        max(0.0, args.idle_power_w) * other_phase["duration_seconds"] / 3_600_000.0
+    )
+    other_phase["net_gpu_energy_kwh"] = max(
+        0.0, other_phase["gpu_energy_kwh"] - other_phase["idle_energy_kwh"]
+    )
+    other_phase["net_total_energy_kwh"] = other_phase["net_gpu_energy_kwh"] * args.pue
     other_phase["codecarbon_duration_seconds"] = max(
         0.0, to_float(codecarbon_job.get("duration_seconds")) - tracked_cc_duration
     )
