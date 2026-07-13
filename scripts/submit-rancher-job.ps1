@@ -76,6 +76,26 @@ function Get-KubectlOutput {
     return ($output | Out-String).Trim()
 }
 
+function Get-KubectlOutputWithRetry {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string[]]$Arguments,
+        [int]$MaxAttempts = 30,
+        [int]$DelaySeconds = 10
+    )
+
+    for ($attempt = 1; $attempt -le $MaxAttempts; $attempt++) {
+        try {
+            return Get-KubectlOutput -Arguments $Arguments
+        }
+        catch {
+            if ($attempt -eq $MaxAttempts) { throw }
+            Write-Warning "kubectl read failed (attempt $attempt/$MaxAttempts). Retrying in $DelaySeconds seconds: $($_.Exception.Message)"
+            Start-Sleep -Seconds $DelaySeconds
+        }
+    }
+}
+
 function Get-PodName {
     param(
         [Parameter(Mandatory = $true)]
@@ -571,7 +591,7 @@ $deadline = (Get-Date).AddSeconds($TimeoutSeconds)
 $finalState = $null
 
 while ((Get-Date) -lt $deadline) {
-    $jobInfo = Get-KubectlOutput -Arguments @(
+    $jobInfo = Get-KubectlOutputWithRetry -Arguments @(
         "--kubeconfig", $Kubeconfig,
         "-n", $Namespace,
         "exec", "deploy/slurmctld",
@@ -607,7 +627,7 @@ if ($finalState -ne "COMPLETED") {
 }
 
 $mlflowPython = "from mlflow.tracking import MlflowClient; client=MlflowClient('http://localhost:5000'); exp=client.get_experiment_by_name('$ExperimentName'); assert exp is not None, 'Experiment not found'; runs=client.search_runs([exp.experiment_id], order_by=['attributes.start_time DESC'], max_results=5); matching=[r for r in runs if r.data.tags.get('mlflow.runName') == 'job-energy-$jobId']; assert matching, 'Matching MLflow run not found'; r=matching[0]; print('run_id=' + r.info.run_id); print('status=' + r.info.status)"
-$mlflowCheck = Get-KubectlOutput -Arguments @(
+$mlflowCheck = Get-KubectlOutputWithRetry -Arguments @(
     "--kubeconfig", $Kubeconfig,
     "-n", $Namespace,
     "exec", "deploy/mlflow",

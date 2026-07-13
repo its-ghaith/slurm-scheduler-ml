@@ -15,6 +15,10 @@ param(
     [int]$IdleSampleSeconds = 10,
     [int]$CooldownSeconds = 30,
     [string]$PlanPath = "results/stop-policy-study/run_matrix.csv",
+    [ValidateRange(1, 2147483647)]
+    [int]$StartAtRun = 1,
+    [ValidateRange(1, 2147483647)]
+    [int]$EndAtRun = 2147483647,
     [switch]$PlanOnly,
     [switch]$ForceWorkspaceSync,
     [switch]$ForceDatasetSync
@@ -209,14 +213,25 @@ Write-Host "CARPK stop-policy study: $($plan.Count) sequential runs" -Foreground
 Write-Host "Scenarios: $($Scenarios -join ', '); training seeds: $($TrainingSeeds -join ', '); split seed: $SplitSeed" -ForegroundColor Green
 Write-Host "Run matrix: $PlanPath" -ForegroundColor Green
 
+if ($StartAtRun -gt $plan.Count) {
+    throw "StartAtRun $StartAtRun exceeds the $($plan.Count)-run study matrix."
+}
+if ($EndAtRun -lt $StartAtRun) {
+    throw "EndAtRun $EndAtRun must be greater than or equal to StartAtRun $StartAtRun."
+}
+
+$effectiveEndAtRun = [Math]::Min($EndAtRun, $plan.Count)
+$selectedPlan = @($plan[($StartAtRun - 1)..($effectiveEndAtRun - 1)])
+Write-Host "Selected matrix runs: $StartAtRun-$effectiveEndAtRun ($($selectedPlan.Count) runs)" -ForegroundColor Green
+
 if ($PlanOnly) {
-    $plan | Format-Table scenario, training_seed, run_order, strategy, epochs, controller -AutoSize
+    $selectedPlan | Format-Table scenario, training_seed, run_order, strategy, epochs, controller -AutoSize
     Write-Host "PlanOnly: no SLURM job was submitted." -ForegroundColor Yellow
     return
 }
 
 $firstRun = $true
-foreach ($row in $plan) {
+foreach ($row in $selectedPlan) {
     if (-not $firstRun -and $CooldownSeconds -gt 0) {
         Write-Host "Cooldown for $CooldownSeconds seconds before the next measured run ..." -ForegroundColor DarkCyan
         Start-Sleep -Seconds $CooldownSeconds
