@@ -1,0 +1,5 @@
+﻿"scenario","seed","stop_epoch","test_full","test_ctrl","test_regret_pp","job_energy_saving_pct","epoch_energy_saving_pct","time_saving_pct"
+"train128-scratch","10","100","38,548","38,548","0","-8,33","-2,11","-9,09"
+"train128-scratch","11","88","38,923","39,412","-0,488","-38,77","11,53","-41,19"
+"train256-pretrained","10","65","58,517","56,546","1,971","30,89","37,74","29,83"
+"train256-pretrained","11","72","58,735","58,356","0,379","23,2","27,21","22,55"

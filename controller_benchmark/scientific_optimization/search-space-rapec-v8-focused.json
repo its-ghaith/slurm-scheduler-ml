@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "method": "Sobol-ALE-informed constrained qLogNEHVI for RAPEC-v8",
+  "selection_basis": "The focused RAPEC-v8 Sobol-ALE analysis achieved reliable surrogate fidelity for energy saving, quality regret, stop epoch, and joint success. It identified these four parameters as the practical control levers; trend_window remains fixed because its overall total-order effects were small.",
+  "mandatory_parameters": [
+    "min_epochs_floor",
+    "utility_quantile",
+    "noise_multiplier",
+    "minimum_quality_floor"
+  ],
+  "fixed_parameters": {
+    "trend_window": 10
+  },
+  "parameters": {
+    "min_epochs_floor": {
+      "type": "int",
+      "low": 12,
+      "high": 97,
+      "safe": "high",
+      "aggressive": "low"
+    },
+    "utility_quantile": {
+      "type": "float",
+      "low": 0.01,
+      "high": 0.75,
+      "safe": "low",
+      "aggressive": "high"
+    },
+    "noise_multiplier": {
+      "type": "float",
+      "low": 0.25,
+      "high": 4.0,
+      "safe": "low",
+      "aggressive": "high"
+    },
+    "minimum_quality_floor": {
+      "type": "float",
+      "low": 0.0,
+      "high": 0.7,
+      "safe": "high",
+      "aggressive": "low"
+    }
+  }
+}

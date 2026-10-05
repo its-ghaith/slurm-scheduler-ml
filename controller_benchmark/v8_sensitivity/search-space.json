@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "method": "surrogate-assisted Sobol global sensitivity analysis",
+  "parameter_independence": "Bounds avoid controller-side clipping between sampled parameters.",
+  "parameters": {
+    "horizon_epochs": {"type": "int", "low": 3, "high": 15},
+    "min_fit_points": {"type": "int", "low": 4, "high": 12},
+    "patience": {"type": "int", "low": 1, "high": 8},
+    "trend_window": {"type": "int", "low": 4, "high": 30},
+    "bootstrap_samples": {"type": "categorical", "choices": [32, 64, 96, 128, 192]},
+    "knn_neighbors": {"type": "int", "low": 3, "high": 15},
+    "min_epochs_floor": {"type": "int", "low": 12, "high": 97},
+    "max_probability_gain_gt_threshold": {"type": "float", "low": 0.05, "high": 0.50},
+    "max_uncertainty_to_gain_ratio": {"type": "float", "low": 1.0, "high": 10.0},
+    "minimum_quality_floor": {"type": "float", "low": 0.0, "high": 0.70},
+    "noise_multiplier": {"type": "float", "low": 0.25, "high": 4.0},
+    "recent_gain_fraction": {"type": "float", "low": 0.05, "high": 0.90},
+    "remaining_room_fraction": {"type": "float", "low": 0.0005, "high": 0.10, "log": true},
+    "late_stage_relaxation": {"type": "float", "low": 0.0, "high": 0.95},
+    "min_meaningful_gain": {"type": "float", "low": 0.000001, "high": 0.005, "log": true},
+    "utility_quantile": {"type": "float", "low": 0.01, "high": 0.75},
+    "bayesian_window": {"type": "int", "low": 12, "high": 50},
+    "bayesian_samples": {"type": "categorical", "choices": [64, 128, 256, 512, 1024]},
+    "bayesian_min_observations": {"type": "int", "low": 4, "high": 12},
+    "bayesian_probability_limit": {"type": "float", "low": 0.05, "high": 0.75},
+    "bayesian_prior_strength": {"type": "float", "low": 0.05, "high": 5.0, "log": true},
+    "bayesian_prior_alpha": {"type": "float", "low": 1.05, "high": 10.0, "log": true},
+    "bayesian_confirmation_patience": {"type": "int", "low": 1, "high": 5}
+  }
+}
+

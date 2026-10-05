@@ -1,0 +1,71 @@
+{
+  "method": "Morris elementary-effects screening",
+  "selected_parameters": [
+    "model_window",
+    "minimum_calibration_points",
+    "calibration_window",
+    "quality_risk_alpha",
+    "quality_noise_quantile",
+    "evidence_decay",
+    "evidence_stop_probability"
+  ],
+  "evaluations": 128,
+  "parameters": [
+    {
+      "parameter": "evidence_decay",
+      "quality_mu_star": 0.0016282563610828834,
+      "quality_sigma": 0.004953517899362915,
+      "energy_mu_star": 0.0018509760629673354,
+      "energy_sigma": 0.005057831103425318,
+      "combined_score": 1.0
+    },
+    {
+      "parameter": "quality_risk_alpha",
+      "quality_mu_star": 0.0011868388765642532,
+      "quality_sigma": 0.004747355506257013,
+      "energy_mu_star": 0.0009247964728581664,
+      "energy_sigma": 0.0036991858914326658,
+      "combined_score": 0.7289017288253906
+    },
+    {
+      "parameter": "evidence_stop_probability",
+      "quality_mu_star": 0.0004414174845186302,
+      "quality_sigma": 0.001765669938074521,
+      "energy_mu_star": 0.000926179590109169,
+      "energy_sigma": 0.0037047183604366754,
+      "combined_score": 0.5003736183516023
+    },
+    {
+      "parameter": "quality_noise_quantile",
+      "quality_mu_star": 0.0004414174845186302,
+      "quality_sigma": 0.0017656699380745207,
+      "energy_mu_star": 0.0,
+      "energy_sigma": 0.0,
+      "combined_score": 0.27109827117460933
+    },
+    {
+      "parameter": "model_window",
+      "quality_mu_star": 0.0,
+      "quality_sigma": 0.0,
+      "energy_mu_star": 0.0,
+      "energy_sigma": 0.0,
+      "combined_score": 0.0
+    },
+    {
+      "parameter": "minimum_calibration_points",
+      "quality_mu_star": 0.0,
+      "quality_sigma": 0.0,
+      "energy_mu_star": 0.0,
+      "energy_sigma": 0.0,
+      "combined_score": 0.0
+    },
+    {
+      "parameter": "calibration_window",
+      "quality_mu_star": 0.0,
+      "quality_sigma": 0.0,
+      "energy_mu_star": 0.0,
+      "energy_sigma": 0.0,
+      "combined_score": 0.0
+    }
+  ]
+}

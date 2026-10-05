@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "method": "focused Sobol-ALE sensitivity analysis for the dominant RAPEC-v8 parameters",
+  "selection_basis": "The 23-parameter RAPEC-v8 Sobol-ALE analysis identified these parameters as the dominant drivers of energy saving, quality regret, and stop epoch.",
+  "fixed_parameters": "All RAPEC-v8 parameters not listed here are fixed to the rapec-v8 base configuration.",
+  "parameters": {
+    "min_epochs_floor": {"type": "int", "low": 12, "high": 97},
+    "noise_multiplier": {"type": "float", "low": 0.25, "high": 4.0},
+    "utility_quantile": {"type": "float", "low": 0.01, "high": 0.75},
+    "minimum_quality_floor": {"type": "float", "low": 0.0, "high": 0.70},
+    "trend_window": {"type": "int", "low": 4, "high": 30}
+  }
+}

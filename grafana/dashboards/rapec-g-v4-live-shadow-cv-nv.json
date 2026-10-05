@@ -1,0 +1,2967 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "id": 100,
+      "title": "1 · Scope and Global Operational Totals",
+      "description": "Ausschließlich Kennzahlen der ausgewählten 48-Fall-Thesis-Live-Shadow-Kampagne.",
+      "type": "row",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "id": 101,
+      "title": "Dashboard Scope and Interpretation",
+      "description": "Dokumentiert Datenquellen, Vergleichslogik und Grenzen des zentralen Thesis-Dashboards.",
+      "type": "text",
+      "gridPos": {
+        "x": 0,
+        "y": 1,
+        "w": 24,
+        "h": 4
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "**Campaign scope:** 48 real Full100 jobs. Each real job produces one independently represented virtual Standard-ES job and one virtual RAPEC-G-v4 job from the same online Live-Shadow trajectory: 48 real + 48 ES virtual + 48 RAPEC-G v4 virtual = 144 represented jobs. Physical system and phase totals count only the 48 real executions. Cost and CO₂ are derived from energy using fixed factors."
+      }
+    },
+    {
+      "id": 1,
+      "title": "Total Jobs",
+      "description": "144 repräsentierte Jobs bei vollständiger Kampagne: 48 reale Full100-, 48 virtuelle Standard-ES- und 48 virtuelle RAPEC-G-v4-Jobs.",
+      "type": "stat",
+      "gridPos": {
+        "x": 0,
+        "y": 5,
+        "w": 6,
+        "h": 5
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value_and_name",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "thesis_live_shadow_represented_jobs_total{benchmark_run_id=\"$benchmark_run_id\"}",
+          "legendFormat": "Total Jobs",
+          "instant": true,
+          "range": false,
+          "format": "table",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "SLURM Total GPU Energy",
+      "description": "Physisch gemessene GPU-Energie der 48 realen Full100-Jobs über den vollständigen Job-Lebenszyklus.",
+      "type": "stat",
+      "gridPos": {
+        "x": 6,
+        "y": 5,
+        "w": 6,
+        "h": 5
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "watth",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "decimals": 2
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value_and_name",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(slurm_job_gpu_energy_kwh{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",benchmark_stage=~\"$stages\",benchmark_case_id=~\"$cases\"}) * 1000",
+          "legendFormat": "SLURM Total GPU Energy",
+          "instant": true,
+          "range": false,
+          "format": "table",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "CodeCarbon Total GPU Energy",
+      "description": "Von CodeCarbon geschätzte GPU-Energie der 48 realen Full100-Jobs über den vollständigen Job-Lebenszyklus.",
+      "type": "stat",
+      "gridPos": {
+        "x": 12,
+        "y": 5,
+        "w": 6,
+        "h": 5
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "watth",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "decimals": 2
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value_and_name",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(slurm_job_codecarbon_job_total_gpu_energy_kwh{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",benchmark_stage=~\"$stages\",benchmark_case_id=~\"$cases\"}) * 1000",
+          "legendFormat": "CodeCarbon Total GPU Energy",
+          "instant": true,
+          "range": false,
+          "format": "table",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "CodeCarbon Total Energy",
+      "description": "CodeCarbon-Gesamtenergie der 48 realen Full100-Jobs einschließlich CPU- und RAM-Anteilen.",
+      "type": "stat",
+      "gridPos": {
+        "x": 18,
+        "y": 5,
+        "w": 6,
+        "h": 5
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "watth",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "decimals": 2
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value_and_name",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(slurm_job_codecarbon_job_total_energy_kwh{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",benchmark_stage=~\"$stages\",benchmark_case_id=~\"$cases\"}) * 1000",
+          "legendFormat": "CodeCarbon Total Energy",
+          "instant": true,
+          "range": false,
+          "format": "table",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "SLURM Total Cost",
+      "description": "Aus realer Full100-Jobenergie und konstantem Strompreis abgeleitete Kosten.",
+      "type": "stat",
+      "gridPos": {
+        "x": 0,
+        "y": 10,
+        "w": 6,
+        "h": 5
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "currencyEUR",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "decimals": 2
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value_and_name",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(slurm_job_estimated_electricity_cost_eur{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",benchmark_stage=~\"$stages\",benchmark_case_id=~\"$cases\"})",
+          "legendFormat": "SLURM Total Cost",
+          "instant": true,
+          "range": false,
+          "format": "table",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "CodeCarbon Total Cost",
+      "description": "Aus CodeCarbon-Gesamtenergie und konstantem Strompreis abgeleitete Kosten.",
+      "type": "stat",
+      "gridPos": {
+        "x": 6,
+        "y": 10,
+        "w": 6,
+        "h": 5
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "currencyEUR",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "decimals": 2
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value_and_name",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(slurm_job_codecarbon_estimated_electricity_cost_eur{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",benchmark_stage=~\"$stages\",benchmark_case_id=~\"$cases\"})",
+          "legendFormat": "CodeCarbon Total Cost",
+          "instant": true,
+          "range": false,
+          "format": "table",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "title": "SLURM Total CO₂",
+      "description": "Aus realer Full100-Jobenergie und konstantem Emissionsfaktor abgeleitete CO₂-Masse.",
+      "type": "stat",
+      "gridPos": {
+        "x": 12,
+        "y": 10,
+        "w": 6,
+        "h": 5
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "kg",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "decimals": 2
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value_and_name",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(slurm_job_estimated_co2_kg{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",benchmark_stage=~\"$stages\",benchmark_case_id=~\"$cases\"})",
+          "legendFormat": "SLURM Total CO₂",
+          "instant": true,
+          "range": false,
+          "format": "table",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "title": "CodeCarbon Total CO₂",
+      "description": "Aus CodeCarbon-Gesamtenergie und konstantem Emissionsfaktor abgeleitete CO₂-Masse.",
+      "type": "stat",
+      "gridPos": {
+        "x": 18,
+        "y": 10,
+        "w": 6,
+        "h": 5
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "kg",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "decimals": 2
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value_and_name",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(slurm_job_codecarbon_estimated_co2_kg{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",benchmark_stage=~\"$stages\",benchmark_case_id=~\"$cases\"})",
+          "legendFormat": "CodeCarbon Total CO₂",
+          "instant": true,
+          "range": false,
+          "format": "table",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "id": 200,
+      "title": "2 · Measurement Agreement, Phases, and Epoch Behaviour",
+      "description": "Vergleicht die beiden Messmethoden innerhalb derselben 48 realen Full100-Jobs.",
+      "type": "row",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 15,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "id": 201,
+      "title": "Phase Duration by Job (s)",
+      "description": "Vier klar benannte Lebenszyklusgruppen je realem Full100-Job. Die Achse verwendet die Drei-Zeichen-Kürzel; vollständiger Fallname und Job-ID stehen im Tooltip.",
+      "type": "volkovlabs-echarts-panel",
+      "gridPos": {
+        "x": 0,
+        "y": 16,
+        "w": 24,
+        "h": 9
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "renderer": "svg",
+        "followTheme": true,
+        "getOption": "\nconst frames = context?.panel?.data?.series || [];\nconst arr = value => {\n  if (value == null) return [];\n  if (typeof value.toArray === 'function') return value.toArray();\n  if (value.buffer) return Array.from(value.buffer);\n  return Array.isArray(value) ? value : [];\n};\nconst fieldsOf = frame => (frame.fields && frame.fields.length) ? frame.fields : (frame.schema?.fields || []);\nconst numberFieldIndex = frame => {\n  const fields = fieldsOf(frame);\n  const index = fields.findIndex(field => field.type === 'number' || field.name === 'Value');\n  return index >= 0 ? index : (fields.length > 1 ? 1 : -1);\n};\nconst frameValue = frame => {\n  const index = numberFieldIndex(frame);\n  if (index < 0) return null;\n  const local = frame.fields || [];\n  const values = local[index]?.values != null ? arr(local[index].values) : arr(frame.data?.values?.[index]);\n  return values.length ? Number(values[values.length - 1]) : null;\n};\nconst frameLabels = frame => fieldsOf(frame)[numberFieldIndex(frame)]?.labels || {};\nconst frameRef = frame => frame.refId || frame.schema?.refId || null;\n\nconst caseCatalog = {\"carpk-aerial-vehicle\": {\"code\": \"CRS\", \"fullName\": \"CARPK — Scratch\", \"order\": 1}, \"vedai-aerial-vehicle\": {\"code\": \"VDS\", \"fullName\": \"VEDAI 512 — Scratch\", \"order\": 2}, \"visdrone-aerial-vehicle\": {\"code\": \"VSS\", \"fullName\": \"VisDrone2019-DET Vehicles — Scratch\", \"order\": 3}, \"cifar10-classification\": {\"code\": \"C1S\", \"fullName\": \"CIFAR-10 — Scratch\", \"order\": 4}, \"cifar100-classification\": {\"code\": \"C0S\", \"fullName\": \"CIFAR-100 — Scratch\", \"order\": 5}, \"tiny-imagenet-classification\": {\"code\": \"TIS\", \"fullName\": \"Tiny ImageNet 200 — Scratch\", \"order\": 6}, \"oxford-pet-segmentation\": {\"code\": \"OXS\", \"fullName\": \"Oxford-IIIT Pet — Scratch\", \"order\": 7}, \"pascal-voc2012-segmentation\": {\"code\": \"PVS\", \"fullName\": \"Pascal VOC 2012 — Scratch\", \"order\": 8}, \"uavid-segmentation\": {\"code\": \"UAS\", \"fullName\": \"UAVid 2020 — Scratch\", \"order\": 9}, \"carpk-aerial-vehicle-pretrained\": {\"code\": \"CRP\", \"fullName\": \"CARPK — Pretrained\", \"order\": 10}, \"vedai-aerial-vehicle-pretrained\": {\"code\": \"VDP\", \"fullName\": \"VEDAI 512 — Pretrained\", \"order\": 11}, \"visdrone-aerial-vehicle-pretrained\": {\"code\": \"VSP\", \"fullName\": \"VisDrone2019-DET Vehicles — Pretrained\", \"order\": 12}, \"cifar10-classification-pretrained\": {\"code\": \"C1P\", \"fullName\": \"CIFAR-10 — Pretrained\", \"order\": 13}, \"cifar100-classification-pretrained\": {\"code\": \"C0P\", \"fullName\": \"CIFAR-100 — Pretrained\", \"order\": 14}, \"tiny-imagenet-classification-pretrained\": {\"code\": \"TIP\", \"fullName\": \"Tiny ImageNet 200 — Pretrained\", \"order\": 15}, \"oxford-pet-segmentation-resnet18-unet-pretrained\": {\"code\": \"OXP\", \"fullName\": \"Oxford-IIIT Pet — Pretrained\", \"order\": 16}, \"pascal-voc2012-segmentation-resnet18-unet-pretrained\": {\"code\": \"PVP\", \"fullName\": \"Pascal VOC 2012 — Pretrained\", \"order\": 17}, \"uavid-segmentation-resnet18-unet-pretrained\": {\"code\": \"UAP\", \"fullName\": \"UAVid 2020 — Pretrained\", \"order\": 18}, \"go-emotions-text-classification-scratch\": {\"code\": \"GES\", \"fullName\": \"GoEmotions — Scratch\", \"order\": 19}, \"go-emotions-text-classification-pretrained\": {\"code\": \"GEP\", \"fullName\": \"GoEmotions — Pretrained\", \"order\": 20}, \"multi-eurlex-text-classification-scratch\": {\"code\": \"MES\", \"fullName\": \"MultiEURLEX — Scratch\", \"order\": 21}, \"multi-eurlex-text-classification-pretrained\": {\"code\": \"MEP\", \"fullName\": \"MultiEURLEX — Pretrained\", \"order\": 22}, \"marc-multilingual-text-classification-scratch\": {\"code\": \"MRS\", \"fullName\": \"MARC Multilingual — Scratch\", \"order\": 23}, \"marc-multilingual-text-classification-pretrained\": {\"code\": \"MRP\", \"fullName\": \"MARC Multilingual — Pretrained\", \"order\": 24}, \"wikitext103-language-modeling-scratch\": {\"code\": \"WTS\", \"fullName\": \"WikiText-103 — Scratch\", \"order\": 25}, \"wikitext103-language-modeling-pretrained\": {\"code\": \"WTP\", \"fullName\": \"WikiText-103 — Pretrained\", \"order\": 26}, \"lm1b-shard-language-modeling-scratch\": {\"code\": \"L1S\", \"fullName\": \"One Billion Word Shard — Scratch\", \"order\": 27}, \"lm1b-shard-language-modeling-pretrained\": {\"code\": \"L1P\", \"fullName\": \"One Billion Word Shard — Pretrained\", \"order\": 28}, \"c4-en-shard-language-modeling-scratch\": {\"code\": \"C4S\", \"fullName\": \"C4 English Shard — Scratch\", \"order\": 29}, \"c4-en-shard-language-modeling-pretrained\": {\"code\": \"C4P\", \"fullName\": \"C4 English Shard — Pretrained\", \"order\": 30}, \"traffic-hourly-time-series-forecasting-scratch\": {\"code\": \"TRS\", \"fullName\": \"Traffic Hourly — Scratch\", \"order\": 31}, \"traffic-hourly-time-series-forecasting-pretrained\": {\"code\": \"TRP\", \"fullName\": \"Traffic Hourly — Pretrained\", \"order\": 32}, \"electricity-hourly-time-series-forecasting-scratch\": {\"code\": \"ELS\", \"fullName\": \"Electricity Hourly — Scratch\", \"order\": 33}, \"electricity-hourly-time-series-forecasting-pretrained\": {\"code\": \"ELP\", \"fullName\": \"Electricity Hourly — Pretrained\", \"order\": 34}, \"solar-10min-time-series-forecasting-scratch\": {\"code\": \"SOS\", \"fullName\": \"Solar 10-Minute — Scratch\", \"order\": 35}, \"solar-10min-time-series-forecasting-pretrained\": {\"code\": \"SOP\", \"fullName\": \"Solar 10-Minute — Pretrained\", \"order\": 36}, \"movielens25m-recommendation-scratch\": {\"code\": \"MLS\", \"fullName\": \"MovieLens 25M — Scratch\", \"order\": 37}, \"movielens25m-recommendation-pretrained\": {\"code\": \"MLP\", \"fullName\": \"MovieLens 25M — Pretrained\", \"order\": 38}, \"amazon-books-5core-recommendation-scratch\": {\"code\": \"ABS\", \"fullName\": \"Amazon Books 5-core — Scratch\", \"order\": 39}, \"amazon-books-5core-recommendation-pretrained\": {\"code\": \"ABP\", \"fullName\": \"Amazon Books 5-core — Pretrained\", \"order\": 40}, \"amazon-electronics-5core-recommendation-scratch\": {\"code\": \"AES\", \"fullName\": \"Amazon Electronics 5-core — Scratch\", \"order\": 41}, \"amazon-electronics-5core-recommendation-pretrained\": {\"code\": \"AEP\", \"fullName\": \"Amazon Electronics 5-core — Pretrained\", \"order\": 42}, \"minatar-breakout-reinforcement-learning-scratch\": {\"code\": \"BRS\", \"fullName\": \"MinAtar Breakout — Scratch\", \"order\": 43}, \"minatar-breakout-reinforcement-learning-pretrained\": {\"code\": \"BRP\", \"fullName\": \"MinAtar Breakout — Pretrained\", \"order\": 44}, \"minatar-seaquest-reinforcement-learning-scratch\": {\"code\": \"SQS\", \"fullName\": \"MinAtar Seaquest — Scratch\", \"order\": 45}, \"minatar-seaquest-reinforcement-learning-pretrained\": {\"code\": \"SQP\", \"fullName\": \"MinAtar Seaquest — Pretrained\", \"order\": 46}, \"minatar-asterix-reinforcement-learning-scratch\": {\"code\": \"ATS\", \"fullName\": \"MinAtar Asterix — Scratch\", \"order\": 47}, \"minatar-asterix-reinforcement-learning-pretrained\": {\"code\": \"ATP\", \"fullName\": \"MinAtar Asterix — Pretrained\", \"order\": 48}};\nconst caseMeta = caseId => caseCatalog[caseId] || {code:String(caseId||'UNK').slice(0,3).toUpperCase(),fullName:String(caseId||'Unknown'),order:999};\nconst caseColor = order => `hsl(${((Number(order)||1)-1)*137.508%360}, 68%, 48%)`;\n\nconst specs=[['A','Preprocessing & Initialization','#4C78A8'],['B','Training','#F58518'],['C','Finalization & Evaluation','#54A24B'],['D','Other Instrumented Work','#B279A2']];\nconst rows=new Map();\nframes.forEach(frame=>{const labels=frameLabels(frame),value=frameValue(frame),refId=frameRef(frame),caseId=labels.benchmark_case_id;if(!caseId||!refId||!Number.isFinite(value))return;const meta=caseMeta(caseId),row=rows.get(caseId)||{case_id:caseId,jobId:labels.job_id,...meta};row[refId]=value;rows.set(caseId,row);});\nconst data=Array.from(rows.values()).sort((a,b)=>a.order-b.order);\nconst series=specs.map(([ref,name,color])=>({name,type:'bar',stack:'duration',itemStyle:{color},data:data.map(row=>({value:row[ref],code:row.code,fullName:row.fullName,case_id:row.case_id,jobId:row.jobId,phase:name}))}));\nreturn {animation:false,tooltip:{trigger:'item',formatter:p=>`<b>${p.data.code} — ${p.data.fullName}</b><br/>Job ${p.data.jobId}<br/>Phase: ${p.data.phase}<br/>Duration: ${Number(p.data.value).toFixed(3)} s`},legend:{type:'scroll',bottom:0},grid:{left:80,right:25,top:35,bottom:90},xAxis:{type:'category',data:data.map(row=>row.code),axisLabel:{rotate:45}},yAxis:{type:'value',name:'Duration (s)',nameLocation:'middle',nameGap:60,min:0},series};\n"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "slurm_job_phase_duration_seconds{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",benchmark_stage=~\"$stages\",benchmark_case_id=~\"$cases\",phase=\"preprocessing_initialization\"}",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        },
+        {
+          "refId": "B",
+          "expr": "slurm_job_phase_duration_seconds{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",benchmark_stage=~\"$stages\",benchmark_case_id=~\"$cases\",phase=\"training\"}",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        },
+        {
+          "refId": "C",
+          "expr": "slurm_job_phase_duration_seconds{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",benchmark_stage=~\"$stages\",benchmark_case_id=~\"$cases\",phase=\"finalization_evaluation\"}",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        },
+        {
+          "refId": "D",
+          "expr": "slurm_job_phase_duration_seconds{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",benchmark_stage=~\"$stages\",benchmark_case_id=~\"$cases\",phase=\"other\"}",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "id": 202,
+      "title": "SLURM Phase: Energy, Quality, and Epoch Count",
+      "description": "SLURM-GPU-Energie der ausgewählten Lebenszyklusphase, beste normalisierte Full100-Qualität und Epochenzahl. Kürzel stehen auf der Achse; vollständiger Fallname und Job-ID im Tooltip.",
+      "type": "volkovlabs-echarts-panel",
+      "gridPos": {
+        "x": 0,
+        "y": 25,
+        "w": 12,
+        "h": 14
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "renderer": "svg",
+        "followTheme": true,
+        "getOption": "\nconst frames = context?.panel?.data?.series || [];\nconst arr = value => {\n  if (value == null) return [];\n  if (typeof value.toArray === 'function') return value.toArray();\n  if (value.buffer) return Array.from(value.buffer);\n  return Array.isArray(value) ? value : [];\n};\nconst fieldsOf = frame => (frame.fields && frame.fields.length) ? frame.fields : (frame.schema?.fields || []);\nconst numberFieldIndex = frame => {\n  const fields = fieldsOf(frame);\n  const index = fields.findIndex(field => field.type === 'number' || field.name === 'Value');\n  return index >= 0 ? index : (fields.length > 1 ? 1 : -1);\n};\nconst frameValue = frame => {\n  const index = numberFieldIndex(frame);\n  if (index < 0) return null;\n  const local = frame.fields || [];\n  const values = local[index]?.values != null ? arr(local[index].values) : arr(frame.data?.values?.[index]);\n  return values.length ? Number(values[values.length - 1]) : null;\n};\nconst frameLabels = frame => fieldsOf(frame)[numberFieldIndex(frame)]?.labels || {};\nconst frameRef = frame => frame.refId || frame.schema?.refId || null;\n\nconst caseCatalog = {\"carpk-aerial-vehicle\": {\"code\": \"CRS\", \"fullName\": \"CARPK — Scratch\", \"order\": 1}, \"vedai-aerial-vehicle\": {\"code\": \"VDS\", \"fullName\": \"VEDAI 512 — Scratch\", \"order\": 2}, \"visdrone-aerial-vehicle\": {\"code\": \"VSS\", \"fullName\": \"VisDrone2019-DET Vehicles — Scratch\", \"order\": 3}, \"cifar10-classification\": {\"code\": \"C1S\", \"fullName\": \"CIFAR-10 — Scratch\", \"order\": 4}, \"cifar100-classification\": {\"code\": \"C0S\", \"fullName\": \"CIFAR-100 — Scratch\", \"order\": 5}, \"tiny-imagenet-classification\": {\"code\": \"TIS\", \"fullName\": \"Tiny ImageNet 200 — Scratch\", \"order\": 6}, \"oxford-pet-segmentation\": {\"code\": \"OXS\", \"fullName\": \"Oxford-IIIT Pet — Scratch\", \"order\": 7}, \"pascal-voc2012-segmentation\": {\"code\": \"PVS\", \"fullName\": \"Pascal VOC 2012 — Scratch\", \"order\": 8}, \"uavid-segmentation\": {\"code\": \"UAS\", \"fullName\": \"UAVid 2020 — Scratch\", \"order\": 9}, \"carpk-aerial-vehicle-pretrained\": {\"code\": \"CRP\", \"fullName\": \"CARPK — Pretrained\", \"order\": 10}, \"vedai-aerial-vehicle-pretrained\": {\"code\": \"VDP\", \"fullName\": \"VEDAI 512 — Pretrained\", \"order\": 11}, \"visdrone-aerial-vehicle-pretrained\": {\"code\": \"VSP\", \"fullName\": \"VisDrone2019-DET Vehicles — Pretrained\", \"order\": 12}, \"cifar10-classification-pretrained\": {\"code\": \"C1P\", \"fullName\": \"CIFAR-10 — Pretrained\", \"order\": 13}, \"cifar100-classification-pretrained\": {\"code\": \"C0P\", \"fullName\": \"CIFAR-100 — Pretrained\", \"order\": 14}, \"tiny-imagenet-classification-pretrained\": {\"code\": \"TIP\", \"fullName\": \"Tiny ImageNet 200 — Pretrained\", \"order\": 15}, \"oxford-pet-segmentation-resnet18-unet-pretrained\": {\"code\": \"OXP\", \"fullName\": \"Oxford-IIIT Pet — Pretrained\", \"order\": 16}, \"pascal-voc2012-segmentation-resnet18-unet-pretrained\": {\"code\": \"PVP\", \"fullName\": \"Pascal VOC 2012 — Pretrained\", \"order\": 17}, \"uavid-segmentation-resnet18-unet-pretrained\": {\"code\": \"UAP\", \"fullName\": \"UAVid 2020 — Pretrained\", \"order\": 18}, \"go-emotions-text-classification-scratch\": {\"code\": \"GES\", \"fullName\": \"GoEmotions — Scratch\", \"order\": 19}, \"go-emotions-text-classification-pretrained\": {\"code\": \"GEP\", \"fullName\": \"GoEmotions — Pretrained\", \"order\": 20}, \"multi-eurlex-text-classification-scratch\": {\"code\": \"MES\", \"fullName\": \"MultiEURLEX — Scratch\", \"order\": 21}, \"multi-eurlex-text-classification-pretrained\": {\"code\": \"MEP\", \"fullName\": \"MultiEURLEX — Pretrained\", \"order\": 22}, \"marc-multilingual-text-classification-scratch\": {\"code\": \"MRS\", \"fullName\": \"MARC Multilingual — Scratch\", \"order\": 23}, \"marc-multilingual-text-classification-pretrained\": {\"code\": \"MRP\", \"fullName\": \"MARC Multilingual — Pretrained\", \"order\": 24}, \"wikitext103-language-modeling-scratch\": {\"code\": \"WTS\", \"fullName\": \"WikiText-103 — Scratch\", \"order\": 25}, \"wikitext103-language-modeling-pretrained\": {\"code\": \"WTP\", \"fullName\": \"WikiText-103 — Pretrained\", \"order\": 26}, \"lm1b-shard-language-modeling-scratch\": {\"code\": \"L1S\", \"fullName\": \"One Billion Word Shard — Scratch\", \"order\": 27}, \"lm1b-shard-language-modeling-pretrained\": {\"code\": \"L1P\", \"fullName\": \"One Billion Word Shard — Pretrained\", \"order\": 28}, \"c4-en-shard-language-modeling-scratch\": {\"code\": \"C4S\", \"fullName\": \"C4 English Shard — Scratch\", \"order\": 29}, \"c4-en-shard-language-modeling-pretrained\": {\"code\": \"C4P\", \"fullName\": \"C4 English Shard — Pretrained\", \"order\": 30}, \"traffic-hourly-time-series-forecasting-scratch\": {\"code\": \"TRS\", \"fullName\": \"Traffic Hourly — Scratch\", \"order\": 31}, \"traffic-hourly-time-series-forecasting-pretrained\": {\"code\": \"TRP\", \"fullName\": \"Traffic Hourly — Pretrained\", \"order\": 32}, \"electricity-hourly-time-series-forecasting-scratch\": {\"code\": \"ELS\", \"fullName\": \"Electricity Hourly — Scratch\", \"order\": 33}, \"electricity-hourly-time-series-forecasting-pretrained\": {\"code\": \"ELP\", \"fullName\": \"Electricity Hourly — Pretrained\", \"order\": 34}, \"solar-10min-time-series-forecasting-scratch\": {\"code\": \"SOS\", \"fullName\": \"Solar 10-Minute — Scratch\", \"order\": 35}, \"solar-10min-time-series-forecasting-pretrained\": {\"code\": \"SOP\", \"fullName\": \"Solar 10-Minute — Pretrained\", \"order\": 36}, \"movielens25m-recommendation-scratch\": {\"code\": \"MLS\", \"fullName\": \"MovieLens 25M — Scratch\", \"order\": 37}, \"movielens25m-recommendation-pretrained\": {\"code\": \"MLP\", \"fullName\": \"MovieLens 25M — Pretrained\", \"order\": 38}, \"amazon-books-5core-recommendation-scratch\": {\"code\": \"ABS\", \"fullName\": \"Amazon Books 5-core — Scratch\", \"order\": 39}, \"amazon-books-5core-recommendation-pretrained\": {\"code\": \"ABP\", \"fullName\": \"Amazon Books 5-core — Pretrained\", \"order\": 40}, \"amazon-electronics-5core-recommendation-scratch\": {\"code\": \"AES\", \"fullName\": \"Amazon Electronics 5-core — Scratch\", \"order\": 41}, \"amazon-electronics-5core-recommendation-pretrained\": {\"code\": \"AEP\", \"fullName\": \"Amazon Electronics 5-core — Pretrained\", \"order\": 42}, \"minatar-breakout-reinforcement-learning-scratch\": {\"code\": \"BRS\", \"fullName\": \"MinAtar Breakout — Scratch\", \"order\": 43}, \"minatar-breakout-reinforcement-learning-pretrained\": {\"code\": \"BRP\", \"fullName\": \"MinAtar Breakout — Pretrained\", \"order\": 44}, \"minatar-seaquest-reinforcement-learning-scratch\": {\"code\": \"SQS\", \"fullName\": \"MinAtar Seaquest — Scratch\", \"order\": 45}, \"minatar-seaquest-reinforcement-learning-pretrained\": {\"code\": \"SQP\", \"fullName\": \"MinAtar Seaquest — Pretrained\", \"order\": 46}, \"minatar-asterix-reinforcement-learning-scratch\": {\"code\": \"ATS\", \"fullName\": \"MinAtar Asterix — Scratch\", \"order\": 47}, \"minatar-asterix-reinforcement-learning-pretrained\": {\"code\": \"ATP\", \"fullName\": \"MinAtar Asterix — Pretrained\", \"order\": 48}};\nconst caseMeta = caseId => caseCatalog[caseId] || {code:String(caseId||'UNK').slice(0,3).toUpperCase(),fullName:String(caseId||'Unknown'),order:999};\nconst caseColor = order => `hsl(${((Number(order)||1)-1)*137.508%360}, 68%, 48%)`;\n\nconst rows = new Map();\nframes.forEach(frame => {\n  const labels = frameLabels(frame), value = frameValue(frame);\n  if (!Number.isFinite(value) || !labels.job_id) return;\n  const key = labels.job_id;\n  const caseId=labels.benchmark_case_id, meta=caseMeta(caseId);\n  const row = rows.get(key) || {job: `Job ${key}`, id: Number(key),case_id:caseId,...meta};\n  row[frameRef(frame)] = value;\n  rows.set(key, row);\n});\nconst data = Array.from(rows.values()).sort((a,b) => a.id - b.id);\nreturn {\n  animation: false,\n  tooltip: {trigger:'axis',formatter:items=>{const d=items[0]?.data||{};return `<b>${d.code} — ${d.fullName}</b><br/>${d.job}<br/>`+items.map(item=>`${item.marker}${item.seriesName}: ${Number(item.value).toFixed(3)}`).join('<br/>');}},\n  legend: {bottom: 0},\n  grid: {left:75,right:80,top:45,bottom:85},\n  xAxis: {type:'category',data:data.map(row=>row.code),axisLabel:{rotate:45}},\n  yAxis: [\n    {type: 'value', name: 'GPU energy (Wh)', nameLocation: 'middle', nameGap: 52, min: 0},\n    {type: 'value', name: 'Quality (%)', min: 0, max: 100},\n    {type: 'value', name: 'Epochs', offset: 55, min: 0}\n  ],\n  series: [\n    {name:'GPU energy (Wh)',type:'bar',yAxisIndex:0,data:data.map(row=>({value:row.A,...row})),itemStyle:{color:'#2E8B57'}},\n    {name:'Quality (%)',type:'line',yAxisIndex:1,data:data.map(row=>({value:row.B,...row})),symbolSize:7,itemStyle:{color:'#7A3FB0'}},\n    {name:'Epoch count',type:'line',yAxisIndex:2,data:data.map(row=>({value:row.C,...row})),symbolSize:7,lineStyle:{type:'dashed'},itemStyle:{color:'#5E5E5E'}}\n  ]\n};\n"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "slurm_job_phase_gpu_energy_kwh{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",benchmark_stage=~\"$stages\",benchmark_case_id=~\"$cases\",phase=\"$slurm_phase\"} * 1000",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        },
+        {
+          "refId": "B",
+          "expr": "max by (job_id) (slurm_job_epoch_quality_score{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",benchmark_stage=~\"$stages\",benchmark_case_id=~\"$cases\"}) * 100",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        },
+        {
+          "refId": "C",
+          "expr": "count by (job_id) (slurm_job_epoch_gpu_energy_kwh{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",benchmark_stage=~\"$stages\",benchmark_case_id=~\"$cases\"})",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "id": 203,
+      "title": "CodeCarbon Phase: Energy, Quality, and Epoch Count",
+      "description": "CodeCarbon-GPU-Energie der ausgewählten Lebenszyklusphase, beste normalisierte Full100-Qualität und Epochenzahl. Kürzel stehen auf der Achse; vollständiger Fallname und Job-ID im Tooltip.",
+      "type": "volkovlabs-echarts-panel",
+      "gridPos": {
+        "x": 12,
+        "y": 25,
+        "w": 12,
+        "h": 14
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "renderer": "svg",
+        "followTheme": true,
+        "getOption": "\nconst frames = context?.panel?.data?.series || [];\nconst arr = value => {\n  if (value == null) return [];\n  if (typeof value.toArray === 'function') return value.toArray();\n  if (value.buffer) return Array.from(value.buffer);\n  return Array.isArray(value) ? value : [];\n};\nconst fieldsOf = frame => (frame.fields && frame.fields.length) ? frame.fields : (frame.schema?.fields || []);\nconst numberFieldIndex = frame => {\n  const fields = fieldsOf(frame);\n  const index = fields.findIndex(field => field.type === 'number' || field.name === 'Value');\n  return index >= 0 ? index : (fields.length > 1 ? 1 : -1);\n};\nconst frameValue = frame => {\n  const index = numberFieldIndex(frame);\n  if (index < 0) return null;\n  const local = frame.fields || [];\n  const values = local[index]?.values != null ? arr(local[index].values) : arr(frame.data?.values?.[index]);\n  return values.length ? Number(values[values.length - 1]) : null;\n};\nconst frameLabels = frame => fieldsOf(frame)[numberFieldIndex(frame)]?.labels || {};\nconst frameRef = frame => frame.refId || frame.schema?.refId || null;\n\nconst caseCatalog = {\"carpk-aerial-vehicle\": {\"code\": \"CRS\", \"fullName\": \"CARPK — Scratch\", \"order\": 1}, \"vedai-aerial-vehicle\": {\"code\": \"VDS\", \"fullName\": \"VEDAI 512 — Scratch\", \"order\": 2}, \"visdrone-aerial-vehicle\": {\"code\": \"VSS\", \"fullName\": \"VisDrone2019-DET Vehicles — Scratch\", \"order\": 3}, \"cifar10-classification\": {\"code\": \"C1S\", \"fullName\": \"CIFAR-10 — Scratch\", \"order\": 4}, \"cifar100-classification\": {\"code\": \"C0S\", \"fullName\": \"CIFAR-100 — Scratch\", \"order\": 5}, \"tiny-imagenet-classification\": {\"code\": \"TIS\", \"fullName\": \"Tiny ImageNet 200 — Scratch\", \"order\": 6}, \"oxford-pet-segmentation\": {\"code\": \"OXS\", \"fullName\": \"Oxford-IIIT Pet — Scratch\", \"order\": 7}, \"pascal-voc2012-segmentation\": {\"code\": \"PVS\", \"fullName\": \"Pascal VOC 2012 — Scratch\", \"order\": 8}, \"uavid-segmentation\": {\"code\": \"UAS\", \"fullName\": \"UAVid 2020 — Scratch\", \"order\": 9}, \"carpk-aerial-vehicle-pretrained\": {\"code\": \"CRP\", \"fullName\": \"CARPK — Pretrained\", \"order\": 10}, \"vedai-aerial-vehicle-pretrained\": {\"code\": \"VDP\", \"fullName\": \"VEDAI 512 — Pretrained\", \"order\": 11}, \"visdrone-aerial-vehicle-pretrained\": {\"code\": \"VSP\", \"fullName\": \"VisDrone2019-DET Vehicles — Pretrained\", \"order\": 12}, \"cifar10-classification-pretrained\": {\"code\": \"C1P\", \"fullName\": \"CIFAR-10 — Pretrained\", \"order\": 13}, \"cifar100-classification-pretrained\": {\"code\": \"C0P\", \"fullName\": \"CIFAR-100 — Pretrained\", \"order\": 14}, \"tiny-imagenet-classification-pretrained\": {\"code\": \"TIP\", \"fullName\": \"Tiny ImageNet 200 — Pretrained\", \"order\": 15}, \"oxford-pet-segmentation-resnet18-unet-pretrained\": {\"code\": \"OXP\", \"fullName\": \"Oxford-IIIT Pet — Pretrained\", \"order\": 16}, \"pascal-voc2012-segmentation-resnet18-unet-pretrained\": {\"code\": \"PVP\", \"fullName\": \"Pascal VOC 2012 — Pretrained\", \"order\": 17}, \"uavid-segmentation-resnet18-unet-pretrained\": {\"code\": \"UAP\", \"fullName\": \"UAVid 2020 — Pretrained\", \"order\": 18}, \"go-emotions-text-classification-scratch\": {\"code\": \"GES\", \"fullName\": \"GoEmotions — Scratch\", \"order\": 19}, \"go-emotions-text-classification-pretrained\": {\"code\": \"GEP\", \"fullName\": \"GoEmotions — Pretrained\", \"order\": 20}, \"multi-eurlex-text-classification-scratch\": {\"code\": \"MES\", \"fullName\": \"MultiEURLEX — Scratch\", \"order\": 21}, \"multi-eurlex-text-classification-pretrained\": {\"code\": \"MEP\", \"fullName\": \"MultiEURLEX — Pretrained\", \"order\": 22}, \"marc-multilingual-text-classification-scratch\": {\"code\": \"MRS\", \"fullName\": \"MARC Multilingual — Scratch\", \"order\": 23}, \"marc-multilingual-text-classification-pretrained\": {\"code\": \"MRP\", \"fullName\": \"MARC Multilingual — Pretrained\", \"order\": 24}, \"wikitext103-language-modeling-scratch\": {\"code\": \"WTS\", \"fullName\": \"WikiText-103 — Scratch\", \"order\": 25}, \"wikitext103-language-modeling-pretrained\": {\"code\": \"WTP\", \"fullName\": \"WikiText-103 — Pretrained\", \"order\": 26}, \"lm1b-shard-language-modeling-scratch\": {\"code\": \"L1S\", \"fullName\": \"One Billion Word Shard — Scratch\", \"order\": 27}, \"lm1b-shard-language-modeling-pretrained\": {\"code\": \"L1P\", \"fullName\": \"One Billion Word Shard — Pretrained\", \"order\": 28}, \"c4-en-shard-language-modeling-scratch\": {\"code\": \"C4S\", \"fullName\": \"C4 English Shard — Scratch\", \"order\": 29}, \"c4-en-shard-language-modeling-pretrained\": {\"code\": \"C4P\", \"fullName\": \"C4 English Shard — Pretrained\", \"order\": 30}, \"traffic-hourly-time-series-forecasting-scratch\": {\"code\": \"TRS\", \"fullName\": \"Traffic Hourly — Scratch\", \"order\": 31}, \"traffic-hourly-time-series-forecasting-pretrained\": {\"code\": \"TRP\", \"fullName\": \"Traffic Hourly — Pretrained\", \"order\": 32}, \"electricity-hourly-time-series-forecasting-scratch\": {\"code\": \"ELS\", \"fullName\": \"Electricity Hourly — Scratch\", \"order\": 33}, \"electricity-hourly-time-series-forecasting-pretrained\": {\"code\": \"ELP\", \"fullName\": \"Electricity Hourly — Pretrained\", \"order\": 34}, \"solar-10min-time-series-forecasting-scratch\": {\"code\": \"SOS\", \"fullName\": \"Solar 10-Minute — Scratch\", \"order\": 35}, \"solar-10min-time-series-forecasting-pretrained\": {\"code\": \"SOP\", \"fullName\": \"Solar 10-Minute — Pretrained\", \"order\": 36}, \"movielens25m-recommendation-scratch\": {\"code\": \"MLS\", \"fullName\": \"MovieLens 25M — Scratch\", \"order\": 37}, \"movielens25m-recommendation-pretrained\": {\"code\": \"MLP\", \"fullName\": \"MovieLens 25M — Pretrained\", \"order\": 38}, \"amazon-books-5core-recommendation-scratch\": {\"code\": \"ABS\", \"fullName\": \"Amazon Books 5-core — Scratch\", \"order\": 39}, \"amazon-books-5core-recommendation-pretrained\": {\"code\": \"ABP\", \"fullName\": \"Amazon Books 5-core — Pretrained\", \"order\": 40}, \"amazon-electronics-5core-recommendation-scratch\": {\"code\": \"AES\", \"fullName\": \"Amazon Electronics 5-core — Scratch\", \"order\": 41}, \"amazon-electronics-5core-recommendation-pretrained\": {\"code\": \"AEP\", \"fullName\": \"Amazon Electronics 5-core — Pretrained\", \"order\": 42}, \"minatar-breakout-reinforcement-learning-scratch\": {\"code\": \"BRS\", \"fullName\": \"MinAtar Breakout — Scratch\", \"order\": 43}, \"minatar-breakout-reinforcement-learning-pretrained\": {\"code\": \"BRP\", \"fullName\": \"MinAtar Breakout — Pretrained\", \"order\": 44}, \"minatar-seaquest-reinforcement-learning-scratch\": {\"code\": \"SQS\", \"fullName\": \"MinAtar Seaquest — Scratch\", \"order\": 45}, \"minatar-seaquest-reinforcement-learning-pretrained\": {\"code\": \"SQP\", \"fullName\": \"MinAtar Seaquest — Pretrained\", \"order\": 46}, \"minatar-asterix-reinforcement-learning-scratch\": {\"code\": \"ATS\", \"fullName\": \"MinAtar Asterix — Scratch\", \"order\": 47}, \"minatar-asterix-reinforcement-learning-pretrained\": {\"code\": \"ATP\", \"fullName\": \"MinAtar Asterix — Pretrained\", \"order\": 48}};\nconst caseMeta = caseId => caseCatalog[caseId] || {code:String(caseId||'UNK').slice(0,3).toUpperCase(),fullName:String(caseId||'Unknown'),order:999};\nconst caseColor = order => `hsl(${((Number(order)||1)-1)*137.508%360}, 68%, 48%)`;\n\nconst rows = new Map();\nframes.forEach(frame => {\n  const labels = frameLabels(frame), value = frameValue(frame);\n  if (!Number.isFinite(value) || !labels.job_id) return;\n  const key = labels.job_id;\n  const caseId=labels.benchmark_case_id, meta=caseMeta(caseId);\n  const row = rows.get(key) || {job: `Job ${key}`, id: Number(key),case_id:caseId,...meta};\n  row[frameRef(frame)] = value;\n  rows.set(key, row);\n});\nconst data = Array.from(rows.values()).sort((a,b) => a.id - b.id);\nreturn {\n  animation: false,\n  tooltip: {trigger:'axis',formatter:items=>{const d=items[0]?.data||{};return `<b>${d.code} — ${d.fullName}</b><br/>${d.job}<br/>`+items.map(item=>`${item.marker}${item.seriesName}: ${Number(item.value).toFixed(3)}`).join('<br/>');}},\n  legend: {bottom: 0},\n  grid: {left:75,right:80,top:45,bottom:85},\n  xAxis: {type:'category',data:data.map(row=>row.code),axisLabel:{rotate:45}},\n  yAxis: [\n    {type: 'value', name: 'GPU energy (Wh)', nameLocation: 'middle', nameGap: 52, min: 0},\n    {type: 'value', name: 'Quality (%)', min: 0, max: 100},\n    {type: 'value', name: 'Epochs', offset: 55, min: 0}\n  ],\n  series: [\n    {name:'GPU energy (Wh)',type:'bar',yAxisIndex:0,data:data.map(row=>({value:row.A,...row})),itemStyle:{color:'#2E8B57'}},\n    {name:'Quality (%)',type:'line',yAxisIndex:1,data:data.map(row=>({value:row.B,...row})),symbolSize:7,itemStyle:{color:'#7A3FB0'}},\n    {name:'Epoch count',type:'line',yAxisIndex:2,data:data.map(row=>({value:row.C,...row})),symbolSize:7,lineStyle:{type:'dashed'},itemStyle:{color:'#5E5E5E'}}\n  ]\n};\n"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "slurm_job_phase_codecarbon_gpu_energy_kwh{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",benchmark_stage=~\"$stages\",benchmark_case_id=~\"$cases\",phase=\"$codecarbon_phase\"} * 1000",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        },
+        {
+          "refId": "B",
+          "expr": "max by (job_id) (slurm_job_epoch_quality_score{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",benchmark_stage=~\"$stages\",benchmark_case_id=~\"$cases\"}) * 100",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        },
+        {
+          "refId": "C",
+          "expr": "count by (job_id) (slurm_job_epoch_gpu_energy_kwh{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",benchmark_stage=~\"$stages\",benchmark_case_id=~\"$cases\"})",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "id": 204,
+      "title": "SLURM − CodeCarbon Training GPU Difference by Job",
+      "description": "Vorzeichenbehaftete Differenz je realem Full100-Job: SLURM minus CodeCarbon. Positive Werte werden als grüne Balken nach oben, negative als rote Balken nach unten dargestellt. Die Achse verwendet Kürzel, der Tooltip den vollständigen Fallnamen und die Job-ID.",
+      "type": "volkovlabs-echarts-panel",
+      "gridPos": {
+        "x": 0,
+        "y": 39,
+        "w": 24,
+        "h": 13
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "renderer": "svg",
+        "followTheme": true,
+        "getOption": "\nconst frames = context?.panel?.data?.series || [];\nconst arr = value => {\n  if (value == null) return [];\n  if (typeof value.toArray === 'function') return value.toArray();\n  if (value.buffer) return Array.from(value.buffer);\n  return Array.isArray(value) ? value : [];\n};\nconst fieldsOf = frame => (frame.fields && frame.fields.length) ? frame.fields : (frame.schema?.fields || []);\nconst numberFieldIndex = frame => {\n  const fields = fieldsOf(frame);\n  const index = fields.findIndex(field => field.type === 'number' || field.name === 'Value');\n  return index >= 0 ? index : (fields.length > 1 ? 1 : -1);\n};\nconst frameValue = frame => {\n  const index = numberFieldIndex(frame);\n  if (index < 0) return null;\n  const local = frame.fields || [];\n  const values = local[index]?.values != null ? arr(local[index].values) : arr(frame.data?.values?.[index]);\n  return values.length ? Number(values[values.length - 1]) : null;\n};\nconst frameLabels = frame => fieldsOf(frame)[numberFieldIndex(frame)]?.labels || {};\nconst frameRef = frame => frame.refId || frame.schema?.refId || null;\n\nconst caseCatalog = {\"carpk-aerial-vehicle\": {\"code\": \"CRS\", \"fullName\": \"CARPK — Scratch\", \"order\": 1}, \"vedai-aerial-vehicle\": {\"code\": \"VDS\", \"fullName\": \"VEDAI 512 — Scratch\", \"order\": 2}, \"visdrone-aerial-vehicle\": {\"code\": \"VSS\", \"fullName\": \"VisDrone2019-DET Vehicles — Scratch\", \"order\": 3}, \"cifar10-classification\": {\"code\": \"C1S\", \"fullName\": \"CIFAR-10 — Scratch\", \"order\": 4}, \"cifar100-classification\": {\"code\": \"C0S\", \"fullName\": \"CIFAR-100 — Scratch\", \"order\": 5}, \"tiny-imagenet-classification\": {\"code\": \"TIS\", \"fullName\": \"Tiny ImageNet 200 — Scratch\", \"order\": 6}, \"oxford-pet-segmentation\": {\"code\": \"OXS\", \"fullName\": \"Oxford-IIIT Pet — Scratch\", \"order\": 7}, \"pascal-voc2012-segmentation\": {\"code\": \"PVS\", \"fullName\": \"Pascal VOC 2012 — Scratch\", \"order\": 8}, \"uavid-segmentation\": {\"code\": \"UAS\", \"fullName\": \"UAVid 2020 — Scratch\", \"order\": 9}, \"carpk-aerial-vehicle-pretrained\": {\"code\": \"CRP\", \"fullName\": \"CARPK — Pretrained\", \"order\": 10}, \"vedai-aerial-vehicle-pretrained\": {\"code\": \"VDP\", \"fullName\": \"VEDAI 512 — Pretrained\", \"order\": 11}, \"visdrone-aerial-vehicle-pretrained\": {\"code\": \"VSP\", \"fullName\": \"VisDrone2019-DET Vehicles — Pretrained\", \"order\": 12}, \"cifar10-classification-pretrained\": {\"code\": \"C1P\", \"fullName\": \"CIFAR-10 — Pretrained\", \"order\": 13}, \"cifar100-classification-pretrained\": {\"code\": \"C0P\", \"fullName\": \"CIFAR-100 — Pretrained\", \"order\": 14}, \"tiny-imagenet-classification-pretrained\": {\"code\": \"TIP\", \"fullName\": \"Tiny ImageNet 200 — Pretrained\", \"order\": 15}, \"oxford-pet-segmentation-resnet18-unet-pretrained\": {\"code\": \"OXP\", \"fullName\": \"Oxford-IIIT Pet — Pretrained\", \"order\": 16}, \"pascal-voc2012-segmentation-resnet18-unet-pretrained\": {\"code\": \"PVP\", \"fullName\": \"Pascal VOC 2012 — Pretrained\", \"order\": 17}, \"uavid-segmentation-resnet18-unet-pretrained\": {\"code\": \"UAP\", \"fullName\": \"UAVid 2020 — Pretrained\", \"order\": 18}, \"go-emotions-text-classification-scratch\": {\"code\": \"GES\", \"fullName\": \"GoEmotions — Scratch\", \"order\": 19}, \"go-emotions-text-classification-pretrained\": {\"code\": \"GEP\", \"fullName\": \"GoEmotions — Pretrained\", \"order\": 20}, \"multi-eurlex-text-classification-scratch\": {\"code\": \"MES\", \"fullName\": \"MultiEURLEX — Scratch\", \"order\": 21}, \"multi-eurlex-text-classification-pretrained\": {\"code\": \"MEP\", \"fullName\": \"MultiEURLEX — Pretrained\", \"order\": 22}, \"marc-multilingual-text-classification-scratch\": {\"code\": \"MRS\", \"fullName\": \"MARC Multilingual — Scratch\", \"order\": 23}, \"marc-multilingual-text-classification-pretrained\": {\"code\": \"MRP\", \"fullName\": \"MARC Multilingual — Pretrained\", \"order\": 24}, \"wikitext103-language-modeling-scratch\": {\"code\": \"WTS\", \"fullName\": \"WikiText-103 — Scratch\", \"order\": 25}, \"wikitext103-language-modeling-pretrained\": {\"code\": \"WTP\", \"fullName\": \"WikiText-103 — Pretrained\", \"order\": 26}, \"lm1b-shard-language-modeling-scratch\": {\"code\": \"L1S\", \"fullName\": \"One Billion Word Shard — Scratch\", \"order\": 27}, \"lm1b-shard-language-modeling-pretrained\": {\"code\": \"L1P\", \"fullName\": \"One Billion Word Shard — Pretrained\", \"order\": 28}, \"c4-en-shard-language-modeling-scratch\": {\"code\": \"C4S\", \"fullName\": \"C4 English Shard — Scratch\", \"order\": 29}, \"c4-en-shard-language-modeling-pretrained\": {\"code\": \"C4P\", \"fullName\": \"C4 English Shard — Pretrained\", \"order\": 30}, \"traffic-hourly-time-series-forecasting-scratch\": {\"code\": \"TRS\", \"fullName\": \"Traffic Hourly — Scratch\", \"order\": 31}, \"traffic-hourly-time-series-forecasting-pretrained\": {\"code\": \"TRP\", \"fullName\": \"Traffic Hourly — Pretrained\", \"order\": 32}, \"electricity-hourly-time-series-forecasting-scratch\": {\"code\": \"ELS\", \"fullName\": \"Electricity Hourly — Scratch\", \"order\": 33}, \"electricity-hourly-time-series-forecasting-pretrained\": {\"code\": \"ELP\", \"fullName\": \"Electricity Hourly — Pretrained\", \"order\": 34}, \"solar-10min-time-series-forecasting-scratch\": {\"code\": \"SOS\", \"fullName\": \"Solar 10-Minute — Scratch\", \"order\": 35}, \"solar-10min-time-series-forecasting-pretrained\": {\"code\": \"SOP\", \"fullName\": \"Solar 10-Minute — Pretrained\", \"order\": 36}, \"movielens25m-recommendation-scratch\": {\"code\": \"MLS\", \"fullName\": \"MovieLens 25M — Scratch\", \"order\": 37}, \"movielens25m-recommendation-pretrained\": {\"code\": \"MLP\", \"fullName\": \"MovieLens 25M — Pretrained\", \"order\": 38}, \"amazon-books-5core-recommendation-scratch\": {\"code\": \"ABS\", \"fullName\": \"Amazon Books 5-core — Scratch\", \"order\": 39}, \"amazon-books-5core-recommendation-pretrained\": {\"code\": \"ABP\", \"fullName\": \"Amazon Books 5-core — Pretrained\", \"order\": 40}, \"amazon-electronics-5core-recommendation-scratch\": {\"code\": \"AES\", \"fullName\": \"Amazon Electronics 5-core — Scratch\", \"order\": 41}, \"amazon-electronics-5core-recommendation-pretrained\": {\"code\": \"AEP\", \"fullName\": \"Amazon Electronics 5-core — Pretrained\", \"order\": 42}, \"minatar-breakout-reinforcement-learning-scratch\": {\"code\": \"BRS\", \"fullName\": \"MinAtar Breakout — Scratch\", \"order\": 43}, \"minatar-breakout-reinforcement-learning-pretrained\": {\"code\": \"BRP\", \"fullName\": \"MinAtar Breakout — Pretrained\", \"order\": 44}, \"minatar-seaquest-reinforcement-learning-scratch\": {\"code\": \"SQS\", \"fullName\": \"MinAtar Seaquest — Scratch\", \"order\": 45}, \"minatar-seaquest-reinforcement-learning-pretrained\": {\"code\": \"SQP\", \"fullName\": \"MinAtar Seaquest — Pretrained\", \"order\": 46}, \"minatar-asterix-reinforcement-learning-scratch\": {\"code\": \"ATS\", \"fullName\": \"MinAtar Asterix — Scratch\", \"order\": 47}, \"minatar-asterix-reinforcement-learning-pretrained\": {\"code\": \"ATP\", \"fullName\": \"MinAtar Asterix — Pretrained\", \"order\": 48}};\nconst caseMeta = caseId => caseCatalog[caseId] || {code:String(caseId||'UNK').slice(0,3).toUpperCase(),fullName:String(caseId||'Unknown'),order:999};\nconst caseColor = order => `hsl(${((Number(order)||1)-1)*137.508%360}, 68%, 48%)`;\n\nconst data = frames.map(frame => {\n  const labels = frameLabels(frame), value = frameValue(frame);\n  const caseId=labels.benchmark_case_id,meta=caseMeta(caseId);\n  return {job:`Job ${labels.job_id}`,id:Number(labels.job_id),value,scenario:labels.scenario,strategy:labels.comparison_strategy,case_id:caseId,...meta};\n}).filter(row => Number.isFinite(row.value)).sort((a,b) => a.id - b.id);\nreturn {\n  animation: false,\n  tooltip: {formatter:p=>`<b>${p.data.code} — ${p.data.fullName}</b><br/>${p.data.job}<br/>${p.data.scenario||''}<br/>${p.data.strategy||''}<br/><b>SLURM − CodeCarbon: ${p.data.value.toFixed(3)} Wh</b>`},\n  grid: {left: 75, right: 25, top: 35, bottom: 90},\n  xAxis: {type:'category',data:data.map(row=>row.code),axisLabel:{rotate:45}},\n  yAxis: {type: 'value', name: 'Signed difference (Wh)', nameLocation: 'middle', nameGap: 55},\n  series: [{type: 'bar', data: data.map(row => ({...row, itemStyle: {color: row.value >= 0 ? '#2E8B57' : '#C23B4A'}})), markLine: {silent: true, symbol: 'none', lineStyle: {color: '#777', width: 2}, data: [{yAxis: 0, name: 'Equal'}]}}]\n};\n"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "(slurm_job_phase_gpu_energy_kwh{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",benchmark_stage=~\"$stages\",benchmark_case_id=~\"$cases\",phase=\"training\"} - ignoring(__name__,measurement_status) slurm_job_phase_codecarbon_gpu_energy_kwh{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",benchmark_stage=~\"$stages\",benchmark_case_id=~\"$cases\",phase=\"training\"}) * 1000",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "id": 205,
+      "title": "Epoch GPU Utilization by Job (%)",
+      "description": "Mittlere GPU-Auslastung je Epoche. Jeder der 48 Fälle erhält eine stabile eigene Farbe; die Legende unten ordnet Farbe und Kürzel zu, der Tooltip zeigt den vollständigen Namen.",
+      "type": "volkovlabs-echarts-panel",
+      "gridPos": {
+        "x": 0,
+        "y": 52,
+        "w": 12,
+        "h": 9
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "renderer": "svg",
+        "followTheme": true,
+        "getOption": "\nconst frames = context?.panel?.data?.series || [];\nconst arr = value => {\n  if (value == null) return [];\n  if (typeof value.toArray === 'function') return value.toArray();\n  if (value.buffer) return Array.from(value.buffer);\n  return Array.isArray(value) ? value : [];\n};\nconst fieldsOf = frame => (frame.fields && frame.fields.length) ? frame.fields : (frame.schema?.fields || []);\nconst numberFieldIndex = frame => {\n  const fields = fieldsOf(frame);\n  const index = fields.findIndex(field => field.type === 'number' || field.name === 'Value');\n  return index >= 0 ? index : (fields.length > 1 ? 1 : -1);\n};\nconst frameValue = frame => {\n  const index = numberFieldIndex(frame);\n  if (index < 0) return null;\n  const local = frame.fields || [];\n  const values = local[index]?.values != null ? arr(local[index].values) : arr(frame.data?.values?.[index]);\n  return values.length ? Number(values[values.length - 1]) : null;\n};\nconst frameLabels = frame => fieldsOf(frame)[numberFieldIndex(frame)]?.labels || {};\nconst frameRef = frame => frame.refId || frame.schema?.refId || null;\n\nconst caseCatalog = {\"carpk-aerial-vehicle\": {\"code\": \"CRS\", \"fullName\": \"CARPK — Scratch\", \"order\": 1}, \"vedai-aerial-vehicle\": {\"code\": \"VDS\", \"fullName\": \"VEDAI 512 — Scratch\", \"order\": 2}, \"visdrone-aerial-vehicle\": {\"code\": \"VSS\", \"fullName\": \"VisDrone2019-DET Vehicles — Scratch\", \"order\": 3}, \"cifar10-classification\": {\"code\": \"C1S\", \"fullName\": \"CIFAR-10 — Scratch\", \"order\": 4}, \"cifar100-classification\": {\"code\": \"C0S\", \"fullName\": \"CIFAR-100 — Scratch\", \"order\": 5}, \"tiny-imagenet-classification\": {\"code\": \"TIS\", \"fullName\": \"Tiny ImageNet 200 — Scratch\", \"order\": 6}, \"oxford-pet-segmentation\": {\"code\": \"OXS\", \"fullName\": \"Oxford-IIIT Pet — Scratch\", \"order\": 7}, \"pascal-voc2012-segmentation\": {\"code\": \"PVS\", \"fullName\": \"Pascal VOC 2012 — Scratch\", \"order\": 8}, \"uavid-segmentation\": {\"code\": \"UAS\", \"fullName\": \"UAVid 2020 — Scratch\", \"order\": 9}, \"carpk-aerial-vehicle-pretrained\": {\"code\": \"CRP\", \"fullName\": \"CARPK — Pretrained\", \"order\": 10}, \"vedai-aerial-vehicle-pretrained\": {\"code\": \"VDP\", \"fullName\": \"VEDAI 512 — Pretrained\", \"order\": 11}, \"visdrone-aerial-vehicle-pretrained\": {\"code\": \"VSP\", \"fullName\": \"VisDrone2019-DET Vehicles — Pretrained\", \"order\": 12}, \"cifar10-classification-pretrained\": {\"code\": \"C1P\", \"fullName\": \"CIFAR-10 — Pretrained\", \"order\": 13}, \"cifar100-classification-pretrained\": {\"code\": \"C0P\", \"fullName\": \"CIFAR-100 — Pretrained\", \"order\": 14}, \"tiny-imagenet-classification-pretrained\": {\"code\": \"TIP\", \"fullName\": \"Tiny ImageNet 200 — Pretrained\", \"order\": 15}, \"oxford-pet-segmentation-resnet18-unet-pretrained\": {\"code\": \"OXP\", \"fullName\": \"Oxford-IIIT Pet — Pretrained\", \"order\": 16}, \"pascal-voc2012-segmentation-resnet18-unet-pretrained\": {\"code\": \"PVP\", \"fullName\": \"Pascal VOC 2012 — Pretrained\", \"order\": 17}, \"uavid-segmentation-resnet18-unet-pretrained\": {\"code\": \"UAP\", \"fullName\": \"UAVid 2020 — Pretrained\", \"order\": 18}, \"go-emotions-text-classification-scratch\": {\"code\": \"GES\", \"fullName\": \"GoEmotions — Scratch\", \"order\": 19}, \"go-emotions-text-classification-pretrained\": {\"code\": \"GEP\", \"fullName\": \"GoEmotions — Pretrained\", \"order\": 20}, \"multi-eurlex-text-classification-scratch\": {\"code\": \"MES\", \"fullName\": \"MultiEURLEX — Scratch\", \"order\": 21}, \"multi-eurlex-text-classification-pretrained\": {\"code\": \"MEP\", \"fullName\": \"MultiEURLEX — Pretrained\", \"order\": 22}, \"marc-multilingual-text-classification-scratch\": {\"code\": \"MRS\", \"fullName\": \"MARC Multilingual — Scratch\", \"order\": 23}, \"marc-multilingual-text-classification-pretrained\": {\"code\": \"MRP\", \"fullName\": \"MARC Multilingual — Pretrained\", \"order\": 24}, \"wikitext103-language-modeling-scratch\": {\"code\": \"WTS\", \"fullName\": \"WikiText-103 — Scratch\", \"order\": 25}, \"wikitext103-language-modeling-pretrained\": {\"code\": \"WTP\", \"fullName\": \"WikiText-103 — Pretrained\", \"order\": 26}, \"lm1b-shard-language-modeling-scratch\": {\"code\": \"L1S\", \"fullName\": \"One Billion Word Shard — Scratch\", \"order\": 27}, \"lm1b-shard-language-modeling-pretrained\": {\"code\": \"L1P\", \"fullName\": \"One Billion Word Shard — Pretrained\", \"order\": 28}, \"c4-en-shard-language-modeling-scratch\": {\"code\": \"C4S\", \"fullName\": \"C4 English Shard — Scratch\", \"order\": 29}, \"c4-en-shard-language-modeling-pretrained\": {\"code\": \"C4P\", \"fullName\": \"C4 English Shard — Pretrained\", \"order\": 30}, \"traffic-hourly-time-series-forecasting-scratch\": {\"code\": \"TRS\", \"fullName\": \"Traffic Hourly — Scratch\", \"order\": 31}, \"traffic-hourly-time-series-forecasting-pretrained\": {\"code\": \"TRP\", \"fullName\": \"Traffic Hourly — Pretrained\", \"order\": 32}, \"electricity-hourly-time-series-forecasting-scratch\": {\"code\": \"ELS\", \"fullName\": \"Electricity Hourly — Scratch\", \"order\": 33}, \"electricity-hourly-time-series-forecasting-pretrained\": {\"code\": \"ELP\", \"fullName\": \"Electricity Hourly — Pretrained\", \"order\": 34}, \"solar-10min-time-series-forecasting-scratch\": {\"code\": \"SOS\", \"fullName\": \"Solar 10-Minute — Scratch\", \"order\": 35}, \"solar-10min-time-series-forecasting-pretrained\": {\"code\": \"SOP\", \"fullName\": \"Solar 10-Minute — Pretrained\", \"order\": 36}, \"movielens25m-recommendation-scratch\": {\"code\": \"MLS\", \"fullName\": \"MovieLens 25M — Scratch\", \"order\": 37}, \"movielens25m-recommendation-pretrained\": {\"code\": \"MLP\", \"fullName\": \"MovieLens 25M — Pretrained\", \"order\": 38}, \"amazon-books-5core-recommendation-scratch\": {\"code\": \"ABS\", \"fullName\": \"Amazon Books 5-core — Scratch\", \"order\": 39}, \"amazon-books-5core-recommendation-pretrained\": {\"code\": \"ABP\", \"fullName\": \"Amazon Books 5-core — Pretrained\", \"order\": 40}, \"amazon-electronics-5core-recommendation-scratch\": {\"code\": \"AES\", \"fullName\": \"Amazon Electronics 5-core — Scratch\", \"order\": 41}, \"amazon-electronics-5core-recommendation-pretrained\": {\"code\": \"AEP\", \"fullName\": \"Amazon Electronics 5-core — Pretrained\", \"order\": 42}, \"minatar-breakout-reinforcement-learning-scratch\": {\"code\": \"BRS\", \"fullName\": \"MinAtar Breakout — Scratch\", \"order\": 43}, \"minatar-breakout-reinforcement-learning-pretrained\": {\"code\": \"BRP\", \"fullName\": \"MinAtar Breakout — Pretrained\", \"order\": 44}, \"minatar-seaquest-reinforcement-learning-scratch\": {\"code\": \"SQS\", \"fullName\": \"MinAtar Seaquest — Scratch\", \"order\": 45}, \"minatar-seaquest-reinforcement-learning-pretrained\": {\"code\": \"SQP\", \"fullName\": \"MinAtar Seaquest — Pretrained\", \"order\": 46}, \"minatar-asterix-reinforcement-learning-scratch\": {\"code\": \"ATS\", \"fullName\": \"MinAtar Asterix — Scratch\", \"order\": 47}, \"minatar-asterix-reinforcement-learning-pretrained\": {\"code\": \"ATP\", \"fullName\": \"MinAtar Asterix — Pretrained\", \"order\": 48}};\nconst caseMeta = caseId => caseCatalog[caseId] || {code:String(caseId||'UNK').slice(0,3).toUpperCase(),fullName:String(caseId||'Unknown'),order:999};\nconst caseColor = order => `hsl(${((Number(order)||1)-1)*137.508%360}, 68%, 48%)`;\n\nconst datasets=new Map();\nframes.forEach(frame=>{const labels=frameLabels(frame),value=frameValue(frame),caseId=labels.benchmark_case_id,epoch=Number(labels.epoch);if(!caseId||!Number.isFinite(epoch)||!Number.isFinite(value))return;const meta=caseMeta(caseId),dataset=datasets.get(caseId)||{case_id:caseId,jobId:labels.job_id,...meta,points:[]};dataset.points.push({value:[epoch,value],epoch,jobId:labels.job_id,case_id:caseId,...meta});datasets.set(caseId,dataset);});\nconst ordered=Array.from(datasets.values()).sort((a,b)=>a.order-b.order);\nconst series=ordered.map(dataset=>({name:dataset.code,type:'line',showSymbol:false,symbolSize:5,lineStyle:{width:1.6,color:caseColor(dataset.order)},itemStyle:{color:caseColor(dataset.order)},data:dataset.points.sort((a,b)=>a.epoch-b.epoch)}));\nreturn {animation:false,tooltip:{trigger:'item',formatter:p=>`<b>${p.data.code} — ${p.data.fullName}</b><br/>Job ${p.data.jobId}<br/>Epoch: ${p.data.epoch}<br/>Value: ${Number(p.data.value[1]).toFixed(4)} %`},legend:{type:'scroll',bottom:0,data:ordered.map(dataset=>dataset.code)},grid:{left:80,right:25,top:35,bottom:95},xAxis:{type:'value',name:'Epoch',nameLocation:'middle',nameGap:35,min:1},yAxis:{type:'value',name:'GPU utilization (%)',nameLocation:'middle',nameGap:60,min:0},series};\n"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "slurm_job_epoch_gpu_util_avg_pct{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",benchmark_stage=~\"$stages\",benchmark_case_id=~\"$cases\"}",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "id": 206,
+      "title": "SLURM Epoch GPU Energy by Job (Wh)",
+      "description": "Gemessene SLURM-GPU-Energie je Epoche. Jeder der 48 Fälle erhält eine stabile eigene Farbe; die Legende unten ordnet Farbe und Kürzel zu, der Tooltip zeigt den vollständigen Namen.",
+      "type": "volkovlabs-echarts-panel",
+      "gridPos": {
+        "x": 12,
+        "y": 52,
+        "w": 12,
+        "h": 9
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "renderer": "svg",
+        "followTheme": true,
+        "getOption": "\nconst frames = context?.panel?.data?.series || [];\nconst arr = value => {\n  if (value == null) return [];\n  if (typeof value.toArray === 'function') return value.toArray();\n  if (value.buffer) return Array.from(value.buffer);\n  return Array.isArray(value) ? value : [];\n};\nconst fieldsOf = frame => (frame.fields && frame.fields.length) ? frame.fields : (frame.schema?.fields || []);\nconst numberFieldIndex = frame => {\n  const fields = fieldsOf(frame);\n  const index = fields.findIndex(field => field.type === 'number' || field.name === 'Value');\n  return index >= 0 ? index : (fields.length > 1 ? 1 : -1);\n};\nconst frameValue = frame => {\n  const index = numberFieldIndex(frame);\n  if (index < 0) return null;\n  const local = frame.fields || [];\n  const values = local[index]?.values != null ? arr(local[index].values) : arr(frame.data?.values?.[index]);\n  return values.length ? Number(values[values.length - 1]) : null;\n};\nconst frameLabels = frame => fieldsOf(frame)[numberFieldIndex(frame)]?.labels || {};\nconst frameRef = frame => frame.refId || frame.schema?.refId || null;\n\nconst caseCatalog = {\"carpk-aerial-vehicle\": {\"code\": \"CRS\", \"fullName\": \"CARPK — Scratch\", \"order\": 1}, \"vedai-aerial-vehicle\": {\"code\": \"VDS\", \"fullName\": \"VEDAI 512 — Scratch\", \"order\": 2}, \"visdrone-aerial-vehicle\": {\"code\": \"VSS\", \"fullName\": \"VisDrone2019-DET Vehicles — Scratch\", \"order\": 3}, \"cifar10-classification\": {\"code\": \"C1S\", \"fullName\": \"CIFAR-10 — Scratch\", \"order\": 4}, \"cifar100-classification\": {\"code\": \"C0S\", \"fullName\": \"CIFAR-100 — Scratch\", \"order\": 5}, \"tiny-imagenet-classification\": {\"code\": \"TIS\", \"fullName\": \"Tiny ImageNet 200 — Scratch\", \"order\": 6}, \"oxford-pet-segmentation\": {\"code\": \"OXS\", \"fullName\": \"Oxford-IIIT Pet — Scratch\", \"order\": 7}, \"pascal-voc2012-segmentation\": {\"code\": \"PVS\", \"fullName\": \"Pascal VOC 2012 — Scratch\", \"order\": 8}, \"uavid-segmentation\": {\"code\": \"UAS\", \"fullName\": \"UAVid 2020 — Scratch\", \"order\": 9}, \"carpk-aerial-vehicle-pretrained\": {\"code\": \"CRP\", \"fullName\": \"CARPK — Pretrained\", \"order\": 10}, \"vedai-aerial-vehicle-pretrained\": {\"code\": \"VDP\", \"fullName\": \"VEDAI 512 — Pretrained\", \"order\": 11}, \"visdrone-aerial-vehicle-pretrained\": {\"code\": \"VSP\", \"fullName\": \"VisDrone2019-DET Vehicles — Pretrained\", \"order\": 12}, \"cifar10-classification-pretrained\": {\"code\": \"C1P\", \"fullName\": \"CIFAR-10 — Pretrained\", \"order\": 13}, \"cifar100-classification-pretrained\": {\"code\": \"C0P\", \"fullName\": \"CIFAR-100 — Pretrained\", \"order\": 14}, \"tiny-imagenet-classification-pretrained\": {\"code\": \"TIP\", \"fullName\": \"Tiny ImageNet 200 — Pretrained\", \"order\": 15}, \"oxford-pet-segmentation-resnet18-unet-pretrained\": {\"code\": \"OXP\", \"fullName\": \"Oxford-IIIT Pet — Pretrained\", \"order\": 16}, \"pascal-voc2012-segmentation-resnet18-unet-pretrained\": {\"code\": \"PVP\", \"fullName\": \"Pascal VOC 2012 — Pretrained\", \"order\": 17}, \"uavid-segmentation-resnet18-unet-pretrained\": {\"code\": \"UAP\", \"fullName\": \"UAVid 2020 — Pretrained\", \"order\": 18}, \"go-emotions-text-classification-scratch\": {\"code\": \"GES\", \"fullName\": \"GoEmotions — Scratch\", \"order\": 19}, \"go-emotions-text-classification-pretrained\": {\"code\": \"GEP\", \"fullName\": \"GoEmotions — Pretrained\", \"order\": 20}, \"multi-eurlex-text-classification-scratch\": {\"code\": \"MES\", \"fullName\": \"MultiEURLEX — Scratch\", \"order\": 21}, \"multi-eurlex-text-classification-pretrained\": {\"code\": \"MEP\", \"fullName\": \"MultiEURLEX — Pretrained\", \"order\": 22}, \"marc-multilingual-text-classification-scratch\": {\"code\": \"MRS\", \"fullName\": \"MARC Multilingual — Scratch\", \"order\": 23}, \"marc-multilingual-text-classification-pretrained\": {\"code\": \"MRP\", \"fullName\": \"MARC Multilingual — Pretrained\", \"order\": 24}, \"wikitext103-language-modeling-scratch\": {\"code\": \"WTS\", \"fullName\": \"WikiText-103 — Scratch\", \"order\": 25}, \"wikitext103-language-modeling-pretrained\": {\"code\": \"WTP\", \"fullName\": \"WikiText-103 — Pretrained\", \"order\": 26}, \"lm1b-shard-language-modeling-scratch\": {\"code\": \"L1S\", \"fullName\": \"One Billion Word Shard — Scratch\", \"order\": 27}, \"lm1b-shard-language-modeling-pretrained\": {\"code\": \"L1P\", \"fullName\": \"One Billion Word Shard — Pretrained\", \"order\": 28}, \"c4-en-shard-language-modeling-scratch\": {\"code\": \"C4S\", \"fullName\": \"C4 English Shard — Scratch\", \"order\": 29}, \"c4-en-shard-language-modeling-pretrained\": {\"code\": \"C4P\", \"fullName\": \"C4 English Shard — Pretrained\", \"order\": 30}, \"traffic-hourly-time-series-forecasting-scratch\": {\"code\": \"TRS\", \"fullName\": \"Traffic Hourly — Scratch\", \"order\": 31}, \"traffic-hourly-time-series-forecasting-pretrained\": {\"code\": \"TRP\", \"fullName\": \"Traffic Hourly — Pretrained\", \"order\": 32}, \"electricity-hourly-time-series-forecasting-scratch\": {\"code\": \"ELS\", \"fullName\": \"Electricity Hourly — Scratch\", \"order\": 33}, \"electricity-hourly-time-series-forecasting-pretrained\": {\"code\": \"ELP\", \"fullName\": \"Electricity Hourly — Pretrained\", \"order\": 34}, \"solar-10min-time-series-forecasting-scratch\": {\"code\": \"SOS\", \"fullName\": \"Solar 10-Minute — Scratch\", \"order\": 35}, \"solar-10min-time-series-forecasting-pretrained\": {\"code\": \"SOP\", \"fullName\": \"Solar 10-Minute — Pretrained\", \"order\": 36}, \"movielens25m-recommendation-scratch\": {\"code\": \"MLS\", \"fullName\": \"MovieLens 25M — Scratch\", \"order\": 37}, \"movielens25m-recommendation-pretrained\": {\"code\": \"MLP\", \"fullName\": \"MovieLens 25M — Pretrained\", \"order\": 38}, \"amazon-books-5core-recommendation-scratch\": {\"code\": \"ABS\", \"fullName\": \"Amazon Books 5-core — Scratch\", \"order\": 39}, \"amazon-books-5core-recommendation-pretrained\": {\"code\": \"ABP\", \"fullName\": \"Amazon Books 5-core — Pretrained\", \"order\": 40}, \"amazon-electronics-5core-recommendation-scratch\": {\"code\": \"AES\", \"fullName\": \"Amazon Electronics 5-core — Scratch\", \"order\": 41}, \"amazon-electronics-5core-recommendation-pretrained\": {\"code\": \"AEP\", \"fullName\": \"Amazon Electronics 5-core — Pretrained\", \"order\": 42}, \"minatar-breakout-reinforcement-learning-scratch\": {\"code\": \"BRS\", \"fullName\": \"MinAtar Breakout — Scratch\", \"order\": 43}, \"minatar-breakout-reinforcement-learning-pretrained\": {\"code\": \"BRP\", \"fullName\": \"MinAtar Breakout — Pretrained\", \"order\": 44}, \"minatar-seaquest-reinforcement-learning-scratch\": {\"code\": \"SQS\", \"fullName\": \"MinAtar Seaquest — Scratch\", \"order\": 45}, \"minatar-seaquest-reinforcement-learning-pretrained\": {\"code\": \"SQP\", \"fullName\": \"MinAtar Seaquest — Pretrained\", \"order\": 46}, \"minatar-asterix-reinforcement-learning-scratch\": {\"code\": \"ATS\", \"fullName\": \"MinAtar Asterix — Scratch\", \"order\": 47}, \"minatar-asterix-reinforcement-learning-pretrained\": {\"code\": \"ATP\", \"fullName\": \"MinAtar Asterix — Pretrained\", \"order\": 48}};\nconst caseMeta = caseId => caseCatalog[caseId] || {code:String(caseId||'UNK').slice(0,3).toUpperCase(),fullName:String(caseId||'Unknown'),order:999};\nconst caseColor = order => `hsl(${((Number(order)||1)-1)*137.508%360}, 68%, 48%)`;\n\nconst datasets=new Map();\nframes.forEach(frame=>{const labels=frameLabels(frame),value=frameValue(frame),caseId=labels.benchmark_case_id,epoch=Number(labels.epoch);if(!caseId||!Number.isFinite(epoch)||!Number.isFinite(value))return;const meta=caseMeta(caseId),dataset=datasets.get(caseId)||{case_id:caseId,jobId:labels.job_id,...meta,points:[]};dataset.points.push({value:[epoch,value],epoch,jobId:labels.job_id,case_id:caseId,...meta});datasets.set(caseId,dataset);});\nconst ordered=Array.from(datasets.values()).sort((a,b)=>a.order-b.order);\nconst series=ordered.map(dataset=>({name:dataset.code,type:'line',showSymbol:false,symbolSize:5,lineStyle:{width:1.6,color:caseColor(dataset.order)},itemStyle:{color:caseColor(dataset.order)},data:dataset.points.sort((a,b)=>a.epoch-b.epoch)}));\nreturn {animation:false,tooltip:{trigger:'item',formatter:p=>`<b>${p.data.code} — ${p.data.fullName}</b><br/>Job ${p.data.jobId}<br/>Epoch: ${p.data.epoch}<br/>Value: ${Number(p.data.value[1]).toFixed(4)} Wh`},legend:{type:'scroll',bottom:0,data:ordered.map(dataset=>dataset.code)},grid:{left:80,right:25,top:35,bottom:95},xAxis:{type:'value',name:'Epoch',nameLocation:'middle',nameGap:35,min:1},yAxis:{type:'value',name:'GPU energy (Wh)',nameLocation:'middle',nameGap:60,min:0},series};\n"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "slurm_job_epoch_gpu_energy_kwh{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",benchmark_stage=~\"$stages\",benchmark_case_id=~\"$cases\"} * 1000",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "id": 300,
+      "title": "3 · RAPEC-G v4 Pairwise Thesis Results",
+      "description": "Makro-Mittel über die ausgewählten Datasets für drei klar gerichtete Vergleiche.",
+      "type": "row",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 61,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "id": 301,
+      "title": "Mean Energy Saving: RAPEC-G vs ES",
+      "description": "Makro-Mittel von (E_ES − E_RAPEC-G) / E_ES × 100. Positiv bedeutet, dass RAPEC-G gegenüber Standard ES Energie spart.",
+      "type": "stat",
+      "gridPos": {
+        "x": 0,
+        "y": 62,
+        "w": 6,
+        "h": 5
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "decimals": 2
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value_and_name",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "avg(((live_shadow_counterfactual_total_energy_wh{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"standard-es-10\"} - on(benchmark_run_id,benchmark_version,stage,case_id,case_code,case_name,case_order,task_type,energy_measurement_method) live_shadow_counterfactual_total_energy_wh{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"rapec-g-v4\"}) / on(benchmark_run_id,benchmark_version,stage,case_id,case_code,case_name,case_order,task_type,energy_measurement_method) live_shadow_counterfactual_total_energy_wh{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"standard-es-10\"}) * 100)",
+          "legendFormat": "Mean Energy Saving: RAPEC-G vs ES",
+          "instant": true,
+          "range": false,
+          "format": "table",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "id": 302,
+      "title": "Mean Quality Regret: RAPEC-G vs ES",
+      "description": "Makro-Mittel von (Q_ES − Q_RAPEC-G) × 100. Positiv bedeutet geringere normalisierte Qualität von RAPEC-G.",
+      "type": "stat",
+      "gridPos": {
+        "x": 6,
+        "y": 62,
+        "w": 6,
+        "h": 5
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentpoint",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "decimals": 2
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value_and_name",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "avg((live_shadow_best_quality_at_stop{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"standard-es-10\"} - on(benchmark_run_id,benchmark_version,stage,case_id,case_code,case_name,case_order,task_type,energy_measurement_method) live_shadow_best_quality_at_stop{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"rapec-g-v4\"}) * 100)",
+          "legendFormat": "Mean Quality Regret: RAPEC-G vs ES",
+          "instant": true,
+          "range": false,
+          "format": "table",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "id": 303,
+      "title": "Mean Energy Saving: RAPEC-G vs Full100",
+      "description": "Makro-Mittel der relativen RAPEC-G-Energieeinsparung gegenüber Full100.",
+      "type": "stat",
+      "gridPos": {
+        "x": 12,
+        "y": 62,
+        "w": 6,
+        "h": 5
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "decimals": 2
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value_and_name",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "avg(live_shadow_energy_saving_fraction{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"rapec-g-v4\"}) * 100",
+          "legendFormat": "Mean Energy Saving: RAPEC-G vs Full100",
+          "instant": true,
+          "range": false,
+          "format": "table",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "id": 304,
+      "title": "Mean Quality Regret: RAPEC-G vs Full100",
+      "description": "Makro-Mittel des normalisierten RAPEC-G-Qualitätsverlusts gegenüber Full100.",
+      "type": "stat",
+      "gridPos": {
+        "x": 18,
+        "y": 62,
+        "w": 6,
+        "h": 5
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentpoint",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "decimals": 2
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value_and_name",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "avg(live_shadow_quality_regret{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"rapec-g-v4\"}) * 100",
+          "legendFormat": "Mean Quality Regret: RAPEC-G vs Full100",
+          "instant": true,
+          "range": false,
+          "format": "table",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "id": 305,
+      "title": "Mean Energy Saving: ES vs Full100",
+      "description": "Makro-Mittel der relativen Standard-ES-Energieeinsparung gegenüber Full100.",
+      "type": "stat",
+      "gridPos": {
+        "x": 0,
+        "y": 67,
+        "w": 6,
+        "h": 5
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "decimals": 2
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value_and_name",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "avg(live_shadow_energy_saving_fraction{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"standard-es-10\"}) * 100",
+          "legendFormat": "Mean Energy Saving: ES vs Full100",
+          "instant": true,
+          "range": false,
+          "format": "table",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "id": 306,
+      "title": "Mean Quality Regret: ES vs Full100",
+      "description": "Makro-Mittel des normalisierten Standard-ES-Qualitätsverlusts gegenüber Full100.",
+      "type": "stat",
+      "gridPos": {
+        "x": 6,
+        "y": 67,
+        "w": 6,
+        "h": 5
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentpoint",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "decimals": 2
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value_and_name",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "avg(live_shadow_quality_regret{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"standard-es-10\"}) * 100",
+          "legendFormat": "Mean Quality Regret: ES vs Full100",
+          "instant": true,
+          "range": false,
+          "format": "table",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "id": 307,
+      "title": "RAPEC-G Controller Overhead",
+      "description": "Summe der separat attributierten RAPEC-G-v4-Overhead-Energie der ausgewählten Datasets.",
+      "type": "stat",
+      "gridPos": {
+        "x": 12,
+        "y": 67,
+        "w": 6,
+        "h": 5
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "watth",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "decimals": 2
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value_and_name",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(live_shadow_controller_overhead_energy_wh{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"rapec-g-v4\"})",
+          "legendFormat": "RAPEC-G Controller Overhead",
+          "instant": true,
+          "range": false,
+          "format": "table",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "id": 308,
+      "title": "Standard ES Overhead",
+      "description": "Summe der separat attributierten Standard-ES-Overhead-Energie der ausgewählten Datasets.",
+      "type": "stat",
+      "gridPos": {
+        "x": 18,
+        "y": 67,
+        "w": 6,
+        "h": 5
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "watth",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "decimals": 2
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value_and_name",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(live_shadow_controller_overhead_energy_wh{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"standard-es-10\"})",
+          "legendFormat": "Standard ES Overhead",
+          "instant": true,
+          "range": false,
+          "format": "table",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "id": 400,
+      "title": "4 · Dataset-Level Controller Comparison",
+      "description": "RAPEC-G v4, Standard ES und Full100 je Dataset; keine Vermischung der Dataset-Ebene mit globalen Summen.",
+      "type": "row",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 72,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "id": 401,
+      "title": "Stop Epoch by Dataset: RAPEC-G, ES, Full100",
+      "description": "Stop-Epochen von RAPEC-G v4 und Standard ES auf derselben Full100-Trajektorie; Full100 erscheint als Referenz bei Epoche 100. Achsen verwenden eindeutige Drei-Zeichen-Kürzel; der Tooltip enthält den vollständigen Namen.",
+      "type": "volkovlabs-echarts-panel",
+      "gridPos": {
+        "x": 0,
+        "y": 73,
+        "w": 24,
+        "h": 11
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "renderer": "svg",
+        "followTheme": true,
+        "getOption": "\nconst frames = context?.panel?.data?.series || [];\nconst arr = value => {\n  if (value == null) return [];\n  if (typeof value.toArray === 'function') return value.toArray();\n  if (value.buffer) return Array.from(value.buffer);\n  return Array.isArray(value) ? value : [];\n};\nconst fieldsOf = frame => (frame.fields && frame.fields.length) ? frame.fields : (frame.schema?.fields || []);\nconst numberFieldIndex = frame => {\n  const fields = fieldsOf(frame);\n  const index = fields.findIndex(field => field.type === 'number' || field.name === 'Value');\n  return index >= 0 ? index : (fields.length > 1 ? 1 : -1);\n};\nconst frameValue = frame => {\n  const index = numberFieldIndex(frame);\n  if (index < 0) return null;\n  const local = frame.fields || [];\n  const values = local[index]?.values != null ? arr(local[index].values) : arr(frame.data?.values?.[index]);\n  return values.length ? Number(values[values.length - 1]) : null;\n};\nconst frameLabels = frame => fieldsOf(frame)[numberFieldIndex(frame)]?.labels || {};\nconst frameRef = frame => frame.refId || frame.schema?.refId || null;\n\nconst specs = [{\"ref\": \"A\", \"name\": \"RAPEC-G v4\", \"color\": \"#2E8B57\"}, {\"ref\": \"B\", \"name\": \"Standard ES\", \"color\": \"#E69F00\"}, {\"ref\": \"C\", \"name\": \"Full100\", \"color\": \"#1976D2\"}];\nconst rows = new Map();\nframes.forEach(frame => {\n  const labels=frameLabels(frame), value=frameValue(frame), refId=frameRef(frame), caseId=labels.case_id;\n  if (!caseId || !refId || !Number.isFinite(value)) return;\n  const row=rows.get(caseId)||{case_id:caseId,code:labels.case_code||caseId.slice(0,3).toUpperCase(),fullName:labels.case_name||caseId,order:Number(labels.case_order)||999};\n  row[refId]=value; rows.set(caseId,row);\n});\nconst data=Array.from(rows.values()).sort((a,b)=>a.order-b.order||a.code.localeCompare(b.code));\nconst series=specs.map(spec=>({name:spec.name,type:'bar',itemStyle:{color:spec.color},data:data.map(row=>({value:row[spec.ref],code:row.code,fullName:row.fullName,case_id:row.case_id}))}));\nreturn {animation:false,tooltip:{trigger:'item',formatter:p=>`${p.seriesName}<br/><b>${p.data.code} — ${p.data.fullName}</b><br/>Case ID: ${p.data.case_id}<br/>Value: ${Number(p.data.value).toFixed(3)} Epoch`},legend:{bottom:0},grid:{left:80,right:25,top:35,bottom:90},xAxis:{type:'category',data:data.map(row=>row.code),axisLabel:{rotate:45}},yAxis:{type:'value',name:'Epoch',nameLocation:'middle',nameGap:60,axisLine:{onZero:true}},series};\n"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "live_shadow_controller_stop_epoch{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"rapec-g-v4\"}",
+          "legendFormat": "RAPEC-G v4",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        },
+        {
+          "refId": "B",
+          "expr": "live_shadow_controller_stop_epoch{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"standard-es-10\"}",
+          "legendFormat": "Standard ES",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        },
+        {
+          "refId": "C",
+          "expr": "live_shadow_full100_best_quality{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"rapec-g-v4\"} * 0 + 100",
+          "legendFormat": "Full100",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "id": 402,
+      "title": "Normalized Quality by Dataset: RAPEC-G, ES, Full100",
+      "description": "Beste taskunabhängig normalisierte Qualität bis zum jeweiligen Stopppunkt. Full100 ist die beste Qualität der vollständigen realen Trajektorie. Achsen verwenden eindeutige Drei-Zeichen-Kürzel; der Tooltip enthält den vollständigen Namen.",
+      "type": "volkovlabs-echarts-panel",
+      "gridPos": {
+        "x": 0,
+        "y": 84,
+        "w": 24,
+        "h": 11
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "renderer": "svg",
+        "followTheme": true,
+        "getOption": "\nconst frames = context?.panel?.data?.series || [];\nconst arr = value => {\n  if (value == null) return [];\n  if (typeof value.toArray === 'function') return value.toArray();\n  if (value.buffer) return Array.from(value.buffer);\n  return Array.isArray(value) ? value : [];\n};\nconst fieldsOf = frame => (frame.fields && frame.fields.length) ? frame.fields : (frame.schema?.fields || []);\nconst numberFieldIndex = frame => {\n  const fields = fieldsOf(frame);\n  const index = fields.findIndex(field => field.type === 'number' || field.name === 'Value');\n  return index >= 0 ? index : (fields.length > 1 ? 1 : -1);\n};\nconst frameValue = frame => {\n  const index = numberFieldIndex(frame);\n  if (index < 0) return null;\n  const local = frame.fields || [];\n  const values = local[index]?.values != null ? arr(local[index].values) : arr(frame.data?.values?.[index]);\n  return values.length ? Number(values[values.length - 1]) : null;\n};\nconst frameLabels = frame => fieldsOf(frame)[numberFieldIndex(frame)]?.labels || {};\nconst frameRef = frame => frame.refId || frame.schema?.refId || null;\n\nconst specs = [{\"ref\": \"A\", \"name\": \"RAPEC-G v4\", \"color\": \"#2E8B57\"}, {\"ref\": \"B\", \"name\": \"Standard ES\", \"color\": \"#E69F00\"}, {\"ref\": \"C\", \"name\": \"Full100\", \"color\": \"#1976D2\"}];\nconst rows = new Map();\nframes.forEach(frame => {\n  const labels=frameLabels(frame), value=frameValue(frame), refId=frameRef(frame), caseId=labels.case_id;\n  if (!caseId || !refId || !Number.isFinite(value)) return;\n  const row=rows.get(caseId)||{case_id:caseId,code:labels.case_code||caseId.slice(0,3).toUpperCase(),fullName:labels.case_name||caseId,order:Number(labels.case_order)||999};\n  row[refId]=value; rows.set(caseId,row);\n});\nconst data=Array.from(rows.values()).sort((a,b)=>a.order-b.order||a.code.localeCompare(b.code));\nconst series=specs.map(spec=>({name:spec.name,type:'bar',itemStyle:{color:spec.color},data:data.map(row=>({value:row[spec.ref],code:row.code,fullName:row.fullName,case_id:row.case_id}))}));\nreturn {animation:false,tooltip:{trigger:'item',formatter:p=>`${p.seriesName}<br/><b>${p.data.code} — ${p.data.fullName}</b><br/>Case ID: ${p.data.case_id}<br/>Value: ${Number(p.data.value).toFixed(3)} %`},legend:{bottom:0},grid:{left:80,right:25,top:35,bottom:90},xAxis:{type:'category',data:data.map(row=>row.code),axisLabel:{rotate:45}},yAxis:{type:'value',name:'%',nameLocation:'middle',nameGap:60,axisLine:{onZero:true}},series};\n"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "live_shadow_best_quality_at_stop{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"rapec-g-v4\"} * 100",
+          "legendFormat": "RAPEC-G v4",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        },
+        {
+          "refId": "B",
+          "expr": "live_shadow_best_quality_at_stop{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"standard-es-10\"} * 100",
+          "legendFormat": "Standard ES",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        },
+        {
+          "refId": "C",
+          "expr": "live_shadow_full100_best_quality{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"rapec-g-v4\"} * 100",
+          "legendFormat": "Full100",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "id": 403,
+      "title": "Quality Regret by Dataset: Three Comparisons",
+      "description": "Normalisierter Quality Regret in Prozentpunkten. Positive Werte bedeuten, dass das erstgenannte Verfahren schlechter ist; negative Werte eine Verbesserung. Achsen verwenden eindeutige Drei-Zeichen-Kürzel; der Tooltip enthält den vollständigen Namen.",
+      "type": "volkovlabs-echarts-panel",
+      "gridPos": {
+        "x": 0,
+        "y": 95,
+        "w": 24,
+        "h": 11
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "renderer": "svg",
+        "followTheme": true,
+        "getOption": "\nconst frames = context?.panel?.data?.series || [];\nconst arr = value => {\n  if (value == null) return [];\n  if (typeof value.toArray === 'function') return value.toArray();\n  if (value.buffer) return Array.from(value.buffer);\n  return Array.isArray(value) ? value : [];\n};\nconst fieldsOf = frame => (frame.fields && frame.fields.length) ? frame.fields : (frame.schema?.fields || []);\nconst numberFieldIndex = frame => {\n  const fields = fieldsOf(frame);\n  const index = fields.findIndex(field => field.type === 'number' || field.name === 'Value');\n  return index >= 0 ? index : (fields.length > 1 ? 1 : -1);\n};\nconst frameValue = frame => {\n  const index = numberFieldIndex(frame);\n  if (index < 0) return null;\n  const local = frame.fields || [];\n  const values = local[index]?.values != null ? arr(local[index].values) : arr(frame.data?.values?.[index]);\n  return values.length ? Number(values[values.length - 1]) : null;\n};\nconst frameLabels = frame => fieldsOf(frame)[numberFieldIndex(frame)]?.labels || {};\nconst frameRef = frame => frame.refId || frame.schema?.refId || null;\n\nconst specs = [{\"ref\": \"A\", \"name\": \"RAPEC-G vs Full100\", \"color\": \"#2E8B57\"}, {\"ref\": \"B\", \"name\": \"RAPEC-G vs ES\", \"color\": \"#E69F00\"}, {\"ref\": \"C\", \"name\": \"ES vs Full100\", \"color\": \"#1976D2\"}];\nconst rows = new Map();\nframes.forEach(frame => {\n  const labels=frameLabels(frame), value=frameValue(frame), refId=frameRef(frame), caseId=labels.case_id;\n  if (!caseId || !refId || !Number.isFinite(value)) return;\n  const row=rows.get(caseId)||{case_id:caseId,code:labels.case_code||caseId.slice(0,3).toUpperCase(),fullName:labels.case_name||caseId,order:Number(labels.case_order)||999};\n  row[refId]=value; rows.set(caseId,row);\n});\nconst data=Array.from(rows.values()).sort((a,b)=>a.order-b.order||a.code.localeCompare(b.code));\nconst series=specs.map(spec=>({name:spec.name,type:'bar',itemStyle:{color:spec.color},data:data.map(row=>({value:row[spec.ref],code:row.code,fullName:row.fullName,case_id:row.case_id}))}));\nreturn {animation:false,tooltip:{trigger:'item',formatter:p=>`${p.seriesName}<br/><b>${p.data.code} — ${p.data.fullName}</b><br/>Case ID: ${p.data.case_id}<br/>Value: ${Number(p.data.value).toFixed(3)} Percentage points`},legend:{bottom:0},grid:{left:80,right:25,top:35,bottom:90},xAxis:{type:'category',data:data.map(row=>row.code),axisLabel:{rotate:45}},yAxis:{type:'value',name:'Percentage points',nameLocation:'middle',nameGap:60,axisLine:{onZero:true}},series};\n"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "live_shadow_quality_regret{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"rapec-g-v4\"} * 100",
+          "legendFormat": "RAPEC-G vs Full100",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        },
+        {
+          "refId": "B",
+          "expr": "(live_shadow_best_quality_at_stop{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"standard-es-10\"} - on(benchmark_run_id,benchmark_version,stage,case_id,case_code,case_name,case_order,task_type,energy_measurement_method) live_shadow_best_quality_at_stop{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"rapec-g-v4\"}) * 100",
+          "legendFormat": "RAPEC-G vs ES",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        },
+        {
+          "refId": "C",
+          "expr": "live_shadow_quality_regret{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"standard-es-10\"} * 100",
+          "legendFormat": "ES vs Full100",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "id": 404,
+      "title": "Controller and ES Overhead Energy by Dataset",
+      "description": "Ausschließlich separat attributierte Overhead-Energie der Stop-Entscheidungen; Trainingsenergie ist nicht enthalten. Achsen verwenden eindeutige Drei-Zeichen-Kürzel; der Tooltip enthält den vollständigen Namen.",
+      "type": "volkovlabs-echarts-panel",
+      "gridPos": {
+        "x": 0,
+        "y": 106,
+        "w": 12,
+        "h": 11
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "renderer": "svg",
+        "followTheme": true,
+        "getOption": "\nconst frames = context?.panel?.data?.series || [];\nconst arr = value => {\n  if (value == null) return [];\n  if (typeof value.toArray === 'function') return value.toArray();\n  if (value.buffer) return Array.from(value.buffer);\n  return Array.isArray(value) ? value : [];\n};\nconst fieldsOf = frame => (frame.fields && frame.fields.length) ? frame.fields : (frame.schema?.fields || []);\nconst numberFieldIndex = frame => {\n  const fields = fieldsOf(frame);\n  const index = fields.findIndex(field => field.type === 'number' || field.name === 'Value');\n  return index >= 0 ? index : (fields.length > 1 ? 1 : -1);\n};\nconst frameValue = frame => {\n  const index = numberFieldIndex(frame);\n  if (index < 0) return null;\n  const local = frame.fields || [];\n  const values = local[index]?.values != null ? arr(local[index].values) : arr(frame.data?.values?.[index]);\n  return values.length ? Number(values[values.length - 1]) : null;\n};\nconst frameLabels = frame => fieldsOf(frame)[numberFieldIndex(frame)]?.labels || {};\nconst frameRef = frame => frame.refId || frame.schema?.refId || null;\n\nconst specs = [{\"ref\": \"A\", \"name\": \"RAPEC-G v4\", \"color\": \"#2E8B57\"}, {\"ref\": \"B\", \"name\": \"Standard ES\", \"color\": \"#E69F00\"}];\nconst rows = new Map();\nframes.forEach(frame => {\n  const labels=frameLabels(frame), value=frameValue(frame), refId=frameRef(frame), caseId=labels.case_id;\n  if (!caseId || !refId || !Number.isFinite(value)) return;\n  const row=rows.get(caseId)||{case_id:caseId,code:labels.case_code||caseId.slice(0,3).toUpperCase(),fullName:labels.case_name||caseId,order:Number(labels.case_order)||999};\n  row[refId]=value; rows.set(caseId,row);\n});\nconst data=Array.from(rows.values()).sort((a,b)=>a.order-b.order||a.code.localeCompare(b.code));\nconst series=specs.map(spec=>({name:spec.name,type:'bar',itemStyle:{color:spec.color},data:data.map(row=>({value:row[spec.ref],code:row.code,fullName:row.fullName,case_id:row.case_id}))}));\nreturn {animation:false,tooltip:{trigger:'item',formatter:p=>`${p.seriesName}<br/><b>${p.data.code} — ${p.data.fullName}</b><br/>Case ID: ${p.data.case_id}<br/>Value: ${Number(p.data.value).toFixed(3)} Wh`},legend:{bottom:0},grid:{left:80,right:25,top:35,bottom:90},xAxis:{type:'category',data:data.map(row=>row.code),axisLabel:{rotate:45}},yAxis:{type:'value',name:'Wh',nameLocation:'middle',nameGap:60,axisLine:{onZero:true}},series};\n"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "live_shadow_controller_overhead_energy_wh{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"rapec-g-v4\"}",
+          "legendFormat": "RAPEC-G v4",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        },
+        {
+          "refId": "B",
+          "expr": "live_shadow_controller_overhead_energy_wh{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"standard-es-10\"}",
+          "legendFormat": "Standard ES",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "id": 405,
+      "title": "Controller and ES Compute Time by Dataset",
+      "description": "Ausschließlich Rechenzeit der Stop-Entscheidungen; Trainingszeit und Datenvorbereitung sind nicht enthalten. Achsen verwenden eindeutige Drei-Zeichen-Kürzel; der Tooltip enthält den vollständigen Namen.",
+      "type": "volkovlabs-echarts-panel",
+      "gridPos": {
+        "x": 12,
+        "y": 106,
+        "w": 12,
+        "h": 11
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "renderer": "svg",
+        "followTheme": true,
+        "getOption": "\nconst frames = context?.panel?.data?.series || [];\nconst arr = value => {\n  if (value == null) return [];\n  if (typeof value.toArray === 'function') return value.toArray();\n  if (value.buffer) return Array.from(value.buffer);\n  return Array.isArray(value) ? value : [];\n};\nconst fieldsOf = frame => (frame.fields && frame.fields.length) ? frame.fields : (frame.schema?.fields || []);\nconst numberFieldIndex = frame => {\n  const fields = fieldsOf(frame);\n  const index = fields.findIndex(field => field.type === 'number' || field.name === 'Value');\n  return index >= 0 ? index : (fields.length > 1 ? 1 : -1);\n};\nconst frameValue = frame => {\n  const index = numberFieldIndex(frame);\n  if (index < 0) return null;\n  const local = frame.fields || [];\n  const values = local[index]?.values != null ? arr(local[index].values) : arr(frame.data?.values?.[index]);\n  return values.length ? Number(values[values.length - 1]) : null;\n};\nconst frameLabels = frame => fieldsOf(frame)[numberFieldIndex(frame)]?.labels || {};\nconst frameRef = frame => frame.refId || frame.schema?.refId || null;\n\nconst specs = [{\"ref\": \"A\", \"name\": \"RAPEC-G v4\", \"color\": \"#2E8B57\"}, {\"ref\": \"B\", \"name\": \"Standard ES\", \"color\": \"#E69F00\"}];\nconst rows = new Map();\nframes.forEach(frame => {\n  const labels=frameLabels(frame), value=frameValue(frame), refId=frameRef(frame), caseId=labels.case_id;\n  if (!caseId || !refId || !Number.isFinite(value)) return;\n  const row=rows.get(caseId)||{case_id:caseId,code:labels.case_code||caseId.slice(0,3).toUpperCase(),fullName:labels.case_name||caseId,order:Number(labels.case_order)||999};\n  row[refId]=value; rows.set(caseId,row);\n});\nconst data=Array.from(rows.values()).sort((a,b)=>a.order-b.order||a.code.localeCompare(b.code));\nconst series=specs.map(spec=>({name:spec.name,type:'bar',itemStyle:{color:spec.color},data:data.map(row=>({value:row[spec.ref],code:row.code,fullName:row.fullName,case_id:row.case_id}))}));\nreturn {animation:false,tooltip:{trigger:'item',formatter:p=>`${p.seriesName}<br/><b>${p.data.code} — ${p.data.fullName}</b><br/>Case ID: ${p.data.case_id}<br/>Value: ${Number(p.data.value).toFixed(3)} Seconds`},legend:{bottom:0},grid:{left:80,right:25,top:35,bottom:90},xAxis:{type:'category',data:data.map(row=>row.code),axisLabel:{rotate:45}},yAxis:{type:'value',name:'Seconds',nameLocation:'middle',nameGap:60,axisLine:{onZero:true}},series};\n"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "live_shadow_controller_compute_seconds{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"rapec-g-v4\"}",
+          "legendFormat": "RAPEC-G v4",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        },
+        {
+          "refId": "B",
+          "expr": "live_shadow_controller_compute_seconds{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"standard-es-10\"}",
+          "legendFormat": "Standard ES",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "id": 406,
+      "title": "Energy Saving by Dataset: Three Comparisons",
+      "description": "Relative Energieeinsparung für RAPEC-G vs Full100, RAPEC-G vs Standard ES und Standard ES vs Full100. Positive Werte sind Einsparungen; negative Werte Mehrverbrauch. Achsen verwenden eindeutige Drei-Zeichen-Kürzel; der Tooltip enthält den vollständigen Namen.",
+      "type": "volkovlabs-echarts-panel",
+      "gridPos": {
+        "x": 0,
+        "y": 117,
+        "w": 24,
+        "h": 11
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "renderer": "svg",
+        "followTheme": true,
+        "getOption": "\nconst frames = context?.panel?.data?.series || [];\nconst arr = value => {\n  if (value == null) return [];\n  if (typeof value.toArray === 'function') return value.toArray();\n  if (value.buffer) return Array.from(value.buffer);\n  return Array.isArray(value) ? value : [];\n};\nconst fieldsOf = frame => (frame.fields && frame.fields.length) ? frame.fields : (frame.schema?.fields || []);\nconst numberFieldIndex = frame => {\n  const fields = fieldsOf(frame);\n  const index = fields.findIndex(field => field.type === 'number' || field.name === 'Value');\n  return index >= 0 ? index : (fields.length > 1 ? 1 : -1);\n};\nconst frameValue = frame => {\n  const index = numberFieldIndex(frame);\n  if (index < 0) return null;\n  const local = frame.fields || [];\n  const values = local[index]?.values != null ? arr(local[index].values) : arr(frame.data?.values?.[index]);\n  return values.length ? Number(values[values.length - 1]) : null;\n};\nconst frameLabels = frame => fieldsOf(frame)[numberFieldIndex(frame)]?.labels || {};\nconst frameRef = frame => frame.refId || frame.schema?.refId || null;\n\nconst specs = [{\"ref\": \"A\", \"name\": \"RAPEC-G vs Full100\", \"color\": \"#2E8B57\"}, {\"ref\": \"B\", \"name\": \"RAPEC-G vs ES\", \"color\": \"#E69F00\"}, {\"ref\": \"C\", \"name\": \"ES vs Full100\", \"color\": \"#1976D2\"}];\nconst rows = new Map();\nframes.forEach(frame => {\n  const labels=frameLabels(frame), value=frameValue(frame), refId=frameRef(frame), caseId=labels.case_id;\n  if (!caseId || !refId || !Number.isFinite(value)) return;\n  const row=rows.get(caseId)||{case_id:caseId,code:labels.case_code||caseId.slice(0,3).toUpperCase(),fullName:labels.case_name||caseId,order:Number(labels.case_order)||999};\n  row[refId]=value; rows.set(caseId,row);\n});\nconst data=Array.from(rows.values()).sort((a,b)=>a.order-b.order||a.code.localeCompare(b.code));\nconst series=specs.map(spec=>({name:spec.name,type:'bar',itemStyle:{color:spec.color},data:data.map(row=>({value:row[spec.ref],code:row.code,fullName:row.fullName,case_id:row.case_id}))}));\nreturn {animation:false,tooltip:{trigger:'item',formatter:p=>`${p.seriesName}<br/><b>${p.data.code} — ${p.data.fullName}</b><br/>Case ID: ${p.data.case_id}<br/>Value: ${Number(p.data.value).toFixed(3)} %`},legend:{bottom:0},grid:{left:80,right:25,top:35,bottom:90},xAxis:{type:'category',data:data.map(row=>row.code),axisLabel:{rotate:45}},yAxis:{type:'value',name:'%',nameLocation:'middle',nameGap:60,axisLine:{onZero:true}},series};\n"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "live_shadow_energy_saving_fraction{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"rapec-g-v4\"} * 100",
+          "legendFormat": "RAPEC-G vs Full100",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        },
+        {
+          "refId": "B",
+          "expr": "((live_shadow_counterfactual_total_energy_wh{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"standard-es-10\"} - on(benchmark_run_id,benchmark_version,stage,case_id,case_code,case_name,case_order,task_type,energy_measurement_method) live_shadow_counterfactual_total_energy_wh{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"rapec-g-v4\"}) / on(benchmark_run_id,benchmark_version,stage,case_id,case_code,case_name,case_order,task_type,energy_measurement_method) live_shadow_counterfactual_total_energy_wh{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"standard-es-10\"}) * 100",
+          "legendFormat": "RAPEC-G vs ES",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        },
+        {
+          "refId": "C",
+          "expr": "live_shadow_energy_saving_fraction{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"standard-es-10\"} * 100",
+          "legendFormat": "ES vs Full100",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "id": 407,
+      "title": "Raw Quality by Dataset and Metric",
+      "description": "Dynamische Rohqualitätsansicht. Pro tatsächlich vorhandener und ausgewählter Rohmetrik wird ein eigenes Unterdiagramm erzeugt; inkompatible Skalen werden nie kombiniert. Gezeigt wird der beste Wert bis zum RAPEC-G-/ES-Stopp sowie der beste Full100-Wert. Für Loss, Cross-Entropy, Perplexity, MAE, RMSE und NRMSE gilt: kleiner ist besser.",
+      "type": "volkovlabs-echarts-panel",
+      "gridPos": {
+        "x": 0,
+        "y": 128,
+        "w": 24,
+        "h": 28
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "renderer": "svg",
+        "followTheme": true,
+        "getOption": "\nconst frames = context?.panel?.data?.series || [];\nconst arr = value => {\n  if (value == null) return [];\n  if (typeof value.toArray === 'function') return value.toArray();\n  if (value.buffer) return Array.from(value.buffer);\n  return Array.isArray(value) ? value : [];\n};\nconst fieldsOf = frame => (frame.fields && frame.fields.length) ? frame.fields : (frame.schema?.fields || []);\nconst numberFieldIndex = frame => {\n  const fields = fieldsOf(frame);\n  const index = fields.findIndex(field => field.type === 'number' || field.name === 'Value');\n  return index >= 0 ? index : (fields.length > 1 ? 1 : -1);\n};\nconst frameValue = frame => {\n  const index = numberFieldIndex(frame);\n  if (index < 0) return null;\n  const local = frame.fields || [];\n  const values = local[index]?.values != null ? arr(local[index].values) : arr(frame.data?.values?.[index]);\n  return values.length ? Number(values[values.length - 1]) : null;\n};\nconst frameLabels = frame => fieldsOf(frame)[numberFieldIndex(frame)]?.labels || {};\nconst frameRef = frame => frame.refId || frame.schema?.refId || null;\n\nconst raw = new Map(), stops = {rapec:new Map(), es:new Map()};\nframes.forEach(frame => {\n  const labels=frameLabels(frame), value=frameValue(frame);\n  if (!Number.isFinite(value) || !labels.case_id) return;\n  const refId=frameRef(frame);\n  if (refId === 'B') {stops.rapec.set(labels.case_id,value);return;}\n  if (refId === 'C') {stops.es.set(labels.case_id,value);return;}\n  if (refId !== 'A' || !labels.raw_quality_metric) return;\n  const key=`${labels.raw_quality_metric}|||${labels.case_id}`;\n  const rows=raw.get(key)||[]; rows.push({epoch:Number(labels.epoch),value,metric:labels.raw_quality_metric,case_id:labels.case_id,code:labels.case_code||labels.case_id.slice(0,3).toUpperCase(),fullName:labels.case_name||labels.case_id,order:Number(labels.case_order)||999}); raw.set(key,rows);\n});\nconst lowerBetter = new Set(['loss','cross_entropy','perplexity','mae','mse','rmse','nrmse','error_rate']);\nconst groups = new Map();\nfor (const rows of raw.values()) {\n  rows.sort((a,b)=>a.epoch-b.epoch); const sample=rows[0], minimize=lowerBetter.has(sample.metric);\n  const bestUntil=stop=>{const chosen=rows.filter(r=>r.epoch<=stop).map(r=>r.value);if(!chosen.length)return null;return minimize?Math.min(...chosen):Math.max(...chosen);};\n  const result={case_id:sample.case_id,code:sample.code,fullName:sample.fullName,order:sample.order,rapec:bestUntil(stops.rapec.get(sample.case_id)),es:bestUntil(stops.es.get(sample.case_id)),full:bestUntil(Infinity)};\n  const list=groups.get(sample.metric)||[]; list.push(result); groups.set(sample.metric,list);\n}\nconst metrics=Array.from(groups.keys()).sort();\nif (!metrics.length) return {title:{text:'No raw-quality data for the current selection',left:'center',top:'middle'},series:[]};\nconst columns=Math.min(2,metrics.length), rowsCount=Math.ceil(metrics.length/columns), rowSlot=86/rowsCount;\nconst grid=[],xAxis=[],yAxis=[],series=[],titles=[];\nmetrics.forEach((metric,index)=>{const col=index%columns,row=Math.floor(index/columns),left=col===0?'7%':'56%',width=columns===1?'88%':'39%',titleTop=3+row*rowSlot,gridTop=titleTop+5,gridHeight=Math.max(7,rowSlot-11);const values=groups.get(metric).sort((a,b)=>a.order-b.order||a.code.localeCompare(b.code));grid.push({left,width,top:`${gridTop}%`,height:`${gridHeight}%`,containLabel:true});xAxis.push({type:'category',gridIndex:index,data:values.map(v=>v.code),axisLabel:{rotate:35,fontSize:8,hideOverlap:true}});yAxis.push({type:'value',gridIndex:index,scale:true,axisLabel:{fontSize:8}});titles.push({text:metric.replaceAll('_',' '),left,top:`${titleTop}%`,textStyle:{fontSize:12,fontWeight:'bold'}});[['RAPEC-G v4','rapec','#2E8B57'],['Standard ES','es','#E69F00'],['Full100','full','#1976D2']].forEach(([name,key,color])=>series.push({name,type:'bar',xAxisIndex:index,yAxisIndex:index,itemStyle:{color},data:values.map(v=>({value:v[key],code:v.code,fullName:v.fullName,case_id:v.case_id,metric}))}));});\nreturn {animation:false,title:titles,tooltip:{trigger:'item',formatter:p=>`${p.seriesName}<br/><b>${p.data.code} — ${p.data.fullName}</b><br/>Case ID: ${p.data.case_id}<br/>Metric: ${p.data.metric}<br/>Value: ${Number(p.data.value).toFixed(4)}`},legend:{bottom:0},grid,xAxis,yAxis,series};\n"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "thesis_live_shadow_epoch_raw_quality{benchmark_run_id=\"$benchmark_run_id\",case_id=~\"$cases\",task_type=~\"$task_types\",stage=~\"$stages\",raw_quality_metric=~\"$raw_quality_metrics\"}",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        },
+        {
+          "refId": "B",
+          "expr": "live_shadow_controller_stop_epoch{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"rapec-g-v4\"}",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        },
+        {
+          "refId": "C",
+          "expr": "live_shadow_controller_stop_epoch{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"standard-es-10\"}",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "id": 500,
+      "title": "5 · Energy–Quality Frontier",
+      "description": "Verknüpft reale Full100-Lernkurven, kontrafaktische Stopppunkte und Energieeffizienz der Qualitätsverbesserung.",
+      "type": "row",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 156,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "id": 501,
+      "title": "Full100 Quality–Energy Curve with RAPEC-G and ES Stop Points",
+      "description": "Eine reale Full100-Linie je ausgewähltem Fall. RAPEC-G-v4- und Standard-ES-Informationen zeigen im Tooltip Stop-Epoche, Trainingsenergie, Qualität, Einsparung, Regret, Overhead und Compute Time.",
+      "type": "volkovlabs-echarts-panel",
+      "gridPos": {
+        "x": 0,
+        "y": 157,
+        "w": 24,
+        "h": 16
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "renderer": "svg",
+        "followTheme": true,
+        "getOption": "\nconst frames = context?.panel?.data?.series || [];\nconst arr = value => {\n  if (value == null) return [];\n  if (typeof value.toArray === 'function') return value.toArray();\n  if (value.buffer) return Array.from(value.buffer);\n  return Array.isArray(value) ? value : [];\n};\nconst fieldsOf = frame => (frame.fields && frame.fields.length) ? frame.fields : (frame.schema?.fields || []);\nconst numberFieldIndex = frame => {\n  const fields = fieldsOf(frame);\n  const index = fields.findIndex(field => field.type === 'number' || field.name === 'Value');\n  return index >= 0 ? index : (fields.length > 1 ? 1 : -1);\n};\nconst frameValue = frame => {\n  const index = numberFieldIndex(frame);\n  if (index < 0) return null;\n  const local = frame.fields || [];\n  const values = local[index]?.values != null ? arr(local[index].values) : arr(frame.data?.values?.[index]);\n  return values.length ? Number(values[values.length - 1]) : null;\n};\nconst frameLabels = frame => fieldsOf(frame)[numberFieldIndex(frame)]?.labels || {};\nconst frameRef = frame => frame.refId || frame.schema?.refId || null;\n\nconst datasets = new Map();\nframes.forEach(frame => {\n  const labels = frameLabels(frame), value = frameValue(frame);\n  if (!Number.isFinite(value) || !labels.case_id) return;\n  const caseId=labels.case_id;\n  const dataset=datasets.get(caseId)||{case_id:caseId,code:labels.case_code||caseId.slice(0,3).toUpperCase(),fullName:labels.case_name||caseId,order:Number(labels.case_order)||999,epochs:new Map(),rapecStop:null,esStop:null};\n  const refId = frameRef(frame);\n  if (refId === 'A' || refId === 'B') {\n    const epoch = Number(labels.epoch); if (!Number.isFinite(epoch)) return;\n    const point = dataset.epochs.get(epoch) || {epoch}; point[refId] = value; dataset.epochs.set(epoch, point);\n  }\n  if (refId === 'C') {dataset.rapecStop=value;dataset.rapecReason=labels.stop_reason||'not reported';}\n  else if (refId === 'D') {dataset.esStop=value;dataset.esReason=labels.stop_reason||'not reported';}\n  else if (refId !== 'A' && refId !== 'B') dataset[refId]=value;\n  datasets.set(caseId,dataset);\n});\nconst ordered=Array.from(datasets.values()).sort((a,b)=>a.order-b.order||a.code.localeCompare(b.code));\nconst curves=[],rapecMarkers=[],esMarkers=[],fullMarkers=[];\nordered.forEach(dataset=>{\n  const rows=Array.from(dataset.epochs.values()).filter(p=>Number.isFinite(p.A)&&Number.isFinite(p.B)).sort((a,b)=>a.epoch-b.epoch);\n  let cumulative=0,best=-Infinity;\n  const curve=rows.map(p=>{cumulative+=p.A;best=Math.max(best,p.B);return{value:[cumulative,best],epoch:p.epoch,code:dataset.code,fullName:dataset.fullName,case_id:dataset.case_id};});\n  if(!curve.length)return;\n  curves.push({name:dataset.code,type:'line',showSymbol:true,symbol:'circle',symbolSize:8,data:curve,lineStyle:{width:2},itemStyle:{opacity:0},emphasis:{focus:'series',lineStyle:{width:4},itemStyle:{opacity:1}}});\n  const pointAt=stop=>curve.find(point=>point.epoch===Number(stop));\n  const rapec=pointAt(dataset.rapecStop),es=pointAt(dataset.esStop),full=curve[curve.length-1];\n  dataset.rapecPoint=rapec;\n  dataset.esPoint=es;\n  if(rapec)rapecMarkers.push({...rapec,stop:'RAPEC-G v4',energySaving:dataset.F,qualityRegret:dataset.G,overheadEnergy:dataset.H,computeSeconds:dataset.I});\n  if(es)esMarkers.push({...es,stop:'Standard ES',energySaving:dataset.K,qualityRegret:dataset.L,overheadEnergy:dataset.M,computeSeconds:dataset.N});\n  if(full)fullMarkers.push({...full,stop:'Full100'});\n});\nconst marker=(name,data,color,symbol,size)=>({name,type:'scatter',data,itemStyle:{color},symbol,symbolSize:size});\nconst fmt=(value,digits,suffix='')=>Number.isFinite(Number(value))?`${Number(value).toFixed(digits)}${suffix}`:'—';\nconst controllerValues=(point,energySaving,qualityRegret,overheadEnergy,computeSeconds)=>({epoch:point?.epoch??'—',quality:point?fmt(point.value[1],2,' %'):'—',training:point?fmt(point.value[0],3,' Wh'):'—',saving:fmt(energySaving,2,' %'),regret:fmt(qualityRegret,2,' pp'),overhead:fmt(overheadEnergy,5,' Wh'),compute:fmt(computeSeconds,4,' s')});\nconst comparisonTable=dataset=>{const r=controllerValues(dataset.rapecPoint,dataset.F,dataset.G,dataset.H,dataset.I),e=controllerValues(dataset.esPoint,dataset.K,dataset.L,dataset.M,dataset.N);const row=(label,a,b)=>`<tr><td style=\"padding:2px 7px 2px 0;color:#aaa\">${label}</td><td style=\"padding:2px 8px\">${a}</td><td style=\"padding:2px 0 2px 8px\">${b}</td></tr>`;return `<table style=\"margin-top:6px;border-collapse:collapse;font-size:11px;line-height:1.2;max-width:700px\"><tr><th></th><th style=\"border-left:4px solid #2E8B57;padding:3px 8px;text-align:left\">RAPEC-G v4</th><th style=\"border-left:4px solid #E69F00;padding:3px 8px;text-align:left\">Standard ES</th></tr>${row('Stop epoch',r.epoch,e.epoch)}${row('Quality at stop',r.quality,e.quality)}${row('Training GPU energy',r.training,e.training)}${row('Energy saving',r.saving,e.saving)}${row('Quality regret',r.regret,e.regret)}${row('Overhead',r.overhead,e.overhead)}${row('Compute time',r.compute,e.compute)}</table>`;};\nreturn {\n  animation: false,\n  tooltip: {trigger:'item',confine:true,enterable:true,extraCssText:'max-width:740px;white-space:normal;',formatter:p=>{const d=p.data,dataset=datasets.get(d.case_id),head=`<div style=\"font-size:11px;line-height:1.25\"><b>${d.code} — ${d.fullName}</b> · ${d.stop||'Full100 trajectory'}<br/>Epoch ${d.epoch} · ${d.value[0].toFixed(3)} Wh cumulative GPU · ${d.value[1].toFixed(2)} % best quality</div>`;return dataset?head+comparisonTable(dataset):head;}},\n  legend: {type:'scroll',bottom:0,data:curves.map(series=>series.name)},\n  grid: {left:80,right:35,top:45,bottom:95},\n  xAxis: {type:'value',name:'Cumulative Full100 GPU energy (Wh)',nameLocation:'middle',nameGap:48,min:0},\n  yAxis: {type:'value',name:'Best normalized quality (%)',nameLocation:'middle',nameGap:58,min:0,max:100},\n  series:[...curves,marker('RAPEC-G v4 stop',rapecMarkers,'#2E8B57','circle',13),marker('Standard ES stop',esMarkers,'#E69F00','diamond',13),marker('Full100 endpoint',fullMarkers,'#1976D2','rect',8)]\n};\n"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "thesis_live_shadow_epoch_gpu_energy_wh{benchmark_run_id=\"$benchmark_run_id\",case_id=~\"$cases\",task_type=~\"$task_types\",stage=~\"$stages\"}",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        },
+        {
+          "refId": "B",
+          "expr": "thesis_live_shadow_epoch_quality_score{benchmark_run_id=\"$benchmark_run_id\",case_id=~\"$cases\",task_type=~\"$task_types\",stage=~\"$stages\"} * 100",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        },
+        {
+          "refId": "C",
+          "expr": "live_shadow_controller_stop_epoch{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"rapec-g-v4\"}",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        },
+        {
+          "refId": "D",
+          "expr": "live_shadow_controller_stop_epoch{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"standard-es-10\"}",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        },
+        {
+          "refId": "F",
+          "expr": "live_shadow_energy_saving_fraction{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"rapec-g-v4\"} * 100",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        },
+        {
+          "refId": "G",
+          "expr": "live_shadow_quality_regret{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"rapec-g-v4\"} * 100",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        },
+        {
+          "refId": "H",
+          "expr": "live_shadow_controller_overhead_energy_wh{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"rapec-g-v4\"}",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        },
+        {
+          "refId": "I",
+          "expr": "live_shadow_controller_compute_seconds{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"rapec-g-v4\"}",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        },
+        {
+          "refId": "K",
+          "expr": "live_shadow_energy_saving_fraction{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"standard-es-10\"} * 100",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        },
+        {
+          "refId": "L",
+          "expr": "live_shadow_quality_regret{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"standard-es-10\"} * 100",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        },
+        {
+          "refId": "M",
+          "expr": "live_shadow_controller_overhead_energy_wh{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"standard-es-10\"}",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        },
+        {
+          "refId": "N",
+          "expr": "live_shadow_controller_compute_seconds{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"standard-es-10\"}",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "id": 502,
+      "title": "GPU Energy per +1 Normalized Quality Point by Dataset",
+      "description": "Durchschnittlicher Energieaufwand je zusätzlichem normalisierten Qualitätsprozentpunkt: Energie bis zum Stop inklusive Overhead geteilt durch (Stopqualität − Qualität in Epoche 1) × 100. Full100 verwendet die vollständige Trainingsenergie. Kleinere Werte sind effizienter; nichtpositive Qualitätsgewinne bleiben undefiniert.",
+      "type": "volkovlabs-echarts-panel",
+      "gridPos": {
+        "x": 0,
+        "y": 173,
+        "w": 24,
+        "h": 16
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "renderer": "svg",
+        "followTheme": true,
+        "getOption": "\nconst frames = context?.panel?.data?.series || [];\nconst arr = value => {\n  if (value == null) return [];\n  if (typeof value.toArray === 'function') return value.toArray();\n  if (value.buffer) return Array.from(value.buffer);\n  return Array.isArray(value) ? value : [];\n};\nconst fieldsOf = frame => (frame.fields && frame.fields.length) ? frame.fields : (frame.schema?.fields || []);\nconst numberFieldIndex = frame => {\n  const fields = fieldsOf(frame);\n  const index = fields.findIndex(field => field.type === 'number' || field.name === 'Value');\n  return index >= 0 ? index : (fields.length > 1 ? 1 : -1);\n};\nconst frameValue = frame => {\n  const index = numberFieldIndex(frame);\n  if (index < 0) return null;\n  const local = frame.fields || [];\n  const values = local[index]?.values != null ? arr(local[index].values) : arr(frame.data?.values?.[index]);\n  return values.length ? Number(values[values.length - 1]) : null;\n};\nconst frameLabels = frame => fieldsOf(frame)[numberFieldIndex(frame)]?.labels || {};\nconst frameRef = frame => frame.refId || frame.schema?.refId || null;\n\nconst rows = new Map();\nframes.forEach(frame => {\n  const labels = frameLabels(frame), value = frameValue(frame), caseId = labels.case_id;\n  if (!caseId || !Number.isFinite(value)) return;\n  const row = rows.get(caseId) || {case_id:caseId,code:labels.case_code||caseId.slice(0,3).toUpperCase(),fullName:labels.case_name||caseId,order:Number(labels.case_order)||999,task:labels.task_type || 'unknown'};\n  row[frameRef(frame)] = value; rows.set(caseId,row);\n});\nconst data = Array.from(rows.values()).sort((a,b)=>a.order-b.order||a.code.localeCompare(b.code));\nconst whpp = (energy, quality, start) => {\n  const gain = (quality-start)*100;\n  return Number.isFinite(energy) && Number.isFinite(gain) && gain > 1e-9 ? energy/gain : null;\n};\nconst specs = [['RAPEC-G v4','C','D','#2E8B57'],['Standard ES','E','F','#E69F00'],['Full100','A','B','#1976D2']];\nconst series = specs.map(([name,e,q,color]) => ({name,type:'bar',itemStyle:{color},data:data.map(row => ({value:whpp(row[e],row[q],row.G),case_id:row.case_id,code:row.code,fullName:row.fullName,energy:row[e],quality:row[q],start:row.G}))}));\nreturn {\n  animation:false,\n  tooltip:{trigger:'item',formatter:p=>{const d=p.data;if(!Number.isFinite(d.value))return `${p.seriesName}<br/><b>${d.code} — ${d.fullName}</b><br/>Case ID: ${d.case_id}<br/>Undefined: no positive quality gain`;return `${p.seriesName}<br/><b>${d.code} — ${d.fullName}</b><br/>Case ID: ${d.case_id}<br/>Energy: ${d.energy.toFixed(3)} Wh<br/>Start quality: ${(d.start*100).toFixed(2)} %<br/>Stop quality: ${(d.quality*100).toFixed(2)} %<br/><b>${d.value.toFixed(3)} Wh/pp</b>`;}},\n  legend:{bottom:0},grid:{left:80,right:25,top:35,bottom:125},\n  xAxis:{type:'category',data:data.map(row=>row.code),axisLabel:{rotate:45}},\n  yAxis:{type:'value',name:'GPU energy (Wh) per +1 quality pp',nameLocation:'middle',nameGap:62,min:0},series\n};\n"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "live_shadow_full100_training_energy_wh{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"rapec-g-v4\"}",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        },
+        {
+          "refId": "B",
+          "expr": "live_shadow_full100_best_quality{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"rapec-g-v4\"}",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        },
+        {
+          "refId": "C",
+          "expr": "live_shadow_counterfactual_total_energy_wh{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"rapec-g-v4\"}",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        },
+        {
+          "refId": "D",
+          "expr": "live_shadow_best_quality_at_stop{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"rapec-g-v4\"}",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        },
+        {
+          "refId": "E",
+          "expr": "live_shadow_counterfactual_total_energy_wh{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"standard-es-10\"}",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        },
+        {
+          "refId": "F",
+          "expr": "live_shadow_best_quality_at_stop{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"standard-es-10\"}",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        },
+        {
+          "refId": "G",
+          "expr": "thesis_live_shadow_epoch_quality_score{benchmark_run_id=\"$benchmark_run_id\",epoch=\"1\",case_id=~\"$cases\",task_type=~\"$task_types\",stage=~\"$stages\"}",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "id": 503,
+      "title": "Energy Saving vs Quality Regret by Dataset",
+      "description": "Drei getrennte Teilgrafiken zeigen RAPEC-G v4 vs Full100, Standard ES vs Full100 und RAPEC-G v4 vs Standard ES. Jeder Punkt ist ein Fall; X ist die gerichtete Energieeinsparung, Y der gerichtete normalisierte Quality Regret.",
+      "type": "volkovlabs-echarts-panel",
+      "gridPos": {
+        "x": 0,
+        "y": 189,
+        "w": 24,
+        "h": 15
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "renderer": "svg",
+        "followTheme": true,
+        "getOption": "\nconst frames = context?.panel?.data?.series || [];\nconst arr = value => {\n  if (value == null) return [];\n  if (typeof value.toArray === 'function') return value.toArray();\n  if (value.buffer) return Array.from(value.buffer);\n  return Array.isArray(value) ? value : [];\n};\nconst fieldsOf = frame => (frame.fields && frame.fields.length) ? frame.fields : (frame.schema?.fields || []);\nconst numberFieldIndex = frame => {\n  const fields = fieldsOf(frame);\n  const index = fields.findIndex(field => field.type === 'number' || field.name === 'Value');\n  return index >= 0 ? index : (fields.length > 1 ? 1 : -1);\n};\nconst frameValue = frame => {\n  const index = numberFieldIndex(frame);\n  if (index < 0) return null;\n  const local = frame.fields || [];\n  const values = local[index]?.values != null ? arr(local[index].values) : arr(frame.data?.values?.[index]);\n  return values.length ? Number(values[values.length - 1]) : null;\n};\nconst frameLabels = frame => fieldsOf(frame)[numberFieldIndex(frame)]?.labels || {};\nconst frameRef = frame => frame.refId || frame.schema?.refId || null;\n\nconst rows=new Map();\nframes.forEach(frame=>{const labels=frameLabels(frame),value=frameValue(frame),refId=frameRef(frame);if(!refId||!labels.case_id||!Number.isFinite(value))return;const key=`${refId[0]}:${labels.case_id}`,row=rows.get(key)||{case_id:labels.case_id,code:labels.case_code||labels.case_id.slice(0,3).toUpperCase(),fullName:labels.case_name||labels.case_id,task:labels.task_type,kind:refId[0]};row[refId[1]]=value;rows.set(key,row);});\nconst make=(kind,name,color,symbol,index,comparison)=>({name,type:'scatter',xAxisIndex:index,yAxisIndex:index,symbol,symbolSize:13,itemStyle:{color},label:{show:true,position:'top',fontSize:9,formatter:p=>p.data.code},data:Array.from(rows.values()).filter(r=>r.kind===kind&&Number.isFinite(r.X)&&Number.isFinite(r.Y)).map(r=>({value:[r.X,r.Y],case_id:r.case_id,code:r.code,fullName:r.fullName,task:r.task,comparison}))});\nreturn {animation:false,title:[{text:'RAPEC-G v4 vs Full100',left:'10%'},{text:'Standard ES vs Full100',left:'42%'},{text:'RAPEC-G v4 vs Standard ES',left:'73%'}],tooltip:{formatter:p=>`${p.data.comparison}<br/><b>${p.data.code} — ${p.data.fullName}</b><br/>Case ID: ${p.data.case_id}<br/>Task: ${p.data.task}<br/>Energy saving: ${p.data.value[0].toFixed(2)} %<br/>Quality regret: ${p.data.value[1].toFixed(2)} pp`},legend:{bottom:0},grid:[{left:'5%',width:'27%',top:55,bottom:75},{left:'37%',width:'27%',top:55,bottom:75},{left:'69%',width:'27%',top:55,bottom:75}],xAxis:[{type:'value',gridIndex:0,name:'RAPEC-G saving vs Full100 (%)',nameLocation:'middle',nameGap:42,axisLine:{onZero:true}},{type:'value',gridIndex:1,name:'ES saving vs Full100 (%)',nameLocation:'middle',nameGap:42,axisLine:{onZero:true}},{type:'value',gridIndex:2,name:'RAPEC-G saving vs ES (%)',nameLocation:'middle',nameGap:42,axisLine:{onZero:true}}],yAxis:[{type:'value',gridIndex:0,name:'RAPEC-G regret vs Full100 (pp)',nameLocation:'middle',nameGap:52,axisLine:{onZero:true}},{type:'value',gridIndex:1,name:'ES regret vs Full100 (pp)',nameLocation:'middle',nameGap:52,axisLine:{onZero:true}},{type:'value',gridIndex:2,name:'RAPEC-G regret vs ES (pp)',nameLocation:'middle',nameGap:52,axisLine:{onZero:true}}],series:[make('R','RAPEC-G vs Full100','#2E8B57','circle',0,'RAPEC-G v4 vs Full100'),make('E','ES vs Full100','#E69F00','diamond',1,'Standard ES vs Full100'),make('C','RAPEC-G vs ES','#7A3FB0','triangle',2,'RAPEC-G v4 vs Standard ES')]};\n"
+      },
+      "targets": [
+        {
+          "refId": "RX",
+          "expr": "live_shadow_energy_saving_fraction{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"rapec-g-v4\"} * 100",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        },
+        {
+          "refId": "RY",
+          "expr": "live_shadow_quality_regret{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"rapec-g-v4\"} * 100",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        },
+        {
+          "refId": "EX",
+          "expr": "live_shadow_energy_saving_fraction{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"standard-es-10\"} * 100",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        },
+        {
+          "refId": "EY",
+          "expr": "live_shadow_quality_regret{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"standard-es-10\"} * 100",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        },
+        {
+          "refId": "CX",
+          "expr": "((live_shadow_counterfactual_total_energy_wh{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"standard-es-10\"} - on(benchmark_run_id,benchmark_version,stage,case_id,case_code,case_name,case_order,task_type,energy_measurement_method) live_shadow_counterfactual_total_energy_wh{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"rapec-g-v4\"}) / on(benchmark_run_id,benchmark_version,stage,case_id,case_code,case_name,case_order,task_type,energy_measurement_method) live_shadow_counterfactual_total_energy_wh{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"standard-es-10\"}) * 100",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        },
+        {
+          "refId": "CY",
+          "expr": "(live_shadow_best_quality_at_stop{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"standard-es-10\"} - on(benchmark_run_id,benchmark_version,stage,case_id,case_code,case_name,case_order,task_type,energy_measurement_method) live_shadow_best_quality_at_stop{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"rapec-g-v4\"}) * 100",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "id": 600,
+      "title": "6 · Generalisation and Robustness",
+      "description": "Task-stratifizierte Effekte, Unsicherheit und konservative Erfolgskennzahlen.",
+      "type": "row",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 204,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "id": 601,
+      "title": "RAPEC-G Generalisation by Task Type (Mean and 95% CI)",
+      "description": "Makro-Mittel der RAPEC-G-Energieeinsparung und des Quality Regret je Task-Typ. Fehlerbalken sind deterministische 95-%-Bootstrap-Konfidenzintervalle mit 1.000 Resamples auf Dataset-Ebene; n steht im Tooltip.",
+      "type": "volkovlabs-echarts-panel",
+      "gridPos": {
+        "x": 0,
+        "y": 205,
+        "w": 24,
+        "h": 16
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "renderer": "svg",
+        "followTheme": true,
+        "getOption": "\nconst frames = context?.panel?.data?.series || [];\nconst arr = value => {\n  if (value == null) return [];\n  if (typeof value.toArray === 'function') return value.toArray();\n  if (value.buffer) return Array.from(value.buffer);\n  return Array.isArray(value) ? value : [];\n};\nconst fieldsOf = frame => (frame.fields && frame.fields.length) ? frame.fields : (frame.schema?.fields || []);\nconst numberFieldIndex = frame => {\n  const fields = fieldsOf(frame);\n  const index = fields.findIndex(field => field.type === 'number' || field.name === 'Value');\n  return index >= 0 ? index : (fields.length > 1 ? 1 : -1);\n};\nconst frameValue = frame => {\n  const index = numberFieldIndex(frame);\n  if (index < 0) return null;\n  const local = frame.fields || [];\n  const values = local[index]?.values != null ? arr(local[index].values) : arr(frame.data?.values?.[index]);\n  return values.length ? Number(values[values.length - 1]) : null;\n};\nconst frameLabels = frame => fieldsOf(frame)[numberFieldIndex(frame)]?.labels || {};\nconst frameRef = frame => frame.refId || frame.schema?.refId || null;\n\nconst rows=new Map();\nframes.forEach(frame=>{const labels=frameLabels(frame),value=frameValue(frame),refId=frameRef(frame);if(!refId||!labels.case_id||!Number.isFinite(value))return;const row=rows.get(labels.case_id)||{case_id:labels.case_id,task:labels.task_type||'unknown'};row[refId]=value;rows.set(labels.case_id,row);});\nconst grouped=new Map();for(const row of rows.values()){const list=grouped.get(row.task)||[];list.push(row);grouped.set(row.task,list);}\nconst mean=a=>a.reduce((s,v)=>s+v,0)/a.length;\nconst ci=a=>{if(a.length<2)return[mean(a),mean(a)];let state=2166136261>>>0;const next=()=>{state=(Math.imul(state,1664525)+1013904223)>>>0;return state/4294967296;};const samples=[];for(let b=0;b<1000;b++){let sum=0;for(let i=0;i<a.length;i++)sum+=a[Math.floor(next()*a.length)];samples.push(sum/a.length);}samples.sort((x,y)=>x-y);return[samples[24],samples[974]];};\nconst tasks=Array.from(grouped.keys()).sort(), energy=[], regret=[];\ntasks.forEach(task=>{const list=grouped.get(task),e=list.map(r=>r.A).filter(Number.isFinite),q=list.map(r=>r.B).filter(Number.isFinite),ec=ci(e),qc=ci(q);energy.push({value:mean(e),ci:ec,n:e.length});regret.push({value:mean(q),ci:qc,n:q.length});});\nconst errorSeries=(values,index,color)=>({type:'custom',xAxisIndex:index,yAxisIndex:index,silent:true,renderItem:(params,api)=>{const x=api.coord([api.value(0),api.value(1)]),lo=api.coord([api.value(0),api.value(2)]),hi=api.coord([api.value(0),api.value(3)]);return{type:'group',children:[{type:'line',shape:{x1:x[0],y1:lo[1],x2:x[0],y2:hi[1]},style:{stroke:color,lineWidth:2}},{type:'line',shape:{x1:x[0]-5,y1:lo[1],x2:x[0]+5,y2:lo[1]},style:{stroke:color,lineWidth:2}},{type:'line',shape:{x1:x[0]-5,y1:hi[1],x2:x[0]+5,y2:hi[1]},style:{stroke:color,lineWidth:2}}]};},data:values.map((v,i)=>[i,v.value,v.ci[0],v.ci[1]])});\nreturn {animation:false,tooltip:{trigger:'axis',formatter:items=>{const i=items[0]?.dataIndex??0;return `${tasks[i]}<br/>Energy saving: ${energy[i].value.toFixed(2)} % (95% bootstrap CI ${energy[i].ci[0].toFixed(2)}–${energy[i].ci[1].toFixed(2)}, n=${energy[i].n})<br/>Quality regret: ${regret[i].value.toFixed(2)} pp (95% bootstrap CI ${regret[i].ci[0].toFixed(2)}–${regret[i].ci[1].toFixed(2)}, n=${regret[i].n})`;}},title:[{text:'Energy saving',left:'23%'},{text:'Quality regret',left:'70%'}],grid:[{left:'7%',right:'55%',top:45,bottom:100},{left:'55%',right:'5%',top:45,bottom:100}],xAxis:[{type:'category',gridIndex:0,data:tasks,axisLabel:{rotate:45}},{type:'category',gridIndex:1,data:tasks,axisLabel:{rotate:45}}],yAxis:[{type:'value',gridIndex:0,name:'%'},{type:'value',gridIndex:1,name:'pp'}],series:[{name:'Mean energy saving',type:'bar',xAxisIndex:0,yAxisIndex:0,data:energy.map(v=>v.value),itemStyle:{color:'#2E8B57'}},errorSeries(energy,0,'#1B5E20'),{name:'Mean quality regret',type:'bar',xAxisIndex:1,yAxisIndex:1,data:regret.map(v=>v.value),itemStyle:{color:'#7A3FB0'}},errorSeries(regret,1,'#4A148C')]};\n"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "live_shadow_energy_saving_fraction{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"rapec-g-v4\"} * 100",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        },
+        {
+          "refId": "B",
+          "expr": "live_shadow_quality_regret{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"rapec-g-v4\"} * 100",
+          "legendFormat": "",
+          "instant": true,
+          "range": false,
+          "format": "time_series",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "id": 602,
+      "title": "Selected Datasets",
+      "description": "Anzahl ausgewählter RAPEC-G-v4-Datasets mit vollständigem Stop-Ergebnis.",
+      "type": "stat",
+      "gridPos": {
+        "x": 0,
+        "y": 221,
+        "w": 8,
+        "h": 5
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value_and_name",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "count(live_shadow_controller_stop_epoch{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"rapec-g-v4\"})",
+          "legendFormat": "Selected Datasets",
+          "instant": true,
+          "range": false,
+          "format": "table",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "id": 603,
+      "title": "Positive Energy Saving",
+      "description": "Anteil ausgewählter Datasets, bei denen RAPEC-G gegenüber Full100 positive Energieeinsparung erzielt.",
+      "type": "stat",
+      "gridPos": {
+        "x": 8,
+        "y": 221,
+        "w": 8,
+        "h": 5
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "decimals": 2
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value_and_name",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "avg(live_shadow_energy_saving_fraction{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"rapec-g-v4\"} > bool 0) * 100",
+          "legendFormat": "Positive Energy Saving",
+          "instant": true,
+          "range": false,
+          "format": "table",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "id": 604,
+      "title": "Quality Within 10 pp",
+      "description": "Anteil ausgewählter Datasets mit höchstens 10 normalisierten Prozentpunkten Quality Regret gegenüber Full100.",
+      "type": "stat",
+      "gridPos": {
+        "x": 16,
+        "y": 221,
+        "w": 8,
+        "h": 5
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "decimals": 2
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value_and_name",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "avg(live_shadow_quality_regret{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"rapec-g-v4\"} <= bool 0.10) * 100",
+          "legendFormat": "Quality Within 10 pp",
+          "instant": true,
+          "range": false,
+          "format": "table",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "id": 605,
+      "title": "Joint Success",
+      "description": "Anteil ausgewählter Datasets mit positiver Energieeinsparung und Quality Regret von höchstens 10 Prozentpunkten.",
+      "type": "stat",
+      "gridPos": {
+        "x": 0,
+        "y": 226,
+        "w": 8,
+        "h": 5
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "decimals": 2
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value_and_name",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "avg((live_shadow_energy_saving_fraction{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"rapec-g-v4\"} > bool 0) * ignoring(__name__) (live_shadow_quality_regret{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"rapec-g-v4\"} <= bool 0.10)) * 100",
+          "legendFormat": "Joint Success",
+          "instant": true,
+          "range": false,
+          "format": "table",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "id": 606,
+      "title": "Worst Quality Regret",
+      "description": "Größter normalisierter RAPEC-G-Quality-Regret unter den ausgewählten Datasets.",
+      "type": "stat",
+      "gridPos": {
+        "x": 8,
+        "y": 226,
+        "w": 8,
+        "h": 5
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentpoint",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "decimals": 2
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value_and_name",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "max(live_shadow_quality_regret{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"rapec-g-v4\"}) * 100",
+          "legendFormat": "Worst Quality Regret",
+          "instant": true,
+          "range": false,
+          "format": "table",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "id": 607,
+      "title": "Minimum Energy Saving",
+      "description": "Niedrigste RAPEC-G-Energieeinsparung unter den ausgewählten Datasets; negative Werte kennzeichnen Mehrverbrauch.",
+      "type": "stat",
+      "gridPos": {
+        "x": 16,
+        "y": 226,
+        "w": 8,
+        "h": 5
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "decimals": 2
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value_and_name",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "min(live_shadow_energy_saving_fraction{benchmark_run_id=\"$benchmark_run_id\",task_type=~\"$task_types\",stage=~\"$stages\",case_id=~\"$cases\",controller_id=\"rapec-g-v4\"}) * 100",
+          "legendFormat": "Minimum Energy Saving",
+          "instant": true,
+          "range": false,
+          "format": "table",
+          "editorMode": "code",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ]
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 39,
+  "tags": [
+    "thesis",
+    "appendix",
+    "rapec-g-v4",
+    "live-shadow",
+    "48-real-96-virtual"
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "benchmark_run_id",
+        "label": "Current Thesis Run",
+        "type": "constant",
+        "hide": 2,
+        "query": "thesis-presentation-48",
+        "current": {
+          "selected": true,
+          "text": "thesis-presentation-48",
+          "value": "thesis-presentation-48"
+        },
+        "options": [
+          {
+            "selected": true,
+            "text": "thesis-presentation-48",
+            "value": "thesis-presentation-48"
+          }
+        ]
+      },
+      {
+        "name": "task_types",
+        "label": "Task Types",
+        "type": "query",
+        "hide": 0,
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "query": {
+          "query": "label_values(live_shadow_controller_stop_epoch{benchmark_run_id=\"$benchmark_run_id\",controller_id=\"rapec-g-v4\"}, task_type)",
+          "refId": "var-task_types"
+        },
+        "definition": "label_values(live_shadow_controller_stop_epoch{benchmark_run_id=\"$benchmark_run_id\",controller_id=\"rapec-g-v4\"}, task_type)",
+        "refresh": 1,
+        "sort": 1,
+        "multi": true,
+        "includeAll": true,
+        "allValue": ".*",
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "options": []
+      },
+      {
+        "name": "stages",
+        "label": "Stages",
+        "type": "query",
+        "hide": 0,
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "query": {
+          "query": "label_values(live_shadow_controller_stop_epoch{benchmark_run_id=\"$benchmark_run_id\",controller_id=\"rapec-g-v4\",task_type=~\"$task_types\"}, stage)",
+          "refId": "var-stages"
+        },
+        "definition": "label_values(live_shadow_controller_stop_epoch{benchmark_run_id=\"$benchmark_run_id\",controller_id=\"rapec-g-v4\",task_type=~\"$task_types\"}, stage)",
+        "refresh": 1,
+        "sort": 1,
+        "multi": true,
+        "includeAll": true,
+        "allValue": ".*",
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "options": []
+      },
+      {
+        "name": "cases",
+        "label": "Datasets",
+        "type": "query",
+        "hide": 0,
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "query": {
+          "query": "label_values(live_shadow_controller_stop_epoch{benchmark_run_id=\"$benchmark_run_id\",controller_id=\"rapec-g-v4\",task_type=~\"$task_types\",stage=~\"$stages\"}, case_id)",
+          "refId": "var-cases"
+        },
+        "definition": "label_values(live_shadow_controller_stop_epoch{benchmark_run_id=\"$benchmark_run_id\",controller_id=\"rapec-g-v4\",task_type=~\"$task_types\",stage=~\"$stages\"}, case_id)",
+        "refresh": 1,
+        "sort": 1,
+        "multi": true,
+        "includeAll": true,
+        "allValue": ".*",
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "options": []
+      },
+      {
+        "name": "raw_quality_metrics",
+        "label": "Raw Quality Metrics",
+        "type": "query",
+        "hide": 0,
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "query": {
+          "query": "label_values(thesis_live_shadow_epoch_raw_quality{benchmark_run_id=\"$benchmark_run_id\",case_id=~\"$cases\"}, raw_quality_metric)",
+          "refId": "var-raw_quality_metrics"
+        },
+        "definition": "label_values(thesis_live_shadow_epoch_raw_quality{benchmark_run_id=\"$benchmark_run_id\",case_id=~\"$cases\"}, raw_quality_metric)",
+        "refresh": 1,
+        "sort": 1,
+        "multi": true,
+        "includeAll": true,
+        "allValue": ".*",
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "options": []
+      },
+      {
+        "name": "slurm_phase",
+        "label": "SLURM Phase",
+        "type": "custom",
+        "hide": 0,
+        "query": "preprocessing_initialization,training,finalization_evaluation",
+        "current": {
+          "selected": true,
+          "text": "training",
+          "value": "training"
+        },
+        "options": [
+          {
+            "selected": false,
+            "text": "preprocessing_initialization",
+            "value": "preprocessing_initialization"
+          },
+          {
+            "selected": true,
+            "text": "training",
+            "value": "training"
+          },
+          {
+            "selected": false,
+            "text": "finalization_evaluation",
+            "value": "finalization_evaluation"
+          }
+        ]
+      },
+      {
+        "name": "codecarbon_phase",
+        "label": "CodeCarbon Phase",
+        "type": "custom",
+        "hide": 0,
+        "query": "preprocessing_initialization,training,finalization_evaluation",
+        "current": {
+          "selected": true,
+          "text": "training",
+          "value": "training"
+        },
+        "options": [
+          {
+            "selected": false,
+            "text": "preprocessing_initialization",
+            "value": "preprocessing_initialization"
+          },
+          {
+            "selected": true,
+            "text": "training",
+            "value": "training"
+          },
+          {
+            "selected": false,
+            "text": "finalization_evaluation",
+            "value": "finalization_evaluation"
+          }
+        ]
+      }
+    ]
+  },
+  "time": {
+    "from": "now-30d",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Thesis Results – Energy-Adaptive MLOps",
+  "uid": "rapec-g-v4-live-shadow-cv-nv",
+  "version": 1,
+  "weekStart": ""
+}

@@ -1,0 +1,71 @@
+{
+  "method": "Morris elementary-effects screening",
+  "selected_parameters": [
+    "model_window",
+    "minimum_calibration_points",
+    "calibration_window",
+    "quality_risk_alpha",
+    "quality_noise_quantile",
+    "evidence_decay",
+    "evidence_stop_probability"
+  ],
+  "evaluations": 128,
+  "parameters": [
+    {
+      "parameter": "quality_risk_alpha",
+      "quality_mu_star": 0.0050434179882734645,
+      "quality_sigma": 0.012374680072060072,
+      "energy_mu_star": 0.0025043516342901375,
+      "energy_sigma": 0.00792467878417293,
+      "combined_score": 1.0
+    },
+    {
+      "parameter": "evidence_stop_probability",
+      "quality_mu_star": 0.0022795527423955415,
+      "quality_sigma": 0.005152391145700413,
+      "energy_mu_star": 0.0007456817087345019,
+      "energy_sigma": 0.0016088298928022319,
+      "combined_score": 0.45198568663072697
+    },
+    {
+      "parameter": "evidence_decay",
+      "quality_mu_star": 0.0018946277908082837,
+      "quality_sigma": 0.004557780865699281,
+      "energy_mu_star": 0.00045055196599384594,
+      "energy_sigma": 0.001231142350145398,
+      "combined_score": 0.37566344792629014
+    },
+    {
+      "parameter": "quality_noise_quantile",
+      "quality_mu_star": 0.0017059149359056553,
+      "quality_sigma": 0.0038424167237680225,
+      "energy_mu_star": 0.0002489685238673975,
+      "energy_sigma": 0.0009958740954695902,
+      "combined_score": 0.3382457967735584
+    },
+    {
+      "parameter": "model_window",
+      "quality_mu_star": 0.0015172020810030272,
+      "quality_sigma": 0.004575079394368669,
+      "energy_mu_star": 0.00029512974274065586,
+      "energy_sigma": 0.001000670377442667,
+      "combined_score": 0.3008281456208268
+    },
+    {
+      "parameter": "calibration_window",
+      "quality_mu_star": 0.0015172020810030272,
+      "quality_sigma": 0.004079290455763935,
+      "energy_mu_star": 0.00022527598299692297,
+      "energy_sigma": 0.0009011039319876919,
+      "combined_score": 0.3008281456208268
+    },
+    {
+      "parameter": "minimum_calibration_points",
+      "quality_mu_star": 0.0,
+      "quality_sigma": 0.0,
+      "energy_mu_star": 0.0,
+      "energy_sigma": 0.0,
+      "combined_score": 0.0
+    }
+  ]
+}

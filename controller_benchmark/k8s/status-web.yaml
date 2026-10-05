@@ -1,0 +1,79 @@
+﻿apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: controller-benchmark-status-web
+  namespace: mlops-energy
+  labels:
+    app: controller-benchmark-status-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: controller-benchmark-status-web
+  template:
+    metadata:
+      labels:
+        app: controller-benchmark-status-web
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: malea-srv01
+      imagePullSecrets:
+        - name: ghcr-pull-secret
+      containers:
+        - name: status-web
+          image: ghcr.io/its-ghaith/slurm-scheduler-ml/mlops-slurm-runtime@sha256:579d927d427b8f5fa677780db338bae740eb1c0c012a133d529c06bf24ad3b55
+          imagePullPolicy: IfNotPresent
+          command: ["python", "/opt/controller-status/server.py"]
+          env:
+            - name: BENCHMARK_ROOT
+              value: /workspace-cache/controller-benchmarks
+            - name: STATUS_HOST
+              value: 0.0.0.0
+            - name: STATUS_PORT
+              value: "8088"
+          ports:
+            - containerPort: 8088
+              name: http
+          readinessProbe:
+            httpGet:
+              path: /status.txt
+              port: 8088
+            initialDelaySeconds: 3
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /status.txt
+              port: 8088
+            initialDelaySeconds: 10
+            periodSeconds: 20
+          volumeMounts:
+            - name: server
+              mountPath: /opt/controller-status/server.py
+              subPath: server.py
+            - name: workspace-cache
+              mountPath: /workspace-cache
+              readOnly: true
+      volumes:
+        - name: server
+          configMap:
+            name: controller-benchmark-status-web
+        - name: workspace-cache
+          persistentVolumeClaim:
+            claimName: slurmd-workspace-cache-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: controller-benchmark-status-web
+  namespace: mlops-energy
+  labels:
+    app: controller-benchmark-status-web
+spec:
+  type: NodePort
+  selector:
+    app: controller-benchmark-status-web
+  ports:
+    - name: http
+      port: 8088
+      targetPort: 8088
+      nodePort: 30888

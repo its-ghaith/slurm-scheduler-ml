@@ -1,0 +1,322 @@
+[
+  {
+    "output": "overall__mean_energy_saving_fraction",
+    "r2": 0.9749281543495902,
+    "mae": 0.01987739638576772,
+    "normalized_mae": 0.03154976993160545,
+    "test_variance": 0.03658089985633396,
+    "status": "reliable"
+  },
+  {
+    "output": "overall__mean_quality_regret_pp",
+    "r2": 0.9683121514990572,
+    "mae": 0.2587540563680676,
+    "normalized_mae": 0.03338764245468107,
+    "test_variance": 6.30137688851712,
+    "status": "reliable"
+  },
+  {
+    "output": "overall__mean_stop_epoch",
+    "r2": 0.9749055148254606,
+    "mae": 1.994394897243665,
+    "normalized_mae": 0.03160132759717075,
+    "test_variance": 366.53778247809583,
+    "status": "reliable"
+  },
+  {
+    "output": "overall__mean_stop_epoch_fraction",
+    "r2": 0.9749055148254604,
+    "mae": 0.0199439489724367,
+    "normalized_mae": 0.031601327597170825,
+    "test_variance": 0.036653778247809576,
+    "status": "reliable"
+  },
+  {
+    "output": "overall__noninferiority_success_fraction",
+    "r2": 0.9618280332465109,
+    "mae": 0.04223581634038917,
+    "normalized_mae": 0.04223581634038917,
+    "test_variance": 0.11544686070166936,
+    "status": "reliable"
+  },
+  {
+    "output": "overall__joint_success_fraction",
+    "r2": 0.9034094484296559,
+    "mae": 0.0572329074744386,
+    "normalized_mae": 0.0572329074744386,
+    "test_variance": 0.05738948744500994,
+    "status": "reliable"
+  },
+  {
+    "output": "overall__bayesian_veto_rate",
+    "r2": 0.5082561158722221,
+    "mae": 0.0033830225477809793,
+    "normalized_mae": 0.05115852665475675,
+    "test_variance": 7.388178289192932e-05,
+    "status": "low-surrogate-fidelity"
+  },
+  {
+    "output": "overall__controller_runtime_ms_per_epoch",
+    "r2": 0.9093316792477829,
+    "mae": 0.25529410000362585,
+    "normalized_mae": 0.04174707123694964,
+    "test_variance": 1.5279196531826895,
+    "status": "reliable"
+  },
+  {
+    "output": "overall__energy_saving_q25",
+    "r2": 0.9406219666748686,
+    "mae": 0.028856352181941904,
+    "normalized_mae": 0.045950151194785516,
+    "test_variance": 0.0501015024270865,
+    "status": "reliable"
+  },
+  {
+    "output": "overall__quality_cvar90_normalized",
+    "r2": 0.937983061070106,
+    "mae": 0.6738853984193011,
+    "normalized_mae": 0.044141842826208505,
+    "test_variance": 18.20891966003154,
+    "status": "reliable"
+  },
+  {
+    "output": "image_classification__mean_energy_saving_fraction",
+    "r2": 0.9472496874762618,
+    "mae": 0.0322776016555396,
+    "normalized_mae": 0.04910508271731062,
+    "test_variance": 0.05499791198731459,
+    "status": "reliable"
+  },
+  {
+    "output": "image_classification__mean_quality_regret_pp",
+    "r2": 0.9485116955461529,
+    "mae": 0.649745385477518,
+    "normalized_mae": 0.04656560335481495,
+    "test_variance": 24.953237271531503,
+    "status": "reliable"
+  },
+  {
+    "output": "image_classification__mean_stop_epoch",
+    "r2": 0.9471852046290989,
+    "mae": 3.232648080596745,
+    "normalized_mae": 0.0492281433593413,
+    "test_variance": 548.9938429506246,
+    "status": "reliable"
+  },
+  {
+    "output": "image_classification__mean_stop_epoch_fraction",
+    "r2": 0.947185204629099,
+    "mae": 0.032326480805967395,
+    "normalized_mae": 0.049228143359341205,
+    "test_variance": 0.05489938429506247,
+    "status": "reliable"
+  },
+  {
+    "output": "image_classification__noninferiority_success_fraction",
+    "r2": 0.9286032646355065,
+    "mae": 0.06584258794878713,
+    "normalized_mae": 0.06584258794878713,
+    "test_variance": 0.1849851279000595,
+    "status": "reliable"
+  },
+  {
+    "output": "image_classification__joint_success_fraction",
+    "r2": 0.7348235732122095,
+    "mae": 0.08483036412548607,
+    "normalized_mae": 0.08483036412548607,
+    "test_variance": 0.0743638046136559,
+    "status": "low-surrogate-fidelity"
+  },
+  {
+    "output": "image_classification__bayesian_veto_rate",
+    "r2": 0.36849274639909757,
+    "mae": 0.005181759560508161,
+    "normalized_mae": 0.08636265934180269,
+    "test_variance": 0.00011239146591532389,
+    "status": "low-surrogate-fidelity"
+  },
+  {
+    "output": "image_classification__controller_runtime_ms_per_epoch",
+    "r2": 0.9059432332329179,
+    "mae": 0.37101524086224436,
+    "normalized_mae": 0.05002070873140602,
+    "test_variance": 3.1553460170630254,
+    "status": "reliable"
+  },
+  {
+    "output": "image_classification__energy_saving_q25",
+    "r2": 0.9338075544229857,
+    "mae": 0.03344014171152463,
+    "normalized_mae": 0.05172312357223817,
+    "test_variance": 0.05287365387926326,
+    "status": "reliable"
+  },
+  {
+    "output": "image_classification__quality_cvar90_normalized",
+    "r2": 0.9243159565537449,
+    "mae": 0.5969001531486258,
+    "normalized_mae": 0.05700634306774292,
+    "test_variance": 13.24991090672346,
+    "status": "reliable"
+  },
+  {
+    "output": "object_detection__mean_energy_saving_fraction",
+    "r2": 0.9621070546303621,
+    "mae": 0.027534179843114466,
+    "normalized_mae": 0.043484543095879416,
+    "test_variance": 0.04345279181030622,
+    "status": "reliable"
+  },
+  {
+    "output": "object_detection__mean_quality_regret_pp",
+    "r2": 0.9555201201482673,
+    "mae": 0.24282307409001497,
+    "normalized_mae": 0.04123566298370008,
+    "test_variance": 3.550733060982216,
+    "status": "reliable"
+  },
+  {
+    "output": "object_detection__mean_stop_epoch",
+    "r2": 0.9619898590765973,
+    "mae": 2.7764260609534954,
+    "normalized_mae": 0.04360878629769888,
+    "test_variance": 439.14321105162264,
+    "status": "reliable"
+  },
+  {
+    "output": "object_detection__mean_stop_epoch_fraction",
+    "r2": 0.9619898590765972,
+    "mae": 0.027764260609534977,
+    "normalized_mae": 0.04360878629769891,
+    "test_variance": 0.043914321105162274,
+    "status": "reliable"
+  },
+  {
+    "output": "object_detection__noninferiority_success_fraction",
+    "r2": 0.9387155821263377,
+    "mae": 0.060764728064016484,
+    "normalized_mae": 0.060764728064016484,
+    "test_variance": 0.17178200806398308,
+    "status": "reliable"
+  },
+  {
+    "output": "object_detection__joint_success_fraction",
+    "r2": 0.84310312286342,
+    "mae": 0.08849527796428208,
+    "normalized_mae": 0.08849527796428208,
+    "test_variance": 0.1147392425143764,
+    "status": "reliable"
+  },
+  {
+    "output": "object_detection__bayesian_veto_rate",
+    "r2": 0.47630482530228113,
+    "mae": 0.002601218800268647,
+    "normalized_mae": 0.0662810559683838,
+    "test_variance": 4.0768472267574575e-05,
+    "status": "low-surrogate-fidelity"
+  },
+  {
+    "output": "object_detection__controller_runtime_ms_per_epoch",
+    "r2": 0.8971423558948315,
+    "mae": 0.20662612291413276,
+    "normalized_mae": 0.05167209430438482,
+    "test_variance": 0.8014371466523984,
+    "status": "reliable"
+  },
+  {
+    "output": "object_detection__energy_saving_q25",
+    "r2": 0.9535194786734139,
+    "mae": 0.03355957904494717,
+    "normalized_mae": 0.05320065204754955,
+    "test_variance": 0.050734779792309614,
+    "status": "reliable"
+  },
+  {
+    "output": "object_detection__quality_cvar90_normalized",
+    "r2": 0.9001946621014768,
+    "mae": 0.7568136771995579,
+    "normalized_mae": 0.049573934182324246,
+    "test_variance": 16.578736002665345,
+    "status": "reliable"
+  },
+  {
+    "output": "semantic_segmentation__mean_energy_saving_fraction",
+    "r2": 0.9359227353087104,
+    "mae": 0.023819868067282014,
+    "normalized_mae": 0.03722266177092989,
+    "test_variance": 0.02569326440577065,
+    "status": "reliable"
+  },
+  {
+    "output": "semantic_segmentation__mean_quality_regret_pp",
+    "r2": 0.9365707984554972,
+    "mae": 0.12447796087401597,
+    "normalized_mae": 0.029404350483165493,
+    "test_variance": 0.9163584269131997,
+    "status": "reliable"
+  },
+  {
+    "output": "semantic_segmentation__mean_stop_epoch",
+    "r2": 0.9357135927776496,
+    "mae": 2.3866000657465,
+    "normalized_mae": 0.03729062602728906,
+    "test_variance": 256.5519922004098,
+    "status": "reliable"
+  },
+  {
+    "output": "semantic_segmentation__mean_stop_epoch_fraction",
+    "r2": 0.9357135927776494,
+    "mae": 0.02386600065746499,
+    "normalized_mae": 0.03729062602728905,
+    "test_variance": 0.025655199220040982,
+    "status": "reliable"
+  },
+  {
+    "output": "semantic_segmentation__noninferiority_success_fraction",
+    "r2": 0.9024194024819702,
+    "mae": 0.04664301146384502,
+    "normalized_mae": 0.04664301146384502,
+    "test_variance": 0.07495868861127636,
+    "status": "reliable"
+  },
+  {
+    "output": "semantic_segmentation__joint_success_fraction",
+    "r2": 0.8639022954586701,
+    "mae": 0.07492886203302884,
+    "normalized_mae": 0.07492886203302884,
+    "test_variance": 0.08510873157512061,
+    "status": "reliable"
+  },
+  {
+    "output": "semantic_segmentation__bayesian_veto_rate",
+    "r2": 0.5012848132619481,
+    "mae": 0.0037219360179737153,
+    "normalized_mae": 0.024013596405317274,
+    "test_variance": 0.00022530106374805077,
+    "status": "low-surrogate-fidelity"
+  },
+  {
+    "output": "semantic_segmentation__controller_runtime_ms_per_epoch",
+    "r2": 0.8417132105108898,
+    "mae": 0.3333976694468886,
+    "normalized_mae": 0.04440378781023209,
+    "test_variance": 1.5333506066025893,
+    "status": "reliable"
+  },
+  {
+    "output": "semantic_segmentation__energy_saving_q25",
+    "r2": 0.9102547303246891,
+    "mae": 0.022668119116035838,
+    "normalized_mae": 0.035951926101103135,
+    "test_variance": 0.020021041510774308,
+    "status": "reliable"
+  },
+  {
+    "output": "semantic_segmentation__quality_cvar90_normalized",
+    "r2": 0.7704007986427699,
+    "mae": 0.28879018197187983,
+    "normalized_mae": 0.03474327334100494,
+    "test_variance": 2.505619909065329,
+    "status": "reliable"
+  }
+]

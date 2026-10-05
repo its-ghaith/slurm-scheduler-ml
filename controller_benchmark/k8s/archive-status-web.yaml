@@ -1,0 +1,130 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: controller-benchmark-archive-web
+  namespace: mlops-energy
+  labels:
+    app: controller-benchmark-archive-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: controller-benchmark-archive-web
+  template:
+    metadata:
+      labels:
+        app: controller-benchmark-archive-web
+    spec:
+      containers:
+        - name: status-web
+          image: ghcr.io/its-ghaith/slurm-scheduler-ml/mlops-slurm-runtime@sha256:579d927d427b8f5fa677780db338bae740eb1c0c012a133d529c06bf24ad3b55
+          imagePullPolicy: IfNotPresent
+          command:
+            - python
+            - /opt/controller-status/server.py
+          env:
+            - name: BENCHMARK_ROOT
+              value: /archive/controller-benchmarks
+            - name: OFFLINE_REPLAY_ROOT
+              value: /archive/controller-benchmarks/offline-replays
+            - name: PRETRAINING_STATUS_ROOT
+              value: /archive/controller-pretraining-status
+            - name: RUN_ID
+              value: 20260816T142848Z-live-shadow-48-archive
+            - name: STATUS_HOST
+              value: 0.0.0.0
+            - name: STATUS_PORT
+              value: "8088"
+          ports:
+            - name: http
+              containerPort: 8088
+          readinessProbe:
+            httpGet:
+              path: /status.txt
+              port: 8088
+            initialDelaySeconds: 3
+            periodSeconds: 10
+          volumeMounts:
+            - name: server
+              mountPath: /opt/controller-status/server.py
+              subPath: server.py
+            - name: archive
+              mountPath: /archive
+          resources:
+            requests:
+              cpu: 25m
+              memory: 64Mi
+            limits:
+              cpu: 250m
+              memory: 256Mi
+      volumes:
+        - name: server
+          configMap:
+            name: controller-benchmark-archive-server
+        - name: archive
+          persistentVolumeClaim:
+            claimName: controller-benchmark-archive-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: controller-benchmark-archive-pvc
+  namespace: mlops-energy
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: controller-benchmark-archive-web
+  namespace: mlops-energy
+spec:
+  selector:
+    app: controller-benchmark-archive-web
+  ports:
+    - name: http
+      port: 8088
+      targetPort: 8088
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: controller-benchmark-archive-tunnel
+  namespace: mlops-energy
+  labels:
+    app: controller-benchmark-archive-tunnel
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: controller-benchmark-archive-tunnel
+  template:
+    metadata:
+      labels:
+        app: controller-benchmark-archive-tunnel
+    spec:
+      # This node currently permits Cloudflare Tunnel egress on TCP 7844.
+      nodeSelector:
+        kubernetes.io/hostname: acds-cpu-01
+      containers:
+        - name: cloudflared
+          image: cloudflare/cloudflared:latest
+          imagePullPolicy: IfNotPresent
+          args:
+            - tunnel
+            - --no-autoupdate
+            - --protocol
+            - http2
+            - --url
+            - http://controller-benchmark-archive-web:8088
+          resources:
+            requests:
+              cpu: 25m
+              memory: 64Mi
+            limits:
+              cpu: 250m
+              memory: 256Mi

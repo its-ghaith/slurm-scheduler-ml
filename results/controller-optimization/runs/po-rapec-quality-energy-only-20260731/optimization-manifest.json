@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "optimization_id": "po-rapec-quality-energy-only-20260731",
+  "created_at": "2026-07-31T18:35:00.099020+00:00",
+  "method": "NSGA-II constrained multi-objective optimization",
+  "source_dir": "D:\\OLD\\Sync\\Projekte\\Masterarbeit\\Project\\PoC4\\results\\controller-optimization\\sources\\20260729T170915Z-rapec-v3-v8-nine-dataset",
+  "source_file_hashes": {
+    "baseline-cache/catalog.json": "983a4ed9315d1a040dfa48fb4dc83d24ec4ce062961314ee613b12ea1edfb698",
+    "baseline-cache/entries/carpk-aerial-vehicle/epoch_summary.json": "322ad1fd282dc8e498db87a119a72a80465258d9c3d7d11ad1195402b1a3fdac",
+    "baseline-cache/entries/carpk-aerial-vehicle/gpu_summary.json": "3f4bb855254d7ea7cf8889bc2f8ad7769b2f39532ff7c1ee8d175c8a74c25831",
+    "baseline-cache/entries/cifar10-classification/epoch_summary.json": "6ac1043c3dcc6b0ac01ab61b377d05fe97195d84bf22f4b995ebd69202f280c1",
+    "baseline-cache/entries/cifar10-classification/gpu_summary.json": "afb39e0ea7abddb9e7f8b38042ab5dd9141c6614c9376df3773b4d88d37fe852",
+    "baseline-cache/entries/cifar100-classification/epoch_summary.json": "37968b3c2554c284c26f4f507ebe4ed557962bd12735db8f7af39982f16e820c",
+    "baseline-cache/entries/cifar100-classification/gpu_summary.json": "03e9c55a7d8b3f6d984105a5aeffad118a241826057d7459fdf4b2fdf74a5260",
+    "baseline-cache/entries/oxford-pet-segmentation/epoch_summary.json": "97c5293170a1e519528d8506775c03e67696e7eff195b8b45bfa522cbbd9a0cf",
+    "baseline-cache/entries/oxford-pet-segmentation/gpu_summary.json": "9c21a544255e61e559e27bb23c249e96a072620f16fd38f364c2e5390225e6a7",
+    "baseline-cache/entries/pascal-voc2012-segmentation/epoch_summary.json": "a6fbdbf60c7d84b7fe52db4fd31781e0654404751d11e303facef732d50cae16",
+    "baseline-cache/entries/pascal-voc2012-segmentation/gpu_summary.json": "d29d95fb7cfb3c1e386f87fb3db5f4e59aa5476610b7177f6b29574f797c25a5",
+    "baseline-cache/entries/tiny-imagenet-classification/epoch_summary.json": "384c8d5116729f8d9339dd2180b5d8b82181ab9e6dca3ed2520e29ef4977800b",
+    "baseline-cache/entries/tiny-imagenet-classification/gpu_summary.json": "c170e413cec6bafe2aabbad3eff75a17bb0b42a12d4e9b411ced8c927df86f6a",
+    "baseline-cache/entries/uavid-segmentation/epoch_summary.json": "23d8fa990e6b2dc363bb3d08b8e8a3479a8f5751dc1d8d9645165c533eb11b87",
+    "baseline-cache/entries/uavid-segmentation/gpu_summary.json": "ba80b33d701774f11736fbedfad49629aaef50192a700f6764d0d612ddefce1a",
+    "baseline-cache/entries/vedai-aerial-vehicle/epoch_summary.json": "9147468449a0fb2a41ad5bed8ece3d02f9c4e99a746883814f4f32b71c3287db",
+    "baseline-cache/entries/vedai-aerial-vehicle/gpu_summary.json": "be4363755e2a03a2e92aa83312081efe6f7ba86540a794972382c6bb31615c12",
+    "baseline-cache/entries/visdrone-aerial-vehicle/epoch_summary.json": "ad7a7bae671d50c0b60fc0af97c9808fdfe6928b14ba1a447713230411ac2808",
+    "baseline-cache/entries/visdrone-aerial-vehicle/gpu_summary.json": "1e45bb004393fb6a92bae34da62989334f415b5c3416c400bc4b5f935f239790",
+    "manifest.json": "592a863a4d689ec459bd9a3c9a8b04456bcf7a11131c201bac786cf0e8b8cc0b",
+    "run-matrix.json": "366f29c3819fe3ed591c472dff14095206f5e7b11a1fd15b027f2bdf4b83c6d7"
+  },
+  "source_run_id": "20260729T170915Z-rapec-v3-v8-nine-dataset",
+  "controller_plugin": "controller_benchmark.controllers.risk_aware_predictive_energy:RiskAwarePredictiveEnergyController",
+  "trials_per_study": 500,
+  "total_planned_trials": 2000,
+  "seed": 20260731,
+  "objectives": [
+    "minimize mean quality regret",
+    "minimize worst normalized quality regret",
+    "maximize median energy saving"
+  ],
+  "quality_constraint": "quality_regret <= dynamic noise-derived tolerance for every optimization case",
+  "evaluation": "leave-one-task-out plus final all-task fit",
+  "offline_replay_limitation": "Counterfactual replay assumes the Full100 trajectory up to the selected stop epoch. Selected profiles require real Rancher validation."
+}

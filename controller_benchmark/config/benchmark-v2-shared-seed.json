@@ -1,0 +1,80 @@
+{
+  "benchmark_version": "controller-benchmark-v2-shared-seed",
+  "description": "Frozen energy-adaptive controller benchmark for stability and generalisation.",
+  "execution": {
+    "namespace": "mlops-energy",
+    "kubeconfig": "rancherConfigs/main.yaml",
+    "experiment_name": "controller-benchmark-v2-shared-seed",
+    "max_epochs": 100,
+    "batch_size": 8,
+    "image_size": 640,
+    "split_seed": 0,
+    "cache_policy": "ram",
+    "runtime_image_id": "ghcr.io/its-ghaith/slurm-scheduler-ml/mlops-slurm-runtime@sha256:579d927d427b8f5fa677780db338bae740eb1c0c012a133d529c06bf24ad3b55",
+    "gpu_name": "NVIDIA A100-SXM4-80GB",
+    "gpu_power_limit_w": "400.00",
+    "timeout_seconds": 7200,
+    "cooldown_seconds": 5
+  },
+  "acceptance": {
+    "minimum_energy_saving_fraction": 0.20,
+    "maximum_quality_regret": 0.015,
+    "minimum_success_rate": 0.80
+  },
+  "baselines": [
+    {
+      "id": "full100",
+      "controller_mode": "none"
+    }
+  ],
+  "stages": [
+    {
+      "id": "carpk_stability",
+      "title": "CARPK Stability",
+      "enabled": true,
+      "baseline_case_id": "carpk-stability-seed-0",
+      "purpose": "Sensitivity to training randomness with a fixed split and scenario.",
+      "cases": [
+        {"id": "carpk-stability-seed-0", "runner": "carpk_yolo", "task_type": "object_detection", "quality_metric": "quality_score", "baseline_quality_metric": "map50_95", "scenario": "train128-scratch", "training_seed": 0, "train_size": 128, "model_version": "yolov8n.yaml", "pretrained": false},
+        {"id": "carpk-stability-seed-1", "runner": "carpk_yolo", "task_type": "object_detection", "quality_metric": "quality_score", "baseline_quality_metric": "map50_95", "scenario": "train128-scratch", "training_seed": 1, "train_size": 128, "model_version": "yolov8n.yaml", "pretrained": false},
+        {"id": "carpk-stability-seed-2", "runner": "carpk_yolo", "task_type": "object_detection", "quality_metric": "quality_score", "baseline_quality_metric": "map50_95", "scenario": "train128-scratch", "training_seed": 2, "train_size": 128, "model_version": "yolov8n.yaml", "pretrained": false},
+        {"id": "carpk-stability-seed-3", "runner": "carpk_yolo", "task_type": "object_detection", "quality_metric": "quality_score", "baseline_quality_metric": "map50_95", "scenario": "train128-scratch", "training_seed": 3, "train_size": 128, "model_version": "yolov8n.yaml", "pretrained": false},
+        {"id": "carpk-stability-seed-4", "runner": "carpk_yolo", "task_type": "object_detection", "quality_metric": "quality_score", "baseline_quality_metric": "map50_95", "scenario": "train128-scratch", "training_seed": 4, "train_size": 128, "model_version": "yolov8n.yaml", "pretrained": false}
+      ]
+    },
+    {
+      "id": "carpk_scenario_generalisation",
+      "title": "CARPK Scenario Generalisation",
+      "enabled": true,
+      "purpose": "Transfer across data volume, initialization, and model capacity.",
+      "cases": [
+        {"id": "carpk-128-scratch-n", "runner": "carpk_yolo", "task_type": "object_detection", "quality_metric": "quality_score", "baseline_quality_metric": "map50_95", "scenario": "train128-scratch-yolov8n", "training_seed": 0, "train_size": 128, "model_version": "yolov8n.yaml", "pretrained": false},
+        {"id": "carpk-256-scratch-n", "runner": "carpk_yolo", "task_type": "object_detection", "quality_metric": "quality_score", "baseline_quality_metric": "map50_95", "scenario": "train256-scratch-yolov8n", "training_seed": 0, "train_size": 256, "model_version": "yolov8n.yaml", "pretrained": false},
+        {"id": "carpk-full-scratch-n", "runner": "carpk_yolo", "task_type": "object_detection", "quality_metric": "quality_score", "baseline_quality_metric": "map50_95", "scenario": "trainfull-scratch-yolov8n", "training_seed": 0, "train_size": 0, "model_version": "yolov8n.yaml", "pretrained": false},
+        {"id": "carpk-128-pretrained-n", "runner": "carpk_yolo", "task_type": "object_detection", "quality_metric": "quality_score", "baseline_quality_metric": "map50_95", "scenario": "train128-pretrained-yolov8n", "training_seed": 0, "train_size": 128, "model_version": "yolov8n.pt", "pretrained": true},
+        {"id": "carpk-256-pretrained-n", "runner": "carpk_yolo", "task_type": "object_detection", "quality_metric": "quality_score", "baseline_quality_metric": "map50_95", "scenario": "train256-pretrained-yolov8n", "training_seed": 0, "train_size": 256, "model_version": "yolov8n.pt", "pretrained": true},
+        {"id": "carpk-full-pretrained-n", "runner": "carpk_yolo", "task_type": "object_detection", "quality_metric": "quality_score", "baseline_quality_metric": "map50_95", "scenario": "trainfull-pretrained-yolov8n", "training_seed": 0, "train_size": 0, "model_version": "yolov8n.pt", "pretrained": true},
+        {"id": "carpk-256-pretrained-s", "runner": "carpk_yolo", "task_type": "object_detection", "quality_metric": "quality_score", "baseline_quality_metric": "map50_95", "scenario": "train256-pretrained-yolov8s", "training_seed": 0, "train_size": 256, "model_version": "yolov8s.pt", "pretrained": true}
+      ]
+    },
+    {
+      "id": "dataset_generalisation",
+      "title": "Dataset Generalisation",
+      "enabled": true,
+      "purpose": "Transfer from CARPK to the independent VEDAI 512 aerial vehicle-detection benchmark.",
+      "cases": [
+        {"id": "vedai512-fold1-scratch-n", "runner": "vedai_yolo", "task_type": "object_detection", "quality_metric": "quality_score", "baseline_quality_metric": "map50_95", "scenario": "vedai512-fold1-scratch-yolov8n", "training_seed": 0, "train_size": 0, "model_version": "yolov8n.yaml", "pretrained": false, "dataset_fingerprint": "vedai512-official-fold01-aa0085fb-542aba4a-da9626f8", "runner_version": "vedai-yolo-v1"}
+      ]
+    },
+    {
+      "id": "task_generalisation",
+      "title": "Task Generalisation",
+      "enabled": true,
+      "purpose": "Transfer of the same abstract quality-and-energy controller across object detection, image classification, and semantic segmentation.",
+      "cases": [
+        {"id": "carpk-density-classification-128", "runner": "carpk_task_generalisation", "task_type": "image_classification", "quality_metric": "quality_score", "scenario": "carpk-density-classification-train128-resnet18", "training_seed": 0, "train_size": 128, "model_version": "resnet18-classifier", "pretrained": false, "primary_metric": "macro_f1", "task_definition_version": "carpk-density-tertiles-v1", "runner_version": "carpk-task-generalisation-v1"},
+        {"id": "carpk-box-mask-segmentation-128", "runner": "carpk_task_generalisation", "task_type": "semantic_segmentation", "quality_metric": "quality_score", "scenario": "carpk-box-mask-segmentation-train128-tiny-unet", "training_seed": 0, "train_size": 128, "model_version": "tiny-unet", "pretrained": false, "primary_metric": "miou", "task_definition_version": "carpk-box-mask-segmentation-v1", "runner_version": "carpk-task-generalisation-v1"}
+      ]
+    }
+  ]
+}

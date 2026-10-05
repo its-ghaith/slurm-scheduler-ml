@@ -1,0 +1,42 @@
+[
+    {
+        "comparison_set":  "7_run",
+        "jobs":  7,
+        "verified_files":  22,
+        "source_files":  22,
+        "samples":  12489,
+        "metric_families":  27,
+        "bytes":  2259174,
+        "source_snapshot":  "D:\\Masterarbeit_Vergleichssicherung\\CARPK_StopPolicy_7Jobs_2026-07-13"
+    },
+    {
+        "comparison_set":  "60_run",
+        "jobs":  60,
+        "verified_files":  182,
+        "source_files":  182,
+        "samples":  160170,
+        "metric_families":  31,
+        "bytes":  40895738,
+        "source_snapshot":  "D:\\Masterarbeit_Vergleichssicherung\\CARPK_StopPolicy_60Jobs_Multiseed_2026-07-14_2026-07-14_102125"
+    },
+    {
+        "comparison_set":  "8_run",
+        "jobs":  9,
+        "verified_files":  29,
+        "source_files":  29,
+        "samples":  31055,
+        "metric_families":  31,
+        "bytes":  8041826,
+        "source_snapshot":  "D:\\Masterarbeit_Vergleichssicherung\\CARPK_StopPolicy_9Jobs_CompleteRerun_2026-07-19_155800"
+    },
+    {
+        "comparison_set":  "energy_guard_study",
+        "jobs":  24,
+        "verified_files":  74,
+        "source_files":  75,
+        "samples":  127963,
+        "metric_families":  31,
+        "bytes":  33275069,
+        "source_snapshot":  "D:\\Masterarbeit_Vergleichssicherung\\CARPK_GeneralizedEnergyGuard_20pct_24Jobs_2026-07-22_034745"
+    }
+]

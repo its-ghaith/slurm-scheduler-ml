@@ -1,0 +1,144 @@
+{
+  "benchmark_version": "controller-benchmark-v3-nine-dataset-fresh",
+  "description": "Focused RAPEC-v10 validation on VEDAI, CIFAR-10, CIFAR-100, and Tiny ImageNet using the existing Full100 baselines.",
+  "execution": {
+    "namespace": "mlops-energy",
+    "kubeconfig": "rancherConfigs/main.yaml",
+    "experiment_name": "controller-benchmark-v3-v10-selected-four",
+    "max_epochs": 100,
+    "batch_size": 8,
+    "image_size": 640,
+    "split_seed": 0,
+    "cache_policy": "persistent-disk",
+    "runtime_image_id": "ghcr.io/its-ghaith/slurm-scheduler-ml/mlops-slurm-runtime@sha256:579d927d427b8f5fa677780db338bae740eb1c0c012a133d529c06bf24ad3b55",
+    "gpu_name": "NVIDIA A100-SXM4-80GB",
+    "gpu_power_limit_w": "400.00",
+    "timeout_seconds": 28800,
+    "cooldown_seconds": 20,
+    "analysis_module": "controller_benchmark.analyze",
+    "dashboard_files": [],
+    "classification_workers": 0,
+    "segmentation_workers": 0
+  },
+  "acceptance": {
+    "minimum_energy_saving_fraction": 0.0,
+    "maximum_quality_regret": 0.015,
+    "minimum_success_rate": 0.8
+  },
+  "baselines": [
+    {
+      "id": "full100",
+      "controller_mode": "none"
+    }
+  ],
+  "stages": [
+    {
+      "id": "aerial_vehicle_counting",
+      "title": "Aerial Vehicle Detection and Counting",
+      "enabled": true,
+      "purpose": "Focused object-detection validation on VEDAI 512.",
+      "cases": [
+        {
+          "id": "vedai-aerial-vehicle",
+          "runner": "vedai_yolo",
+          "task_type": "object_detection",
+          "quality_metric": "quality_score",
+          "baseline_quality_metric": "map50_95",
+          "primary_metric": "map50_95",
+          "secondary_metrics": [
+            "map50",
+            "precision",
+            "recall",
+            "count_mae",
+            "count_rmse"
+          ],
+          "scenario": "vedai512-fold1-scratch-yolov8n-nine-dataset",
+          "training_seed": 0,
+          "train_size": 0,
+          "model_version": "yolov8n.yaml",
+          "pretrained": false,
+          "dataset_name": "VEDAI 512",
+          "dataset_fingerprint": "vedai512-official-fold01-aa0085fb-542aba4a-da9626f8",
+          "runner_version": "vedai-yolo-v1"
+        }
+      ]
+    },
+    {
+      "id": "image_classification",
+      "title": "Image Classification",
+      "enabled": true,
+      "purpose": "Focused classification validation across 10, 100, and 200 classes.",
+      "cases": [
+        {
+          "id": "cifar10-classification",
+          "runner": "standard_image_classification",
+          "task_type": "image_classification",
+          "quality_metric": "quality_score",
+          "primary_metric": "accuracy",
+          "secondary_metrics": [
+            "macro_f1"
+          ],
+          "scenario": "cifar10-resnet18-small-scratch",
+          "training_seed": 0,
+          "train_size": 0,
+          "model_version": "resnet18-small",
+          "pretrained": false,
+          "dataset_name": "CIFAR-10",
+          "dataset_key": "cifar10",
+          "num_classes": 10,
+          "input_size": 32,
+          "batch_size": 128,
+          "dataset_fingerprint": "cifar10-python-c58f30108f718f92721af3b95e74349a",
+          "runner_version": "standard-classification-v1",
+          "workers": 0
+        },
+        {
+          "id": "cifar100-classification",
+          "runner": "standard_image_classification",
+          "task_type": "image_classification",
+          "quality_metric": "quality_score",
+          "primary_metric": "accuracy",
+          "secondary_metrics": [
+            "macro_f1"
+          ],
+          "scenario": "cifar100-resnet18-small-scratch",
+          "training_seed": 0,
+          "train_size": 0,
+          "model_version": "resnet18-small",
+          "pretrained": false,
+          "dataset_name": "CIFAR-100",
+          "dataset_key": "cifar100",
+          "num_classes": 100,
+          "input_size": 32,
+          "batch_size": 128,
+          "dataset_fingerprint": "cifar100-python-eb9058c3a382ffc7106e4002c42a8d85",
+          "runner_version": "standard-classification-v1",
+          "workers": 0
+        },
+        {
+          "id": "tiny-imagenet-classification",
+          "runner": "standard_image_classification",
+          "task_type": "image_classification",
+          "quality_metric": "quality_score",
+          "primary_metric": "accuracy",
+          "secondary_metrics": [
+            "macro_f1"
+          ],
+          "scenario": "tiny-imagenet-200-resnet18-small-scratch",
+          "training_seed": 0,
+          "train_size": 0,
+          "model_version": "resnet18-small",
+          "pretrained": false,
+          "dataset_name": "Tiny ImageNet 200",
+          "dataset_key": "tiny-imagenet",
+          "num_classes": 200,
+          "input_size": 64,
+          "batch_size": 128,
+          "dataset_fingerprint": "tiny-imagenet-200-official-90528d7ca1a48142e341f4ef8d21d0de",
+          "runner_version": "standard-classification-v1",
+          "workers": 0
+        }
+      ]
+    }
+  ]
+}

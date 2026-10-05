@@ -1,0 +1,160 @@
+{
+  "method": "Morris elementary-effects screening",
+  "selected_parameters": [
+    "min_epochs_floor",
+    "patience",
+    "max_probability_gain_gt_threshold",
+    "horizon_epochs",
+    "trend_window",
+    "utility_quantile",
+    "noise_multiplier",
+    "warmup_required_stable_windows"
+  ],
+  "evaluations": 152,
+  "parameters": [
+    {
+      "parameter": "min_epochs_floor",
+      "quality_mu_star": 4.555219644585546,
+      "quality_sigma": 5.114007097209782,
+      "energy_mu_star": 0.1266778067692359,
+      "energy_sigma": 0.22156153979549245,
+      "combined_score": 1.0
+    },
+    {
+      "parameter": "horizon_epochs",
+      "quality_mu_star": 3.6304001405584883,
+      "quality_sigma": 5.987838278682382,
+      "energy_mu_star": 0.343445184759787,
+      "energy_sigma": 0.5566956084410802,
+      "combined_score": 1.0
+    },
+    {
+      "parameter": "trend_window",
+      "quality_mu_star": 3.906390388867716,
+      "quality_sigma": 6.85607755562941,
+      "energy_mu_star": 0.18431363960889438,
+      "energy_sigma": 0.37640992127445444,
+      "combined_score": 0.8575635630459564
+    },
+    {
+      "parameter": "utility_quantile",
+      "quality_mu_star": 2.3104221026748566,
+      "quality_sigma": 6.12848101766706,
+      "energy_mu_star": 0.1796394561646678,
+      "energy_sigma": 0.35551152750139414,
+      "combined_score": 0.5230513168799019
+    },
+    {
+      "parameter": "noise_multiplier",
+      "quality_mu_star": 1.5196393898847167,
+      "quality_sigma": 4.0116388899796425,
+      "energy_mu_star": 0.16902814256103652,
+      "energy_sigma": 0.3707126647534495,
+      "combined_score": 0.4921546437730913
+    },
+    {
+      "parameter": "warmup_required_stable_windows",
+      "quality_mu_star": 1.221427909463865,
+      "quality_sigma": 2.0331494957771965,
+      "energy_mu_star": 0.09399562020274863,
+      "energy_sigma": 0.20205805353236536,
+      "combined_score": 0.2736844899091865
+    },
+    {
+      "parameter": "patience",
+      "quality_mu_star": 1.1566863668635565,
+      "quality_sigma": 2.700633331869426,
+      "energy_mu_star": 0.018169150105146983,
+      "energy_sigma": 0.02572460960007985,
+      "combined_score": 0.2539254870483412
+    },
+    {
+      "parameter": "warmup_signal_to_noise_ratio",
+      "quality_mu_star": 0.9739206575987168,
+      "quality_sigma": 2.7546636053028575,
+      "energy_mu_star": 0.003611459053327779,
+      "energy_sigma": 0.010214748746342487,
+      "combined_score": 0.2138032265373514
+    },
+    {
+      "parameter": "warmup_noise_stability_ratio",
+      "quality_mu_star": 0.8078840548353018,
+      "quality_sigma": 2.105402185755879,
+      "energy_mu_star": 0.023109583831322812,
+      "energy_sigma": 0.05721982580402229,
+      "combined_score": 0.17735347971542362
+    },
+    {
+      "parameter": "max_probability_gain_gt_threshold",
+      "quality_mu_star": 0.0014926501678609594,
+      "quality_sigma": 0.0042218522225348915,
+      "energy_mu_star": 0.01682166931793809,
+      "energy_sigma": 0.035057862026333146,
+      "combined_score": 0.04897919686864595
+    },
+    {
+      "parameter": "bootstrap_samples",
+      "quality_mu_star": 0.06007419856292365,
+      "quality_sigma": 0.16991549271276185,
+      "energy_mu_star": 0.004482391732473385,
+      "energy_sigma": 0.012678118359865794,
+      "combined_score": 0.01318799163380177
+    },
+    {
+      "parameter": "late_stage_relaxation",
+      "quality_mu_star": 0.0,
+      "quality_sigma": 0.0,
+      "energy_mu_star": 0.004090998363275375,
+      "energy_sigma": 0.011571090737980341,
+      "combined_score": 0.011911648626364372
+    },
+    {
+      "parameter": "remaining_room_fraction",
+      "quality_mu_star": 0.0014908427840912462,
+      "quality_sigma": 0.004216740169255809,
+      "energy_mu_star": 0.001524860290805501,
+      "energy_sigma": 0.0043129562079626425,
+      "combined_score": 0.004439894220301913
+    },
+    {
+      "parameter": "min_fit_points",
+      "quality_mu_star": 0.0,
+      "quality_sigma": 0.0,
+      "energy_mu_star": 0.0,
+      "energy_sigma": 0.0,
+      "combined_score": 0.0
+    },
+    {
+      "parameter": "knn_neighbors",
+      "quality_mu_star": 0.0,
+      "quality_sigma": 0.0,
+      "energy_mu_star": 0.0,
+      "energy_sigma": 0.0,
+      "combined_score": 0.0
+    },
+    {
+      "parameter": "max_uncertainty_to_gain_ratio",
+      "quality_mu_star": 0.0,
+      "quality_sigma": 0.0,
+      "energy_mu_star": 0.0,
+      "energy_sigma": 0.0,
+      "combined_score": 0.0
+    },
+    {
+      "parameter": "recent_gain_fraction",
+      "quality_mu_star": 0.0,
+      "quality_sigma": 0.0,
+      "energy_mu_star": 0.0,
+      "energy_sigma": 0.0,
+      "combined_score": 0.0
+    },
+    {
+      "parameter": "min_meaningful_gain",
+      "quality_mu_star": 0.0,
+      "quality_sigma": 0.0,
+      "energy_mu_star": 0.0,
+      "energy_sigma": 0.0,
+      "combined_score": 0.0
+    }
+  ]
+}

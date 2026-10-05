@@ -38,7 +38,13 @@ def main():
         f'job_id="{job_id}",scenario="{prom_escape(str(data.get("scenario", "unspecified")))}",'
         f'comparison_strategy="{prom_escape(str(data.get("comparison_strategy", "unspecified")))}",'
         f'training_seed="{prom_escape(str(data.get("training_seed", 0)))}",'
-        f'split_seed="{prom_escape(str(data.get("split_seed", 0)))}"'
+        f'split_seed="{prom_escape(str(data.get("split_seed", 0)))}",'
+        f'controller_id="{prom_escape(str(data.get("controller_id", "unspecified")))}",'
+        f'benchmark_version="{prom_escape(str(data.get("benchmark_version", "unversioned")))}",'
+        f'benchmark_run_id="{prom_escape(str(data.get("benchmark_run_id", "none")))}",'
+        f'benchmark_case_id="{prom_escape(str(data.get("benchmark_case_id", "none")))}",'
+        f'benchmark_stage="{prom_escape(str(data.get("benchmark_stage", "none")))}",'
+        f'task_type="{prom_escape(str(data.get("task_type", "unknown")))}"'
     )
     lines = []
     phase_metrics = data.get("phase_metrics", {})
@@ -58,10 +64,9 @@ def main():
         lines.append(f'slurm_job_phase_codecarbon_estimated_electricity_cost_eur{{{labels}}} {to_float(m.get("codecarbon_estimated_electricity_cost_eur")):.12g}')
         lines.append(f'slurm_job_phase_codecarbon_estimated_co2_kg{{{labels}}} {to_float(m.get("codecarbon_estimated_co2_kg")):.12g}')
 
-    lines.append(f'slurm_job_codecarbon_total_energy_kwh{{{common_labels}}} {to_float(data.get("codecarbon_job_total_energy_kwh")):.12g}')
-    lines.append(f'slurm_job_codecarbon_total_gpu_energy_kwh{{{common_labels}}} {to_float(data.get("codecarbon_job_total_gpu_energy_kwh")):.12g}')
-    lines.append(f'slurm_job_codecarbon_estimated_electricity_cost_eur{{{common_labels}}} {to_float(data.get("codecarbon_estimated_electricity_cost_eur")):.12g}')
-    lines.append(f'slurm_job_codecarbon_estimated_co2_kg{{{common_labels}}} {to_float(data.get("codecarbon_estimated_co2_kg")):.12g}')
+    # Job-wide CodeCarbon totals, cost and CO2 are emitted once by
+    # export_job_metrics_prom.py. Repeating them here with a slightly different
+    # label set makes Prometheus treat them as separate series.
 
     cmp = data.get("codecarbon_vs_slurm", {})
     lines.append(f'slurm_job_training_energy_compare_abs_diff_kwh{{{common_labels}}} {to_float(cmp.get("training_abs_diff_kwh")):.12g}')

@@ -1,0 +1,5 @@
+numpy>=2.0,<3
+SALib>=1.5,<2
+botorch>=0.15,<1
+gpytorch>=1.14,<2
+scikit-learn>=1.5,<2

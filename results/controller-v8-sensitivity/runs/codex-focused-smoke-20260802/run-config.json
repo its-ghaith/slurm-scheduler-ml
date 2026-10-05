@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "analysis_id": "codex-focused-smoke-20260802",
+  "mode": "surrogate",
+  "seed": 20260802,
+  "design_samples": 32,
+  "sobol_base_samples": 16,
+  "parameters": [
+    "min_epochs_floor",
+    "noise_multiplier",
+    "utility_quantile",
+    "minimum_quality_floor",
+    "trend_window"
+  ],
+  "base_parameters": {
+    "horizon_epochs": 5,
+    "min_fit_points": 10,
+    "patience": 3,
+    "trend_window": 10,
+    "bootstrap_samples": 96,
+    "knn_neighbors": 9,
+    "min_epochs_floor": 12,
+    "max_probability_gain_gt_threshold": 0.25,
+    "max_uncertainty_to_gain_ratio": 4.0,
+    "minimum_quality_floor": 0.0,
+    "noise_multiplier": 1.25,
+    "recent_gain_fraction": 0.35,
+    "remaining_room_fraction": 0.015,
+    "late_stage_relaxation": 0.55,
+    "min_meaningful_gain": 0.0001,
+    "utility_quantile": 0.25,
+    "bayesian_window": 20,
+    "bayesian_samples": 512,
+    "bayesian_min_observations": 8,
+    "bayesian_probability_limit": 0.35,
+    "bayesian_prior_strength": 0.5,
+    "bayesian_prior_alpha": 2.0,
+    "bayesian_confirmation_patience": 1
+  },
+  "parameter_specifications": {
+    "min_epochs_floor": {
+      "type": "int",
+      "low": 12,
+      "high": 97
+    },
+    "noise_multiplier": {
+      "type": "float",
+      "low": 0.25,
+      "high": 4.0
+    },
+    "utility_quantile": {
+      "type": "float",
+      "low": 0.01,
+      "high": 0.75
+    },
+    "minimum_quality_floor": {
+      "type": "float",
+      "low": 0.0,
+      "high": 0.7
+    },
+    "trend_window": {
+      "type": "int",
+      "low": 4,
+      "high": 30
+    }
+  },
+  "outputs": [
+    "overall__mean_energy_saving_fraction",
+    "overall__mean_quality_regret_pp",
+    "overall__mean_stop_epoch",
+    "overall__mean_stop_epoch_fraction",
+    "overall__noninferiority_success_fraction",
+    "overall__joint_success_fraction",
+    "overall__bayesian_veto_rate",
+    "overall__controller_runtime_ms_per_epoch",
+    "overall__energy_saving_q25",
+    "overall__quality_cvar90_normalized",
+    "image_classification__mean_energy_saving_fraction",
+    "image_classification__mean_quality_regret_pp",
+    "image_classification__mean_stop_epoch",
+    "image_classification__mean_stop_epoch_fraction",
+    "image_classification__noninferiority_success_fraction",
+    "image_classification__joint_success_fraction",
+    "image_classification__bayesian_veto_rate",
+    "image_classification__controller_runtime_ms_per_epoch",
+    "image_classification__energy_saving_q25",
+    "image_classification__quality_cvar90_normalized",
+    "object_detection__mean_energy_saving_fraction",
+    "object_detection__mean_quality_regret_pp",
+    "object_detection__mean_stop_epoch",
+    "object_detection__mean_stop_epoch_fraction",
+    "object_detection__noninferiority_success_fraction",
+    "object_detection__joint_success_fraction",
+    "object_detection__bayesian_veto_rate",
+    "object_detection__controller_runtime_ms_per_epoch",
+    "object_detection__energy_saving_q25",
+    "object_detection__quality_cvar90_normalized",
+    "semantic_segmentation__mean_energy_saving_fraction",
+    "semantic_segmentation__mean_quality_regret_pp",
+    "semantic_segmentation__mean_stop_epoch",
+    "semantic_segmentation__mean_stop_epoch_fraction",
+    "semantic_segmentation__noninferiority_success_fraction",
+    "semantic_segmentation__joint_success_fraction",
+    "semantic_segmentation__bayesian_veto_rate",
+    "semantic_segmentation__controller_runtime_ms_per_epoch",
+    "semantic_segmentation__energy_saving_q25",
+    "semantic_segmentation__quality_cvar90_normalized"
+  ],
+  "source_run_ids": [
+    "20260729T170915Z-rapec-v3-v8-nine-dataset"
+  ]
+}

@@ -51,8 +51,10 @@ function Get-PodName {
     param([Parameter(Mandatory = $true)][string]$App)
     $pod = Get-NativeText -Command "kubectl" -Arguments @(
         "--kubeconfig", $Kubeconfig, "-n", $Namespace,
-        "get", "pod", "-l", "app=$App", "-o", "jsonpath={.items[0].metadata.name}"
+        "get", "pod", "-l", "app=$App",
+        "-o", "jsonpath={.items[?(@.status.phase=='Running')].metadata.name}"
     )
+    $pod = @($pod -split "\s+" | Where-Object { $_ })[0]
     if (-not $pod) { throw "Kein Pod mit Label app=$App gefunden." }
     return $pod
 }
@@ -107,7 +109,22 @@ if ($ValidateOnly) {
 if (-not $Force -and -not $PSCmdlet.ShouldProcess($Namespace, $summary)) { return }
 
 $slurmdPod = Get-PodName -App "slurmd"
-$mlflowPod = Get-PodName -App "mlflow"
+$mlflowPod = ""
+$mlflowContainer = ""
+$mlflowBackendPath = "/mlflow"
+$mlflowArtifactsPath = "/mlruns"
+$useSlurmdMlflowFallback = $false
+try {
+    $mlflowPod = Get-PodName -App "mlflow"
+}
+catch {
+    $mlflowPod = $slurmdPod
+    $mlflowContainer = "slurmd"
+    $mlflowBackendPath = "/workspace/mlflow-fallback/backend"
+    $mlflowArtifactsPath = "/workspace/mlflow-fallback/artifacts"
+    $useSlurmdMlflowFallback = $true
+    Write-Host "Kein separates MLflow-Pod gefunden; verwende den slurmd-MLflow-Fallback." -ForegroundColor Yellow
+}
 
 Write-Host "Breche aktive SLURM-Jobs ab ..." -ForegroundColor Cyan
 Invoke-Native -Command "kubectl" -Arguments @(
@@ -144,12 +161,31 @@ if (-not $SkipModels) {
 }
 
 Write-Host "Ersetze MLflow-Backend und Artefakte ..." -ForegroundColor Cyan
-Invoke-Native -Command "kubectl" -Arguments @(
-    "--kubeconfig", $Kubeconfig, "-n", $Namespace,
-    "exec", $mlflowPod, "--", "bash", "-lc", "mkdir -p /mlflow /mlruns; rm -rf /mlflow/* /mlruns/*"
-)
-Copy-ToPod -LocalPath (Join-Path $SnapshotPath "data\mlflow\backend") -Pod $mlflowPod -RemotePath "/mlflow"
-Copy-ToPod -LocalPath (Join-Path $SnapshotPath "data\mlflow\artifacts") -Pod $mlflowPod -RemotePath "/mlruns"
+$mlflowExec = @("--kubeconfig", $Kubeconfig, "-n", $Namespace, "exec", $mlflowPod)
+if ($mlflowContainer) { $mlflowExec += @("-c", $mlflowContainer) }
+$mlflowCleanup = if ($useSlurmdMlflowFallback) {
+    "pid=`$(pgrep -f '^/opt/conda/bin/python .*mlflow server.*--port 5000' | head -1 || true); if [ -n `"`$pid`" ]; then kill `"`$pid`" || true; sleep 2; fi; mkdir -p $mlflowBackendPath $mlflowArtifactsPath; rm -rf $mlflowBackendPath/* $mlflowArtifactsPath/*"
+} else {
+    "mkdir -p $mlflowBackendPath $mlflowArtifactsPath; rm -rf $mlflowBackendPath/* $mlflowArtifactsPath/*"
+}
+Invoke-Native -Command "kubectl" -Arguments ($mlflowExec + @("--", "bash", "-lc", $mlflowCleanup))
+Copy-ToPod -LocalPath (Join-Path $SnapshotPath "data\mlflow\backend") -Pod $mlflowPod -Container $mlflowContainer -RemotePath $mlflowBackendPath
+Copy-ToPod -LocalPath (Join-Path $SnapshotPath "data\mlflow\artifacts") -Pod $mlflowPod -Container $mlflowContainer -RemotePath $mlflowArtifactsPath
+
+if ($useSlurmdMlflowFallback) {
+    $startMlflow = "nohup mlflow server --backend-store-uri sqlite:////workspace/mlflow-fallback/backend/mlflow.db --default-artifact-root /workspace/mlflow-fallback/artifacts --host 0.0.0.0 --port 5000 --allowed-hosts '*' >/workspace/mlflow-fallback/mlflow.log 2>&1 &"
+    Invoke-Native -Command "kubectl" -Arguments ($mlflowExec + @("--", "bash", "-lc", $startMlflow))
+    for ($attempt = 1; $attempt -le 30; $attempt++) {
+        $previousPreference = $ErrorActionPreference
+        $ErrorActionPreference = "Continue"
+        $health = & kubectl @($mlflowExec + @("--", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:5000/health', timeout=2).read()")) 2>&1
+        $healthExitCode = $LASTEXITCODE
+        $ErrorActionPreference = $previousPreference
+        if ($healthExitCode -eq 0) { break }
+        if ($attempt -eq 30) { throw "Der wiederhergestellte slurmd-MLflow-Fallback wurde nicht bereit." }
+        Start-Sleep -Seconds 1
+    }
+}
 
 if (-not $SkipDashboard) {
     Write-Host "Stelle das gesicherte Grafana-Dashboard bereit ..." -ForegroundColor Cyan

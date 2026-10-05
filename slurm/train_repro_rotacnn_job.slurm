@@ -46,12 +46,51 @@ export UNCERTAINTY_MIN_FIT_POINTS="${UNCERTAINTY_MIN_FIT_POINTS:-8}"
 export STANDARD_EARLY_STOP_MIN_DELTA="${STANDARD_EARLY_STOP_MIN_DELTA:-0.0005}"
 export UNCERTAINTY_MIN_QUALITY="${UNCERTAINTY_MIN_QUALITY:-0.55}"
 export UNCERTAINTY_REQUIRE_LOW_MAPE="${UNCERTAINTY_REQUIRE_LOW_MAPE:-true}"
+export CONFORMAL_CALIBRATION_PATH="${CONFORMAL_CALIBRATION_PATH:-/workspace/slurm/conformal_calibration.json}"
+export CONFORMAL_REGRET_TOLERANCE="${CONFORMAL_REGRET_TOLERANCE:-0.015}"
+export CONFORMAL_FUTURE_EFFICIENCY_THRESHOLD="${CONFORMAL_FUTURE_EFFICIENCY_THRESHOLD:-0.05}"
+export CONFORMAL_MAX_INTERVAL_WIDTH="${CONFORMAL_MAX_INTERVAL_WIDTH:-0.08}"
+export CONFORMAL_ENERGY_WINDOW="${CONFORMAL_ENERGY_WINDOW:-5}"
+export CONFORMAL_REQUIRE_CALIBRATION="${CONFORMAL_REQUIRE_CALIBRATION:-true}"
+export CONTROLLER_EVALUATION_INTERVAL="${CONTROLLER_EVALUATION_INTERVAL:-1}"
+export HYBRID_QUALITY_TARGET="${HYBRID_QUALITY_TARGET:-0.68}"
+export HYBRID_PLATEAU_WINDOW="${HYBRID_PLATEAU_WINDOW:-12}"
+export HYBRID_PLATEAU_SLOPE_THRESHOLD="${HYBRID_PLATEAU_SLOPE_THRESHOLD:-0.0015}"
+export HYBRID_THRESHOLD_GROWTH="${HYBRID_THRESHOLD_GROWTH:-0.25}"
+export HYBRID_CANDIDATE_DECAY="${HYBRID_CANDIDATE_DECAY:-0.5}"
+export HYBRID_LATE_EPOCH_FRACTION="${HYBRID_LATE_EPOCH_FRACTION:-0.90}"
+export HYBRID_LATE_PATIENCE="${HYBRID_LATE_PATIENCE:-2}"
+export HYBRID_MAX_EPOCH_BUDGET="${HYBRID_MAX_EPOCH_BUDGET:-95}"
+export HYBRID_MAX_NET_ENERGY_WH="${HYBRID_MAX_NET_ENERGY_WH:-0}"
+export HYBRID_REGRET_WEIGHT="${HYBRID_REGRET_WEIGHT:-1.0}"
+export HYBRID_ENERGY_WEIGHT="${HYBRID_ENERGY_WEIGHT:-0.05}"
+export ENERGY_GUARD_TARGET_SAVING_FRACTION="${ENERGY_GUARD_TARGET_SAVING_FRACTION:-0.20}"
+export ENERGY_GUARD_SAFETY_MARGIN_FRACTION="${ENERGY_GUARD_SAFETY_MARGIN_FRACTION:-0.01}"
+export ENERGY_GUARD_POST_TRAINING_RESERVE_WH="${ENERGY_GUARD_POST_TRAINING_RESERVE_WH:-0.90}"
+export ENERGY_GUARD_WINDOW="${ENERGY_GUARD_WINDOW:-5}"
+export ENERGY_GUARD_FALLBACK_EPOCH_FRACTION="${ENERGY_GUARD_FALLBACK_EPOCH_FRACTION:-0.77}"
+export ENERGY_GUARD_STRICT="${ENERGY_GUARD_STRICT:-true}"
+export CONTROLLER_PLUGIN="${CONTROLLER_PLUGIN:-}"
+export CONTROLLER_PARAMETERS_JSON="${CONTROLLER_PARAMETERS_JSON:-{}}"
+export CONTROLLER_PARAMETERS_BASE64="${CONTROLLER_PARAMETERS_BASE64:-}"
+export CONTROLLER_ID="${CONTROLLER_ID:-unspecified}"
+export BENCHMARK_VERSION="${BENCHMARK_VERSION:-unversioned}"
+export BENCHMARK_RUN_ID="${BENCHMARK_RUN_ID:-none}"
+export BENCHMARK_CASE_ID="${BENCHMARK_CASE_ID:-none}"
+export BENCHMARK_STAGE="${BENCHMARK_STAGE:-none}"
+export BENCHMARK_TASK_TYPE="${BENCHMARK_TASK_TYPE:-object_detection}"
+export BENCHMARK_QUALITY_METRIC="${BENCHMARK_QUALITY_METRIC:-map50_95}"
 export EXPERIMENT_SCENARIO="${EXPERIMENT_SCENARIO:-unspecified}"
 export TRAINING_SEED="${TRAINING_SEED:-0}"
 export SPLIT_SEED="${SPLIT_SEED:-42}"
 export CACHE_POLICY="${CACHE_POLICY:-ram}"
 export GPU_IDLE_SAMPLE_SECONDS="${GPU_IDLE_SAMPLE_SECONDS:-10}"
 export RUNTIME_IMAGE_ID="${RUNTIME_IMAGE_ID:-unknown}"
+
+CONTROLLER_PARAMETERS_ARGS=(--controller-parameters-json "${CONTROLLER_PARAMETERS_JSON}")
+if [[ -n "${CONTROLLER_PARAMETERS_BASE64}" ]]; then
+  CONTROLLER_PARAMETERS_ARGS=(--controller-parameters-base64 "${CONTROLLER_PARAMETERS_BASE64}")
+fi
 
 mkdir -p "${GPU_METRICS_DIR}" "${PROM_TEXTFILE_DIR}" /workspace/logs
 
@@ -132,6 +171,39 @@ python "${REPRO_SCRIPT}" \
   --standard-min-delta "${STANDARD_EARLY_STOP_MIN_DELTA}" \
   --uncertainty-min-quality "${UNCERTAINTY_MIN_QUALITY}" \
   --uncertainty-require-low-mape "${UNCERTAINTY_REQUIRE_LOW_MAPE}" \
+  --conformal-calibration-path "${CONFORMAL_CALIBRATION_PATH}" \
+  --conformal-regret-tolerance "${CONFORMAL_REGRET_TOLERANCE}" \
+  --conformal-future-efficiency-threshold "${CONFORMAL_FUTURE_EFFICIENCY_THRESHOLD}" \
+  --conformal-max-interval-width "${CONFORMAL_MAX_INTERVAL_WIDTH}" \
+  --conformal-energy-window "${CONFORMAL_ENERGY_WINDOW}" \
+  --conformal-require-calibration "${CONFORMAL_REQUIRE_CALIBRATION}" \
+  --controller-evaluation-interval "${CONTROLLER_EVALUATION_INTERVAL}" \
+  --hybrid-quality-target "${HYBRID_QUALITY_TARGET}" \
+  --hybrid-plateau-window "${HYBRID_PLATEAU_WINDOW}" \
+  --hybrid-plateau-slope-threshold "${HYBRID_PLATEAU_SLOPE_THRESHOLD}" \
+  --hybrid-threshold-growth "${HYBRID_THRESHOLD_GROWTH}" \
+  --hybrid-candidate-decay "${HYBRID_CANDIDATE_DECAY}" \
+  --hybrid-late-epoch-fraction "${HYBRID_LATE_EPOCH_FRACTION}" \
+  --hybrid-late-patience "${HYBRID_LATE_PATIENCE}" \
+  --hybrid-max-epoch-budget "${HYBRID_MAX_EPOCH_BUDGET}" \
+  --hybrid-max-net-energy-wh "${HYBRID_MAX_NET_ENERGY_WH}" \
+  --hybrid-regret-weight "${HYBRID_REGRET_WEIGHT}" \
+  --hybrid-energy-weight "${HYBRID_ENERGY_WEIGHT}" \
+  --energy-guard-target-saving-fraction "${ENERGY_GUARD_TARGET_SAVING_FRACTION}" \
+  --energy-guard-safety-margin-fraction "${ENERGY_GUARD_SAFETY_MARGIN_FRACTION}" \
+  --energy-guard-post-training-reserve-wh "${ENERGY_GUARD_POST_TRAINING_RESERVE_WH}" \
+  --energy-guard-window "${ENERGY_GUARD_WINDOW}" \
+  --energy-guard-fallback-epoch-fraction "${ENERGY_GUARD_FALLBACK_EPOCH_FRACTION}" \
+  --energy-guard-strict "${ENERGY_GUARD_STRICT}" \
+  --controller-plugin "${CONTROLLER_PLUGIN}" \
+  "${CONTROLLER_PARAMETERS_ARGS[@]}" \
+  --controller-id "${CONTROLLER_ID}" \
+  --benchmark-version "${BENCHMARK_VERSION}" \
+  --benchmark-run-id "${BENCHMARK_RUN_ID}" \
+  --benchmark-case-id "${BENCHMARK_CASE_ID}" \
+  --benchmark-stage "${BENCHMARK_STAGE}" \
+  --task-type "${BENCHMARK_TASK_TYPE}" \
+  --quality-metric "${BENCHMARK_QUALITY_METRIC}" \
   "${ADAPTIVE_FLAG[@]}" \
   "${OVR_ARR[@]}"
 TRAIN_EXIT=$?
@@ -160,6 +232,11 @@ python slurm/summarize_gpu_metrics_phases.py \
   --co2-kg-kwh "${GRID_CO2_KG_PER_KWH}" \
   --pue "${PUE_FACTOR}" \
   --idle-power-w "${GPU_IDLE_POWER_W}"
+
+# The orchestrator and all generic runners use the unsuffixed summary as the
+# canonical, fully enriched artifact. Preserve the legacy phase-suffixed copy,
+# then publish the same complete document at the canonical path.
+cp "${GPU_SUMMARY_PHASES_JSON}" "${GPU_SUMMARY_JSON}"
 
 if [ "${MLFLOW_LOG_JOB_ENERGY}" = "1" ] || [ "${MLFLOW_LOG_JOB_ENERGY,,}" = "true" ] || [ "${MLFLOW_LOG_JOB_ENERGY,,}" = "yes" ]; then
   RUN_ID=""

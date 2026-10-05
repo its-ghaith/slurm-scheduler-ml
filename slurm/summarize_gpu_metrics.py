@@ -60,7 +60,11 @@ def main():
         with Path(args.metadata_json).open("r", encoding="utf-8") as f:
             metadata = json.load(f)
         report["run_metadata"] = metadata
-        for key in ("scenario", "comparison_strategy", "training_seed", "split_seed", "cache_policy"):
+        for key in (
+            "scenario", "comparison_strategy", "training_seed", "split_seed", "cache_policy",
+            "controller_id", "benchmark_version", "benchmark_run_id", "benchmark_case_id",
+            "benchmark_stage", "task_type", "quality_metric",
+        ):
             if key in metadata:
                 report[key] = metadata[key]
 

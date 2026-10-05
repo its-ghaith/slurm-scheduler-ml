@@ -3,7 +3,12 @@ param(
     [string]$Kubeconfig = "rancherConfigs/main.yaml",
     [string]$Namespace = "mlops-energy",
     [string]$OutputPath = "",
-    [string]$SnapshotName = "carpk-stop-policy-comparison"
+    [string]$SnapshotName = "carpk-stop-policy-comparison",
+    [string]$DashboardSource = "grafana/dashboards/slurm-energy-overview.json",
+    [string]$MlflowPod = "",
+    [string]$MlflowContainer = "",
+    [string]$MlflowBackendPath = "/mlflow",
+    [string]$MlflowArtifactsPath = "/mlruns"
 )
 
 $ErrorActionPreference = "Stop"
@@ -52,8 +57,9 @@ function Get-PodName {
     $pod = Get-NativeText -Command "kubectl" -Arguments @(
         "--kubeconfig", $Kubeconfig, "-n", $Namespace,
         "get", "pod", "-l", "app=$App",
-        "-o", "jsonpath={.items[0].metadata.name}"
+        "-o", "jsonpath={.items[?(@.status.phase=='Running')].metadata.name}"
     )
+    $pod = @($pod -split "\s+" | Where-Object { $_ })[0]
     if (-not $pod) { throw "Kein Pod mit Label app=$App gefunden." }
     return $pod
 }
@@ -128,7 +134,7 @@ foreach ($folder in @("data", "config", "source", "reports", "checksums")) {
 Write-Host "Pruefe Cluster und ermittle Pods ..." -ForegroundColor Cyan
 Invoke-Native -Command "kubectl" -Arguments @("--kubeconfig", $Kubeconfig, "-n", $Namespace, "get", "pods")
 $slurmdPod = Get-PodName -App "slurmd"
-$mlflowPod = Get-PodName -App "mlflow"
+if (-not $MlflowPod) { $MlflowPod = Get-PodName -App "mlflow" }
 
 Write-Host "Sichere kanonische Job-, Epochen- und Phasenmetriken ..." -ForegroundColor Cyan
 Copy-FromPod -Pod $slurmdPod -Container "slurmd" -RemotePath "/workspace/energy_metrics" -LocalPath (Join-Path $OutputPath "data\energy_metrics")
@@ -149,8 +155,10 @@ foreach ($modelDirectory in @($modelDirectories -split "[`r`n]+" | Where-Object 
 }
 
 Write-Host "Sichere MLflow-Experimente und Artefakte ..." -ForegroundColor Cyan
-Copy-FromPod -Pod $mlflowPod -RemotePath "/mlflow" -LocalPath (Join-Path $OutputPath "data\mlflow\backend")
-Copy-FromPod -Pod $mlflowPod -RemotePath "/mlruns" -LocalPath (Join-Path $OutputPath "data\mlflow\artifacts")
+Copy-FromPod -Pod $MlflowPod -Container $MlflowContainer -RemotePath $MlflowBackendPath `
+    -LocalPath (Join-Path $OutputPath "data\mlflow\backend")
+Copy-FromPod -Pod $MlflowPod -Container $MlflowContainer -RemotePath $MlflowArtifactsPath `
+    -LocalPath (Join-Path $OutputPath "data\mlflow\artifacts")
 
 Write-Host "Sichere Dashboard und Kubernetes-Definitionen ..." -ForegroundColor Cyan
 $dashboardJson = Get-NativeText -Command "kubectl" -Arguments @(
@@ -158,6 +166,17 @@ $dashboardJson = Get-NativeText -Command "kubectl" -Arguments @(
     "get", "configmap", "grafana-dashboard-slurm-energy",
     "-o", "jsonpath={.data.slurm-energy-overview\.json}"
 )
+$resolvedDashboardSource = if ([System.IO.Path]::IsPathRooted($DashboardSource)) {
+    $DashboardSource
+} else {
+    Join-Path $RepoRoot $DashboardSource
+}
+if ([string]::IsNullOrWhiteSpace($dashboardJson)) {
+    if (-not (Test-Path -LiteralPath $resolvedDashboardSource)) {
+        throw "Dashboard weder im ConfigMap noch lokal gefunden: $resolvedDashboardSource"
+    }
+    $dashboardJson = [System.IO.File]::ReadAllText($resolvedDashboardSource)
+}
 $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
 [System.IO.File]::WriteAllText(
     (Join-Path $OutputPath "config\slurm-energy-overview.json"),

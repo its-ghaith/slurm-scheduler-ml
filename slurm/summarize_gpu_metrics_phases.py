@@ -54,6 +54,32 @@ def add_phase_rollups(phase: dict, price_eur_kwh: float, co2_kg_kwh: float):
     return phase
 
 
+def combine_phases(
+    phase_metrics: dict,
+    names: tuple[str, ...],
+    price_eur_kwh: float,
+    co2_kg_kwh: float,
+) -> dict:
+    """Combine implementation-specific phase names into one thesis lifecycle phase."""
+    additive = (
+        "duration_seconds",
+        "gpu_energy_kwh",
+        "total_energy_kwh",
+        "idle_energy_kwh",
+        "net_gpu_energy_kwh",
+        "net_total_energy_kwh",
+        "codecarbon_duration_seconds",
+        "codecarbon_energy_kwh",
+        "codecarbon_gpu_energy_kwh",
+        "codecarbon_cpu_energy_kwh",
+    )
+    combined = {
+        key: sum(to_float(phase_metrics.get(name, {}).get(key)) for name in names)
+        for key in additive
+    }
+    return add_phase_rollups(combined, price_eur_kwh, co2_kg_kwh)
+
+
 def main():
     args = parse_args()
     gpu_csv = Path(args.gpu_csv)
@@ -128,6 +154,22 @@ def main():
     if any(to_float(v) > 0.0 for v in other_phase.values() if isinstance(v, (int, float))):
         phase_metrics["other"] = other_phase
 
+    # The CARPK/YOLO runner predates the generic benchmark runner and records
+    # finer-grained phase names. Keep those source phases for traceability while
+    # adding the common lifecycle aliases consumed by validation and Grafana.
+    phase_metrics["preprocessing_initialization"] = combine_phases(
+        phase_metrics,
+        ("preprocessing_labels", "preprocessing_split"),
+        args.price_eur_kwh,
+        args.co2_kg_kwh,
+    )
+    phase_metrics["finalization_evaluation"] = combine_phases(
+        phase_metrics,
+        ("test_evaluation", "other"),
+        args.price_eur_kwh,
+        args.co2_kg_kwh,
+    )
+
     training = phase_metrics.get("training", {})
     cc_train_gpu = to_float(training.get("codecarbon_gpu_energy_kwh"))
     slurm_train_gpu = to_float(training.get("gpu_energy_kwh"))
@@ -153,6 +195,21 @@ def main():
         * args.price_eur_kwh,
         "codecarbon_estimated_co2_kg": to_float(codecarbon_job.get("codecarbon_energy_kwh")) * args.co2_kg_kwh,
         "phase_metrics": phase_metrics,
+        "codecarbon_measurement_available": int(
+            all(
+                codecarbon_job.get(key) is not None
+                for key in (
+                    "duration_seconds",
+                    "codecarbon_energy_kwh",
+                    "codecarbon_gpu_energy_kwh",
+                )
+            )
+        ),
+        "lifecycle_energy_complete": int(
+            all(name in phase_metrics for name in ("preprocessing_labels", "preprocessing_split"))
+            and "training" in phase_metrics
+            and "test_evaluation" in phase_metrics
+        ),
         "codecarbon_vs_slurm": compare,
     }
 

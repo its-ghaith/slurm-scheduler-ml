@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "method": "Constraint-first qLogNEHVI for RAPEC-v9",
+  "selection_basis": "Quality non-inferiority is a hard probabilistic constraint. Among feasible controllers, the lower-quartile training-energy saving is maximized.",
+  "mandatory_parameters": [
+    "model_window",
+    "minimum_calibration_points",
+    "calibration_window",
+    "quality_risk_alpha",
+    "quality_noise_quantile",
+    "evidence_decay",
+    "evidence_stop_probability"
+  ],
+  "fixed_parameters": {
+    "horizons": [1, 5, 10, 20],
+    "posterior_samples": 512,
+    "minimum_observations_floor": 10,
+    "numerical_quality_floor": 1e-6
+  },
+  "parameters": {
+    "model_window": {
+      "type": "int",
+      "low": 24,
+      "high": 80,
+      "step": 4,
+      "safe": "high",
+      "aggressive": "low"
+    },
+    "minimum_calibration_points": {
+      "type": "int",
+      "low": 6,
+      "high": 16,
+      "safe": "high",
+      "aggressive": "low"
+    },
+    "calibration_window": {
+      "type": "int",
+      "low": 20,
+      "high": 60,
+      "step": 4,
+      "safe": "high",
+      "aggressive": "low"
+    },
+    "evidence_decay": {
+      "type": "float",
+      "low": 0.2,
+      "high": 0.9,
+      "safe": "high",
+      "aggressive": "low"
+    },
+    "quality_risk_alpha": {
+      "type": "float",
+      "low": 0.05,
+      "high": 0.25,
+      "safe": "low",
+      "aggressive": "high"
+    },
+    "quality_noise_quantile": {
+      "type": "float",
+      "low": 0.5,
+      "high": 0.9,
+      "safe": "low",
+      "aggressive": "high"
+    },
+    "evidence_stop_probability": {
+      "type": "float",
+      "low": 0.8,
+      "high": 0.99,
+      "safe": "high",
+      "aggressive": "low"
+    },
+    "horizons": {
+      "type": "fixed",
+      "value": [1, 5, 10, 20]
+    },
+    "posterior_samples": {
+      "type": "fixed",
+      "value": 512
+    },
+    "minimum_observations_floor": {
+      "type": "fixed",
+      "value": 10
+    },
+    "numerical_quality_floor": {
+      "type": "fixed",
+      "value": 1e-6
+    }
+  }
+}

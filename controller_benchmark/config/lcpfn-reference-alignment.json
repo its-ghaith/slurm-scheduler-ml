@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "reference": {
+    "method": "LC-PFN",
+    "paper": "Efficient Bayesian Learning Curve Extrapolation using Prior-Data Fitted Networks",
+    "venue": "NeurIPS 2023",
+    "benchmarks": ["LCBench", "NAS-Bench-201", "Taskset", "PD1"]
+  },
+  "alignment": [
+    {
+      "reference_benchmark": "NAS-Bench-201",
+      "reference_dataset": "CIFAR-10",
+      "local_case": "cifar10-classification",
+      "level": "exact_dataset",
+      "difference": "The local benchmark trains ResNet18-small; NAS-Bench-201 evaluates a neural architecture search space."
+    },
+    {
+      "reference_benchmark": "NAS-Bench-201",
+      "reference_dataset": "CIFAR-100",
+      "local_case": "cifar100-classification",
+      "level": "exact_dataset",
+      "difference": "The local benchmark trains ResNet18-small; NAS-Bench-201 evaluates a neural architecture search space."
+    },
+    {
+      "reference_benchmark": "Taskset",
+      "reference_dataset": "IMDB sentiment",
+      "local_case": "imdb-sentiment-gru",
+      "level": "exact_dataset_and_model_family",
+      "difference": "The local protocol uses a fixed bidirectional GRU and Macro-F1 rather than Taskset's configuration collection."
+    },
+    {
+      "reference_benchmark": "LCBench",
+      "reference_dataset": "35 OpenML tabular classification datasets",
+      "local_case": "adult-tabular-classification",
+      "level": "modality_and_model_family",
+      "difference": "UCI Adult plus a fixed MLP is used as an executable representative, not as a replacement for all LCBench curves."
+    },
+    {
+      "reference_benchmark": "PD1",
+      "reference_dataset": "LM1B",
+      "local_case": "wikitext2-transformer-language-model",
+      "level": "task_and_model_family_proxy",
+      "difference": "WikiText-2 is a tractable language-modeling proxy; it is not LM1B."
+    },
+    {
+      "reference_benchmark": "PD1",
+      "reference_dataset": "WMT and UniRef50",
+      "local_case": null,
+      "level": "offline_curve_reference_only",
+      "difference": "Exact retraining is intentionally excluded from the default on-premise benchmark because of dataset size and compute cost."
+    }
+  ],
+  "comparison_protocols": {
+    "real_energy": "Run LC-PFN as an additional live-shadow controller after its dependency is installed in the runtime image.",
+    "offline_quality_only": "Replay completed epoch curves with compare_lcpfn.py; report counterfactual epoch GPU energy separately from measured controller overhead.",
+    "limitation": "The local single-run stopping adaptation is not the paper's multi-configuration model-selection protocol."
+  }
+}

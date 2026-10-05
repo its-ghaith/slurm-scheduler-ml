@@ -1,0 +1,23 @@
+{
+  "campaign_id": "rapec-v9-risk-constrained",
+  "controllers": [
+    {
+      "id": "rapec-v9",
+      "controller_mode": "plugin",
+      "controller_plugin": "controller_benchmark.controllers.risk_constrained_bayesian_multi_horizon:RiskConstrainedBayesianMultiHorizonController",
+      "controller_parameters": {
+        "horizons": [1, 5, 10, 20],
+        "posterior_samples": 512,
+        "model_window": 60,
+        "minimum_observations_floor": 10,
+        "minimum_calibration_points": 8,
+        "calibration_window": 40,
+        "quality_risk_alpha": 0.05,
+        "quality_noise_quantile": 0.75,
+        "evidence_decay": 0.5,
+        "evidence_stop_probability": 0.95,
+        "numerical_quality_floor": 1e-6
+      }
+    }
+  ]
+}

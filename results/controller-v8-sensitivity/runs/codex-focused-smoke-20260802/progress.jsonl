@@ -1,0 +1,38 @@
+{"timestamp": "2026-08-02T14:47:29.864285+00:00", "elapsed_seconds": 0.0, "event": "sensitivity_started", "analysis_id": "codex-focused-smoke-20260802", "mode": "surrogate", "design_samples": 32, "sobol_base_samples": 16}
+{"timestamp": "2026-08-02T14:47:31.681839+00:00", "elapsed_seconds": 1.818, "event": "design_evaluation_completed", "completed": 1, "total": 32, "unique_parameter_vectors": 1}
+{"timestamp": "2026-08-02T14:47:35.132825+00:00", "elapsed_seconds": 5.269, "event": "design_evaluation_completed", "completed": 2, "total": 32, "unique_parameter_vectors": 2}
+{"timestamp": "2026-08-02T14:47:40.502839+00:00", "elapsed_seconds": 10.639, "event": "design_evaluation_completed", "completed": 3, "total": 32, "unique_parameter_vectors": 3}
+{"timestamp": "2026-08-02T14:47:45.393683+00:00", "elapsed_seconds": 15.53, "event": "design_evaluation_completed", "completed": 4, "total": 32, "unique_parameter_vectors": 4}
+{"timestamp": "2026-08-02T14:47:46.550628+00:00", "elapsed_seconds": 16.687, "event": "design_evaluation_completed", "completed": 5, "total": 32, "unique_parameter_vectors": 5}
+{"timestamp": "2026-08-02T14:47:51.752360+00:00", "elapsed_seconds": 21.888, "event": "design_evaluation_completed", "completed": 6, "total": 32, "unique_parameter_vectors": 6}
+{"timestamp": "2026-08-02T14:47:55.229263+00:00", "elapsed_seconds": 25.365, "event": "design_evaluation_completed", "completed": 7, "total": 32, "unique_parameter_vectors": 7}
+{"timestamp": "2026-08-02T14:47:57.490075+00:00", "elapsed_seconds": 27.626, "event": "design_evaluation_completed", "completed": 8, "total": 32, "unique_parameter_vectors": 8}
+{"timestamp": "2026-08-02T14:47:59.358315+00:00", "elapsed_seconds": 29.494, "event": "design_evaluation_completed", "completed": 9, "total": 32, "unique_parameter_vectors": 9}
+{"timestamp": "2026-08-02T14:48:04.002520+00:00", "elapsed_seconds": 34.139, "event": "design_evaluation_completed", "completed": 10, "total": 32, "unique_parameter_vectors": 10}
+{"timestamp": "2026-08-02T14:48:08.050217+00:00", "elapsed_seconds": 38.186, "event": "design_evaluation_completed", "completed": 11, "total": 32, "unique_parameter_vectors": 11}
+{"timestamp": "2026-08-02T14:48:11.267369+00:00", "elapsed_seconds": 41.404, "event": "design_evaluation_completed", "completed": 12, "total": 32, "unique_parameter_vectors": 12}
+{"timestamp": "2026-08-02T14:48:16.931030+00:00", "elapsed_seconds": 47.067, "event": "design_evaluation_completed", "completed": 13, "total": 32, "unique_parameter_vectors": 13}
+{"timestamp": "2026-08-02T14:48:20.859532+00:00", "elapsed_seconds": 50.996, "event": "design_evaluation_completed", "completed": 14, "total": 32, "unique_parameter_vectors": 14}
+{"timestamp": "2026-08-02T14:48:24.089628+00:00", "elapsed_seconds": 54.226, "event": "design_evaluation_completed", "completed": 15, "total": 32, "unique_parameter_vectors": 15}
+{"timestamp": "2026-08-02T14:48:25.630523+00:00", "elapsed_seconds": 55.767, "event": "design_evaluation_completed", "completed": 16, "total": 32, "unique_parameter_vectors": 16}
+{"timestamp": "2026-08-02T14:48:30.904262+00:00", "elapsed_seconds": 61.041, "event": "design_evaluation_completed", "completed": 17, "total": 32, "unique_parameter_vectors": 17}
+{"timestamp": "2026-08-02T14:48:33.369710+00:00", "elapsed_seconds": 63.506, "event": "design_evaluation_completed", "completed": 18, "total": 32, "unique_parameter_vectors": 18}
+{"timestamp": "2026-08-02T14:48:37.535714+00:00", "elapsed_seconds": 67.672, "event": "design_evaluation_completed", "completed": 19, "total": 32, "unique_parameter_vectors": 19}
+{"timestamp": "2026-08-02T14:48:38.833914+00:00", "elapsed_seconds": 68.97, "event": "design_evaluation_completed", "completed": 20, "total": 32, "unique_parameter_vectors": 20}
+{"timestamp": "2026-08-02T14:48:40.103190+00:00", "elapsed_seconds": 70.24, "event": "design_evaluation_completed", "completed": 21, "total": 32, "unique_parameter_vectors": 21}
+{"timestamp": "2026-08-02T14:48:45.705680+00:00", "elapsed_seconds": 75.842, "event": "design_evaluation_completed", "completed": 22, "total": 32, "unique_parameter_vectors": 22}
+{"timestamp": "2026-08-02T14:48:48.768504+00:00", "elapsed_seconds": 78.905, "event": "design_evaluation_completed", "completed": 23, "total": 32, "unique_parameter_vectors": 23}
+{"timestamp": "2026-08-02T14:48:54.103068+00:00", "elapsed_seconds": 84.24, "event": "design_evaluation_completed", "completed": 24, "total": 32, "unique_parameter_vectors": 24}
+{"timestamp": "2026-08-02T14:48:56.615580+00:00", "elapsed_seconds": 86.752, "event": "design_evaluation_completed", "completed": 25, "total": 32, "unique_parameter_vectors": 25}
+{"timestamp": "2026-08-02T14:49:01.087174+00:00", "elapsed_seconds": 91.224, "event": "design_evaluation_completed", "completed": 26, "total": 32, "unique_parameter_vectors": 26}
+{"timestamp": "2026-08-02T14:49:06.560936+00:00", "elapsed_seconds": 96.698, "event": "design_evaluation_completed", "completed": 27, "total": 32, "unique_parameter_vectors": 27}
+{"timestamp": "2026-08-02T14:49:12.124648+00:00", "elapsed_seconds": 102.261, "event": "design_evaluation_completed", "completed": 28, "total": 32, "unique_parameter_vectors": 28}
+{"timestamp": "2026-08-02T14:49:13.511086+00:00", "elapsed_seconds": 103.648, "event": "design_evaluation_completed", "completed": 29, "total": 32, "unique_parameter_vectors": 29}
+{"timestamp": "2026-08-02T14:49:18.162641+00:00", "elapsed_seconds": 108.299, "event": "design_evaluation_completed", "completed": 30, "total": 32, "unique_parameter_vectors": 30}
+{"timestamp": "2026-08-02T14:49:22.265953+00:00", "elapsed_seconds": 112.403, "event": "design_evaluation_completed", "completed": 31, "total": 32, "unique_parameter_vectors": 31}
+{"timestamp": "2026-08-02T14:49:23.593256+00:00", "elapsed_seconds": 113.73, "event": "design_evaluation_completed", "completed": 32, "total": 32, "unique_parameter_vectors": 32}
+{"timestamp": "2026-08-02T14:49:23.596301+00:00", "elapsed_seconds": 113.733, "event": "surrogate_fit_started", "completed": 32, "total": 32}
+{"timestamp": "2026-08-02T14:49:24.308291+00:00", "elapsed_seconds": 114.445, "event": "surrogate_fit_completed", "reliable_outputs": 0, "total": 40}
+{"timestamp": "2026-08-02T14:49:24.343109+00:00", "elapsed_seconds": 114.48, "event": "sobol_analysis_started", "completed": 0, "total": 40}
+{"timestamp": "2026-08-02T14:49:24.447689+00:00", "elapsed_seconds": 114.585, "event": "sobol_analysis_completed", "completed": 40, "total": 40, "top_parameter": "min_epochs_floor"}
+{"timestamp": "2026-08-02T14:50:31.608321+00:00", "elapsed_seconds": 181.746, "event": "sensitivity_completed", "analysis_id": "codex-focused-smoke-20260802", "top_parameter": "min_epochs_floor", "surrogate_reliable": false, "output_dir": "D:\\OLD\\Sync\\Projekte\\Masterarbeit\\Project\\PoC4\\results\\controller-v8-sensitivity\\runs\\codex-focused-smoke-20260802"}

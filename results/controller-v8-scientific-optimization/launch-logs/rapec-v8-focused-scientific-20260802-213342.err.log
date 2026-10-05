@@ -1,0 +1,2 @@
+D:\OLD\Sync\Projekte\Masterarbeit\Project\PoC4\results\controller-scientific-optimization\.venv\Lib\site-packages\botorch\acquisition\multi_objective\logei.py:602: UserWarning: Failed to compile fused qLogEHVI C++ extension: Ninja is required to load C++ extensions (pip install ninja to get it). Falling back to the pure-Python implementation. To get ~3x speedup, ensure a C++ compiler and the `ninja` package are installed.
+  _try_load_fused_kernel()

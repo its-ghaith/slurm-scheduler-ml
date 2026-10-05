@@ -1,0 +1,44 @@
+{
+  "method": "Morris elementary-effects screening",
+  "selected_parameters": [
+    "min_epochs_floor",
+    "utility_quantile",
+    "noise_multiplier",
+    "minimum_quality_floor"
+  ],
+  "evaluations": 60,
+  "parameters": [
+    {
+      "parameter": "min_epochs_floor",
+      "quality_mu_star": 8.606790819347065,
+      "quality_sigma": 5.748569950423371,
+      "energy_mu_star": 0.14149131265543055,
+      "energy_sigma": 0.2757754588222143,
+      "combined_score": 1.0
+    },
+    {
+      "parameter": "minimum_quality_floor",
+      "quality_mu_star": 1.6538847399736072,
+      "quality_sigma": 3.2666993159211137,
+      "energy_mu_star": 0.1570030074530058,
+      "energy_sigma": 0.34645903678060036,
+      "combined_score": 1.0
+    },
+    {
+      "parameter": "noise_multiplier",
+      "quality_mu_star": 0.778335871609114,
+      "quality_sigma": 1.5954286488700715,
+      "energy_mu_star": 0.09533015388338249,
+      "energy_sigma": 0.2913856042990961,
+      "combined_score": 0.607186801258675
+    },
+    {
+      "parameter": "utility_quantile",
+      "quality_mu_star": 2.2387092068728407,
+      "quality_sigma": 3.1461629783526943,
+      "energy_mu_star": 0.0494030201420955,
+      "energy_sigma": 0.16600507386841878,
+      "combined_score": 0.3146628904983418
+    }
+  ]
+}

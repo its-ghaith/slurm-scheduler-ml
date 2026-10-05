@@ -1,0 +1,160 @@
+{
+  "method": "Morris elementary-effects screening",
+  "selected_parameters": [
+    "min_epochs_floor",
+    "patience",
+    "max_probability_gain_gt_threshold",
+    "trend_window",
+    "utility_quantile",
+    "noise_multiplier",
+    "warmup_signal_to_noise_ratio",
+    "warmup_noise_stability_ratio"
+  ],
+  "evaluations": 152,
+  "parameters": [
+    {
+      "parameter": "min_epochs_floor",
+      "quality_mu_star": 7.238932661111782,
+      "quality_sigma": 7.791432569871458,
+      "energy_mu_star": 0.2510163626766251,
+      "energy_sigma": 0.39992671569888194,
+      "combined_score": 1.0
+    },
+    {
+      "parameter": "patience",
+      "quality_mu_star": 3.9205284218103236,
+      "quality_sigma": 3.637587067735669,
+      "energy_mu_star": 0.23107910124945027,
+      "energy_sigma": 0.309861652683397,
+      "combined_score": 0.9205738573590152
+    },
+    {
+      "parameter": "trend_window",
+      "quality_mu_star": 4.05668845289423,
+      "quality_sigma": 5.5661014825689685,
+      "energy_mu_star": 0.17397688060444652,
+      "energy_sigma": 0.28891886882491047,
+      "combined_score": 0.6930898000007051
+    },
+    {
+      "parameter": "utility_quantile",
+      "quality_mu_star": 4.4041158443131,
+      "quality_sigma": 6.592908428990516,
+      "energy_mu_star": 0.05912644681882679,
+      "energy_sigma": 0.09906606202259863,
+      "combined_score": 0.6083929842271387
+    },
+    {
+      "parameter": "noise_multiplier",
+      "quality_mu_star": 1.3657131221190073,
+      "quality_sigma": 2.6602768868501836,
+      "energy_mu_star": 0.09786933277528664,
+      "energy_sigma": 0.25789240021269066,
+      "combined_score": 0.38989224340473777
+    },
+    {
+      "parameter": "warmup_signal_to_noise_ratio",
+      "quality_mu_star": 2.067095670123927,
+      "quality_sigma": 3.7750027007437676,
+      "energy_mu_star": 0.08484139715234731,
+      "energy_sigma": 0.17803120421814495,
+      "combined_score": 0.33799150082357493
+    },
+    {
+      "parameter": "warmup_noise_stability_ratio",
+      "quality_mu_star": 2.428657174176299,
+      "quality_sigma": 3.973419733321665,
+      "energy_mu_star": 0.01314123232271697,
+      "energy_sigma": 0.03716901795416406,
+      "combined_score": 0.33549934608775556
+    },
+    {
+      "parameter": "horizon_epochs",
+      "quality_mu_star": 2.379802152032118,
+      "quality_sigma": 3.5390792834327716,
+      "energy_mu_star": 0.06401000331740067,
+      "energy_sigma": 0.08340648066333263,
+      "combined_score": 0.3287504199088128
+    },
+    {
+      "parameter": "max_probability_gain_gt_threshold",
+      "quality_mu_star": 0.6004350184634178,
+      "quality_sigma": 1.6829933951392915,
+      "energy_mu_star": 0.05426795617230667,
+      "energy_sigma": 0.15067566098724322,
+      "combined_score": 0.2161929030985842
+    },
+    {
+      "parameter": "bootstrap_samples",
+      "quality_mu_star": 0.0,
+      "quality_sigma": 0.0,
+      "energy_mu_star": 0.02042195349053451,
+      "energy_sigma": 0.0490938140665822,
+      "combined_score": 0.08135706084166051
+    },
+    {
+      "parameter": "warmup_required_stable_windows",
+      "quality_mu_star": 0.04289755027275495,
+      "quality_sigma": 0.1213325947766234,
+      "energy_mu_star": 0.0,
+      "energy_sigma": 0.0,
+      "combined_score": 0.005925949622822791
+    },
+    {
+      "parameter": "max_uncertainty_to_gain_ratio",
+      "quality_mu_star": 0.0,
+      "quality_sigma": 0.0,
+      "energy_mu_star": 0.0005053042256614948,
+      "energy_sigma": 0.0014292161781098418,
+      "combined_score": 0.002013033016148271
+    },
+    {
+      "parameter": "knn_neighbors",
+      "quality_mu_star": 0.0,
+      "quality_sigma": 0.0,
+      "energy_mu_star": 0.0005007032822368,
+      "energy_sigma": 0.0014162027449280124,
+      "combined_score": 0.0019947037591403444
+    },
+    {
+      "parameter": "min_fit_points",
+      "quality_mu_star": 0.0,
+      "quality_sigma": 0.0,
+      "energy_mu_star": 0.0,
+      "energy_sigma": 0.0,
+      "combined_score": 0.0
+    },
+    {
+      "parameter": "recent_gain_fraction",
+      "quality_mu_star": 0.0,
+      "quality_sigma": 0.0,
+      "energy_mu_star": 0.0,
+      "energy_sigma": 0.0,
+      "combined_score": 0.0
+    },
+    {
+      "parameter": "remaining_room_fraction",
+      "quality_mu_star": 0.0,
+      "quality_sigma": 0.0,
+      "energy_mu_star": 0.0,
+      "energy_sigma": 0.0,
+      "combined_score": 0.0
+    },
+    {
+      "parameter": "late_stage_relaxation",
+      "quality_mu_star": 0.0,
+      "quality_sigma": 0.0,
+      "energy_mu_star": 0.0,
+      "energy_sigma": 0.0,
+      "combined_score": 0.0
+    },
+    {
+      "parameter": "min_meaningful_gain",
+      "quality_mu_star": 0.0,
+      "quality_sigma": 0.0,
+      "energy_mu_star": 0.0,
+      "energy_sigma": 0.0,
+      "combined_score": 0.0
+    }
+  ]
+}

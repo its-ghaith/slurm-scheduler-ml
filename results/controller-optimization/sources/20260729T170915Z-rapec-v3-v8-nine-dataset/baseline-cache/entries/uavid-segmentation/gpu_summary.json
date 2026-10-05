@@ -1,0 +1,61 @@
+{
+  "job_id": "171",
+  "samples": 10049,
+  "gpu_power_avg_w": 84.77936511095906,
+  "gpu_power_max_w": 155.26,
+  "gpu_util_avg_pct": 1.041994228281421,
+  "gpu_mem_used_avg_mb": 1367.934620360235,
+  "gpu_temp_avg_c": 27.351477758980995,
+  "gpu_energy_kwh_integrated": 0.12837795189020496,
+  "gpu_energy_kwh_estimated": 0.1283790561364173,
+  "gpu_energy_kwh": 0.1283790561364173,
+  "duration_seconds": 5451.380786895752,
+  "scenario": "uavid2020-tiny-unet-scratch",
+  "comparison_strategy": "full100",
+  "training_seed": 0,
+  "split_seed": 0,
+  "cache_policy": "persistent-disk",
+  "controller_id": "full100",
+  "benchmark_version": "controller-benchmark-v3-nine-dataset-fresh",
+  "benchmark_run_id": "20260729T170915Z-rapec-v3-v8-nine-dataset",
+  "benchmark_case_id": "uavid-segmentation",
+  "benchmark_stage": "semantic_segmentation",
+  "task_type": "semantic_segmentation",
+  "quality_metric": "quality_score",
+  "adaptive_monitor_metric": "quality_score",
+  "training_energy_kwh": 0.1283790561364173,
+  "estimated_electricity_cost_eur": 0.038513716840925194,
+  "estimated_co2_kg": 0.051351622454566925,
+  "codecarbon_job_total_energy_kwh": 0.546638520786001,
+  "codecarbon_job_total_gpu_energy_kwh": 0.12833474294546932,
+  "codecarbon_job_total_cpu_energy_kwh": 0.31238604943419546,
+  "codecarbon_measurement_available": 1,
+  "codecarbon_estimated_electricity_cost_eur": 0.16399155623580028,
+  "codecarbon_estimated_co2_kg": 0.2186554083144004,
+  "phase_metrics": {
+    "training": {
+      "gpu_energy_kwh": 0.1283790561364173,
+      "codecarbon_gpu_energy_kwh": 0.12833474294546932,
+      "codecarbon_energy_kwh": 0.546638520786001
+    }
+  },
+  "price_eur_kwh": 0.3,
+  "co2_kg_kwh": 0.4,
+  "pue_factor": 1.0,
+  "run_metadata": {
+    "captured_at": 1785484540.7764642,
+    "runtime_image_id": "ghcr.io/its-ghaith/slurm-scheduler-ml/mlops-slurm-runtime@sha256:579d927d427b8f5fa677780db338bae740eb1c0c012a133d529c06bf24ad3b55",
+    "scenario": "uavid2020-tiny-unet-scratch",
+    "training_seed": 0,
+    "split_seed": 0,
+    "cache_policy": "persistent-disk",
+    "gpu": {
+      "name": "NVIDIA A100-SXM4-80GB",
+      "driver_version": "580.105.08",
+      "power_limit_w": "400.00",
+      "graphics_clock_mhz": "1155",
+      "memory_clock_mhz": "1593",
+      "temperature_c": "29"
+    }
+  }
+}

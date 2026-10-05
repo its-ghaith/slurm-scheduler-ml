@@ -1,0 +1,911 @@
+{
+  "image_classification": {
+    "training_tasks": [
+      "object_detection",
+      "semantic_segmentation"
+    ],
+    "holdout_task": "image_classification",
+    "profiles": {
+      "conservative": {
+        "selected_on_training_tasks": {
+          "trial_number": 12,
+          "parameters": {
+            "horizon_epochs": 4,
+            "min_fit_points": 18,
+            "patience": 7,
+            "trend_window": 24,
+            "bootstrap_samples": 128,
+            "knn_neighbors": 6,
+            "min_epochs_floor": 37,
+            "max_probability_gain_gt_threshold": 0.1410290444810116,
+            "max_uncertainty_to_gain_ratio": 2.6496537337886323,
+            "minimum_quality_floor": 0.0,
+            "noise_multiplier": 1.3932819177680424,
+            "recent_gain_fraction": 0.6834472049898949,
+            "remaining_room_fraction": 0.07951135592238279,
+            "late_stage_relaxation": 0.41452381737976907,
+            "min_meaningful_gain": 7.317840259770498e-05,
+            "utility_quantile": 0.05828293110366632
+          },
+          "metrics": {
+            "maximum_quality_regret": 0.0,
+            "mean_energy_saving_fraction": 0.0,
+            "mean_quality_regret": 0.0,
+            "median_energy_saving_fraction": 0.0,
+            "minimum_energy_saving_fraction": 0.0,
+            "quality_constraint": -0.0027052939757986508,
+            "worst_normalized_quality_regret": 0.0
+          },
+          "quality_feasible": true
+        },
+        "holdout_metrics": {
+          "mean_quality_regret": 0.0,
+          "worst_normalized_quality_regret": 0.0,
+          "median_energy_saving_fraction": 0.0,
+          "quality_constraint": -0.01755363237985671,
+          "mean_energy_saving_fraction": 0.0,
+          "minimum_energy_saving_fraction": 0.0,
+          "maximum_quality_regret": 0.0
+        },
+        "holdout_cases": [
+          {
+            "case_id": "cifar10-classification",
+            "stage": "image_classification",
+            "task_type": "image_classification",
+            "stop_epoch": 100,
+            "ideal_stop_epoch": 67,
+            "baseline_best_quality": 0.9428,
+            "stopped_best_quality": 0.9428,
+            "quality_regret": 0.0,
+            "dynamic_quality_tolerance": 0.019760092799999882,
+            "normalized_quality_regret": 0.0,
+            "baseline_energy_wh": 41.33458502332478,
+            "stopped_energy_wh": 41.33458502332478,
+            "energy_saving_fraction": 0.0,
+            "normalized_stop_error": 0.33,
+            "stopped_early": false,
+            "stop_reason": "maximum_epochs_reached"
+          },
+          {
+            "case_id": "cifar100-classification",
+            "stage": "image_classification",
+            "task_type": "image_classification",
+            "stop_epoch": 100,
+            "ideal_stop_epoch": 79,
+            "baseline_best_quality": 0.7842,
+            "stopped_best_quality": 0.7842,
+            "quality_regret": 0.0,
+            "dynamic_quality_tolerance": 0.01755363237985671,
+            "normalized_quality_regret": 0.0,
+            "baseline_energy_wh": 54.02730584580387,
+            "stopped_energy_wh": 54.02730584580387,
+            "energy_saving_fraction": 0.0,
+            "normalized_stop_error": 0.21,
+            "stopped_early": false,
+            "stop_reason": "maximum_epochs_reached"
+          },
+          {
+            "case_id": "tiny-imagenet-classification",
+            "stage": "image_classification",
+            "task_type": "image_classification",
+            "stop_epoch": 100,
+            "ideal_stop_epoch": 82,
+            "baseline_best_quality": 0.6459,
+            "stopped_best_quality": 0.6459,
+            "quality_regret": 0.0,
+            "dynamic_quality_tolerance": 0.023598219445305824,
+            "normalized_quality_regret": 0.0,
+            "baseline_energy_wh": 330.46398884513934,
+            "stopped_energy_wh": 330.46398884513934,
+            "energy_saving_fraction": 0.0,
+            "normalized_stop_error": 0.18,
+            "stopped_early": false,
+            "stop_reason": "maximum_epochs_reached"
+          }
+        ]
+      },
+      "balanced": {
+        "selected_on_training_tasks": {
+          "trial_number": 410,
+          "parameters": {
+            "horizon_epochs": 10,
+            "min_fit_points": 10,
+            "patience": 7,
+            "trend_window": 18,
+            "bootstrap_samples": 64,
+            "knn_neighbors": 3,
+            "min_epochs_floor": 27,
+            "max_probability_gain_gt_threshold": 0.17405247584195527,
+            "max_uncertainty_to_gain_ratio": 4.409741686021489,
+            "minimum_quality_floor": 0.0,
+            "noise_multiplier": 0.8697313713390136,
+            "recent_gain_fraction": 0.7152504690830501,
+            "remaining_room_fraction": 0.019809241582800848,
+            "late_stage_relaxation": 0.38309495915804653,
+            "min_meaningful_gain": 7.262115431463333e-05,
+            "utility_quantile": 0.2662549847121198
+          },
+          "metrics": {
+            "maximum_quality_regret": 0.0017702151878184469,
+            "mean_energy_saving_fraction": 0.057079550698143904,
+            "mean_quality_regret": 0.00032836919796973746,
+            "median_energy_saving_fraction": 0.04486404833756177,
+            "minimum_energy_saving_fraction": 0.0,
+            "quality_constraint": -0.002505293975798673,
+            "worst_normalized_quality_regret": 0.31674883929215086
+          },
+          "quality_feasible": true
+        },
+        "holdout_metrics": {
+          "mean_quality_regret": 0.0,
+          "worst_normalized_quality_regret": 0.0,
+          "median_energy_saving_fraction": 0.0,
+          "quality_constraint": -0.01755363237985671,
+          "mean_energy_saving_fraction": 0.0,
+          "minimum_energy_saving_fraction": 0.0,
+          "maximum_quality_regret": 0.0
+        },
+        "holdout_cases": [
+          {
+            "case_id": "cifar10-classification",
+            "stage": "image_classification",
+            "task_type": "image_classification",
+            "stop_epoch": 100,
+            "ideal_stop_epoch": 67,
+            "baseline_best_quality": 0.9428,
+            "stopped_best_quality": 0.9428,
+            "quality_regret": 0.0,
+            "dynamic_quality_tolerance": 0.019760092799999882,
+            "normalized_quality_regret": 0.0,
+            "baseline_energy_wh": 41.33458502332478,
+            "stopped_energy_wh": 41.33458502332478,
+            "energy_saving_fraction": 0.0,
+            "normalized_stop_error": 0.33,
+            "stopped_early": false,
+            "stop_reason": "maximum_epochs_reached"
+          },
+          {
+            "case_id": "cifar100-classification",
+            "stage": "image_classification",
+            "task_type": "image_classification",
+            "stop_epoch": 100,
+            "ideal_stop_epoch": 79,
+            "baseline_best_quality": 0.7842,
+            "stopped_best_quality": 0.7842,
+            "quality_regret": 0.0,
+            "dynamic_quality_tolerance": 0.01755363237985671,
+            "normalized_quality_regret": 0.0,
+            "baseline_energy_wh": 54.02730584580387,
+            "stopped_energy_wh": 54.02730584580387,
+            "energy_saving_fraction": 0.0,
+            "normalized_stop_error": 0.21,
+            "stopped_early": false,
+            "stop_reason": "maximum_epochs_reached"
+          },
+          {
+            "case_id": "tiny-imagenet-classification",
+            "stage": "image_classification",
+            "task_type": "image_classification",
+            "stop_epoch": 100,
+            "ideal_stop_epoch": 82,
+            "baseline_best_quality": 0.6459,
+            "stopped_best_quality": 0.6459,
+            "quality_regret": 0.0,
+            "dynamic_quality_tolerance": 0.023598219445305824,
+            "normalized_quality_regret": 0.0,
+            "baseline_energy_wh": 330.46398884513934,
+            "stopped_energy_wh": 330.46398884513934,
+            "energy_saving_fraction": 0.0,
+            "normalized_stop_error": 0.18,
+            "stopped_early": false,
+            "stop_reason": "maximum_epochs_reached"
+          }
+        ]
+      },
+      "aggressive": {
+        "selected_on_training_tasks": {
+          "trial_number": 370,
+          "parameters": {
+            "horizon_epochs": 9,
+            "min_fit_points": 17,
+            "patience": 8,
+            "trend_window": 20,
+            "bootstrap_samples": 192,
+            "knn_neighbors": 4,
+            "min_epochs_floor": 30,
+            "max_probability_gain_gt_threshold": 0.23995316709003361,
+            "max_uncertainty_to_gain_ratio": 1.949477401851984,
+            "minimum_quality_floor": 0.0,
+            "noise_multiplier": 1.4465442765218681,
+            "recent_gain_fraction": 0.7155474704984082,
+            "remaining_room_fraction": 0.001792100521436324,
+            "late_stage_relaxation": 0.7736934494444573,
+            "min_meaningful_gain": 2.552287024938578e-06,
+            "utility_quantile": 0.48326852967494605
+          },
+          "metrics": {
+            "maximum_quality_regret": 0.028449999999999975,
+            "mean_energy_saving_fraction": 0.17425933258833826,
+            "mean_quality_regret": 0.008549796896052083,
+            "median_energy_saving_fraction": 0.1598344605021183,
+            "minimum_energy_saving_fraction": 0.0,
+            "quality_constraint": -0.0027052939757986508,
+            "worst_normalized_quality_regret": 0.8544427041764607
+          },
+          "quality_feasible": true
+        },
+        "holdout_metrics": {
+          "mean_quality_regret": 0.07303333333333335,
+          "worst_normalized_quality_regret": 6.258946796487252,
+          "median_energy_saving_fraction": 0.5485232856749281,
+          "quality_constraint": 0.12410178055469423,
+          "mean_energy_saving_fraction": 0.36775828876571853,
+          "minimum_energy_saving_fraction": 0.0,
+          "maximum_quality_regret": 0.14770000000000005
+        },
+        "holdout_cases": [
+          {
+            "case_id": "cifar10-classification",
+            "stage": "image_classification",
+            "task_type": "image_classification",
+            "stop_epoch": 45,
+            "ideal_stop_epoch": 67,
+            "baseline_best_quality": 0.9428,
+            "stopped_best_quality": 0.8714,
+            "quality_regret": 0.07140000000000002,
+            "dynamic_quality_tolerance": 0.019760092799999882,
+            "normalized_quality_regret": 3.6133433543389253,
+            "baseline_energy_wh": 41.33458502332478,
+            "stopped_energy_wh": 18.404158647271498,
+            "energy_saving_fraction": 0.5547515806222276,
+            "normalized_stop_error": 0.22,
+            "stopped_early": true,
+            "stop_reason": "rapec_stop: epoch=45, state=plateau, horizon=9, dynamic_gain=0.028095, expected_gain=0.002400, prob_gain=0.0558, utility=0.000654, utility_threshold=0.006128"
+          },
+          {
+            "case_id": "cifar100-classification",
+            "stage": "image_classification",
+            "task_type": "image_classification",
+            "stop_epoch": 100,
+            "ideal_stop_epoch": 79,
+            "baseline_best_quality": 0.7842,
+            "stopped_best_quality": 0.7842,
+            "quality_regret": 0.0,
+            "dynamic_quality_tolerance": 0.01755363237985671,
+            "normalized_quality_regret": 0.0,
+            "baseline_energy_wh": 54.02730584580387,
+            "stopped_energy_wh": 54.02730584580387,
+            "energy_saving_fraction": 0.0,
+            "normalized_stop_error": 0.21,
+            "stopped_early": false,
+            "stop_reason": "maximum_epochs_reached"
+          },
+          {
+            "case_id": "tiny-imagenet-classification",
+            "stage": "image_classification",
+            "task_type": "image_classification",
+            "stop_epoch": 45,
+            "ideal_stop_epoch": 82,
+            "baseline_best_quality": 0.6459,
+            "stopped_best_quality": 0.4982,
+            "quality_regret": 0.14770000000000005,
+            "dynamic_quality_tolerance": 0.023598219445305824,
+            "normalized_quality_regret": 6.258946796487252,
+            "baseline_energy_wh": 330.46398884513934,
+            "stopped_energy_wh": 149.19679588656072,
+            "energy_saving_fraction": 0.5485232856749281,
+            "normalized_stop_error": 0.37,
+            "stopped_early": true,
+            "stop_reason": "rapec_stop: epoch=45, state=plateau, horizon=9, dynamic_gain=0.050292, expected_gain=0.010000, prob_gain=0.0000, utility=0.000337, utility_threshold=0.000817"
+          }
+        ]
+      }
+    }
+  },
+  "object_detection": {
+    "training_tasks": [
+      "image_classification",
+      "semantic_segmentation"
+    ],
+    "holdout_task": "object_detection",
+    "profiles": {
+      "conservative": {
+        "selected_on_training_tasks": {
+          "trial_number": 15,
+          "parameters": {
+            "horizon_epochs": 3,
+            "min_fit_points": 17,
+            "patience": 5,
+            "trend_window": 15,
+            "bootstrap_samples": 128,
+            "knn_neighbors": 3,
+            "min_epochs_floor": 9,
+            "max_probability_gain_gt_threshold": 0.29573352945508913,
+            "max_uncertainty_to_gain_ratio": 5.120964931670326,
+            "minimum_quality_floor": 0.0,
+            "noise_multiplier": 1.3656755905681168,
+            "recent_gain_fraction": 0.14056987453669778,
+            "remaining_room_fraction": 0.01165028681231272,
+            "late_stage_relaxation": 0.0808445435630649,
+            "min_meaningful_gain": 0.00042051015688257466,
+            "utility_quantile": 0.10514537014315839
+          },
+          "metrics": {
+            "maximum_quality_regret": 0.0,
+            "mean_energy_saving_fraction": 0.0,
+            "mean_quality_regret": 0.0,
+            "median_energy_saving_fraction": 0.0,
+            "minimum_energy_saving_fraction": 0.0,
+            "quality_constraint": -0.005588702998168535,
+            "worst_normalized_quality_regret": 0.0
+          },
+          "quality_feasible": true
+        },
+        "holdout_metrics": {
+          "mean_quality_regret": 0.0014366666666666417,
+          "worst_normalized_quality_regret": 1.5931725123246676,
+          "median_energy_saving_fraction": 0.0,
+          "quality_constraint": 0.0016047060242012742,
+          "mean_energy_saving_fraction": 0.07873159619426022,
+          "minimum_energy_saving_fraction": 0.0,
+          "maximum_quality_regret": 0.004309999999999925
+        },
+        "holdout_cases": [
+          {
+            "case_id": "carpk-aerial-vehicle",
+            "stage": "aerial_vehicle_counting",
+            "task_type": "object_detection",
+            "stop_epoch": 100,
+            "ideal_stop_epoch": 76,
+            "baseline_best_quality": 0.84617,
+            "stopped_best_quality": 0.84617,
+            "quality_regret": 0.0,
+            "dynamic_quality_tolerance": 0.009250864120985611,
+            "normalized_quality_regret": 0.0,
+            "baseline_energy_wh": 37.78717350000767,
+            "stopped_energy_wh": 37.78717350000767,
+            "energy_saving_fraction": 0.0,
+            "normalized_stop_error": 0.24,
+            "stopped_early": false,
+            "stop_reason": "maximum_epochs_reached"
+          },
+          {
+            "case_id": "vedai-aerial-vehicle",
+            "stage": "aerial_vehicle_counting",
+            "task_type": "object_detection",
+            "stop_epoch": 100,
+            "ideal_stop_epoch": 69,
+            "baseline_best_quality": 0.51023,
+            "stopped_best_quality": 0.51023,
+            "quality_regret": 0.0,
+            "dynamic_quality_tolerance": 0.03587349797084467,
+            "normalized_quality_regret": 0.0,
+            "baseline_energy_wh": 47.10976437498774,
+            "stopped_energy_wh": 47.10976437498774,
+            "energy_saving_fraction": 0.0,
+            "normalized_stop_error": 0.31,
+            "stopped_early": false,
+            "stop_reason": "maximum_epochs_reached"
+          },
+          {
+            "case_id": "visdrone-aerial-vehicle",
+            "stage": "aerial_vehicle_counting",
+            "task_type": "object_detection",
+            "stop_epoch": 76,
+            "ideal_stop_epoch": 80,
+            "baseline_best_quality": 0.50211,
+            "stopped_best_quality": 0.4978,
+            "quality_regret": 0.004309999999999925,
+            "dynamic_quality_tolerance": 0.0027052939757986508,
+            "normalized_quality_regret": 1.5931725123246676,
+            "baseline_energy_wh": 423.61780774511624,
+            "stopped_energy_wh": 323.5614892048575,
+            "energy_saving_fraction": 0.23619478858278067,
+            "normalized_stop_error": 0.04,
+            "stopped_early": true,
+            "stop_reason": "rapec_stop: epoch=76, state=plateau, horizon=3, dynamic_gain=0.005491, expected_gain=0.001260, prob_gain=0.0000, utility=0.000099, utility_threshold=0.000116"
+          }
+        ]
+      },
+      "balanced": {
+        "selected_on_training_tasks": {
+          "trial_number": 338,
+          "parameters": {
+            "horizon_epochs": 6,
+            "min_fit_points": 10,
+            "patience": 7,
+            "trend_window": 13,
+            "bootstrap_samples": 64,
+            "knn_neighbors": 4,
+            "min_epochs_floor": 22,
+            "max_probability_gain_gt_threshold": 0.3652175397193492,
+            "max_uncertainty_to_gain_ratio": 1.5136899631293677,
+            "minimum_quality_floor": 0.0,
+            "noise_multiplier": 0.6588043345268373,
+            "recent_gain_fraction": 0.7794404056863412,
+            "remaining_room_fraction": 0.008485904383522336,
+            "late_stage_relaxation": 0.008561405614695662,
+            "min_meaningful_gain": 0.0003054824486747329,
+            "utility_quantile": 0.4651860672913148
+          },
+          "metrics": {
+            "maximum_quality_regret": 0.003117348913303397,
+            "mean_energy_saving_fraction": 0.0584627230962701,
+            "mean_quality_regret": 0.0009203439163748458,
+            "median_energy_saving_fraction": 0.019548767658335284,
+            "minimum_energy_saving_fraction": 0.0,
+            "quality_constraint": -0.003198331390312212,
+            "worst_normalized_quality_regret": 0.42771491142751156
+          },
+          "quality_feasible": true
+        },
+        "holdout_metrics": {
+          "mean_quality_regret": 0.000559999999999968,
+          "worst_normalized_quality_regret": 0.6210045987715395,
+          "median_energy_saving_fraction": 0.0,
+          "quality_constraint": -0.001025293975798747,
+          "mean_energy_saving_fraction": 0.06530280161363756,
+          "minimum_energy_saving_fraction": 0.0,
+          "maximum_quality_regret": 0.0016799999999999038
+        },
+        "holdout_cases": [
+          {
+            "case_id": "carpk-aerial-vehicle",
+            "stage": "aerial_vehicle_counting",
+            "task_type": "object_detection",
+            "stop_epoch": 100,
+            "ideal_stop_epoch": 76,
+            "baseline_best_quality": 0.84617,
+            "stopped_best_quality": 0.84617,
+            "quality_regret": 0.0,
+            "dynamic_quality_tolerance": 0.009250864120985611,
+            "normalized_quality_regret": 0.0,
+            "baseline_energy_wh": 37.78717350000767,
+            "stopped_energy_wh": 37.78717350000767,
+            "energy_saving_fraction": 0.0,
+            "normalized_stop_error": 0.24,
+            "stopped_early": false,
+            "stop_reason": "maximum_epochs_reached"
+          },
+          {
+            "case_id": "vedai-aerial-vehicle",
+            "stage": "aerial_vehicle_counting",
+            "task_type": "object_detection",
+            "stop_epoch": 100,
+            "ideal_stop_epoch": 69,
+            "baseline_best_quality": 0.51023,
+            "stopped_best_quality": 0.51023,
+            "quality_regret": 0.0,
+            "dynamic_quality_tolerance": 0.03587349797084467,
+            "normalized_quality_regret": 0.0,
+            "baseline_energy_wh": 47.10976437498774,
+            "stopped_energy_wh": 47.10976437498774,
+            "energy_saving_fraction": 0.0,
+            "normalized_stop_error": 0.31,
+            "stopped_early": false,
+            "stop_reason": "maximum_epochs_reached"
+          },
+          {
+            "case_id": "visdrone-aerial-vehicle",
+            "stage": "aerial_vehicle_counting",
+            "task_type": "object_detection",
+            "stop_epoch": 80,
+            "ideal_stop_epoch": 80,
+            "baseline_best_quality": 0.50211,
+            "stopped_best_quality": 0.50043,
+            "quality_regret": 0.0016799999999999038,
+            "dynamic_quality_tolerance": 0.0027052939757986508,
+            "normalized_quality_regret": 0.6210045987715395,
+            "baseline_energy_wh": 423.61780774511624,
+            "stopped_energy_wh": 340.6275187675661,
+            "energy_saving_fraction": 0.1959084048409127,
+            "normalized_stop_error": 0.0,
+            "stopped_early": true,
+            "stop_reason": "rapec_stop: epoch=80, state=slow_learning, horizon=6, dynamic_gain=0.004210, expected_gain=0.002790, prob_gain=0.1739, utility=0.000109, utility_threshold=0.000274"
+          }
+        ]
+      },
+      "aggressive": {
+        "selected_on_training_tasks": {
+          "trial_number": 80,
+          "parameters": {
+            "horizon_epochs": 9,
+            "min_fit_points": 10,
+            "patience": 8,
+            "trend_window": 9,
+            "bootstrap_samples": 96,
+            "knn_neighbors": 10,
+            "min_epochs_floor": 10,
+            "max_probability_gain_gt_threshold": 0.3652175397193492,
+            "max_uncertainty_to_gain_ratio": 1.5136899631293677,
+            "minimum_quality_floor": 0.0,
+            "noise_multiplier": 1.3374812577847566,
+            "recent_gain_fraction": 0.6568903106725658,
+            "remaining_room_fraction": 0.006941443022895257,
+            "late_stage_relaxation": 0.26734535406053295,
+            "min_meaningful_gain": 8.893585234985786e-05,
+            "utility_quantile": 0.1708841689915172
+          },
+          "metrics": {
+            "maximum_quality_regret": 0.017499272480562156,
+            "mean_energy_saving_fraction": 0.10522314252858411,
+            "mean_quality_regret": 0.0035330798053528414,
+            "median_energy_saving_fraction": 0.03449220181304469,
+            "minimum_energy_saving_fraction": 0.0,
+            "quality_constraint": -0.0019761244833209624,
+            "worst_normalized_quality_regret": 0.7783673705111724
+          },
+          "quality_feasible": true
+        },
+        "holdout_metrics": {
+          "mean_quality_regret": 0.017826666666666657,
+          "worst_normalized_quality_regret": 1.4907941244944822,
+          "median_energy_saving_fraction": 0.0,
+          "quality_constraint": 0.0176065020291553,
+          "mean_energy_saving_fraction": 0.13836378463480345,
+          "minimum_energy_saving_fraction": 0.0,
+          "maximum_quality_regret": 0.05347999999999997
+        },
+        "holdout_cases": [
+          {
+            "case_id": "carpk-aerial-vehicle",
+            "stage": "aerial_vehicle_counting",
+            "task_type": "object_detection",
+            "stop_epoch": 100,
+            "ideal_stop_epoch": 76,
+            "baseline_best_quality": 0.84617,
+            "stopped_best_quality": 0.84617,
+            "quality_regret": 0.0,
+            "dynamic_quality_tolerance": 0.009250864120985611,
+            "normalized_quality_regret": 0.0,
+            "baseline_energy_wh": 37.78717350000767,
+            "stopped_energy_wh": 37.78717350000767,
+            "energy_saving_fraction": 0.0,
+            "normalized_stop_error": 0.24,
+            "stopped_early": false,
+            "stop_reason": "maximum_epochs_reached"
+          },
+          {
+            "case_id": "vedai-aerial-vehicle",
+            "stage": "aerial_vehicle_counting",
+            "task_type": "object_detection",
+            "stop_epoch": 58,
+            "ideal_stop_epoch": 69,
+            "baseline_best_quality": 0.51023,
+            "stopped_best_quality": 0.45675,
+            "quality_regret": 0.05347999999999997,
+            "dynamic_quality_tolerance": 0.03587349797084467,
+            "normalized_quality_regret": 1.4907941244944822,
+            "baseline_energy_wh": 47.10976437498774,
+            "stopped_energy_wh": 27.55490849845632,
+            "energy_saving_fraction": 0.4150913539044104,
+            "normalized_stop_error": 0.11,
+            "stopped_early": true,
+            "stop_reason": "rapec_stop: epoch=58, state=plateau, horizon=9, dynamic_gain=0.019492, expected_gain=0.001550, prob_gain=0.0374, utility=0.000367, utility_threshold=0.004252"
+          },
+          {
+            "case_id": "visdrone-aerial-vehicle",
+            "stage": "aerial_vehicle_counting",
+            "task_type": "object_detection",
+            "stop_epoch": 100,
+            "ideal_stop_epoch": 80,
+            "baseline_best_quality": 0.50211,
+            "stopped_best_quality": 0.50211,
+            "quality_regret": 0.0,
+            "dynamic_quality_tolerance": 0.0027052939757986508,
+            "normalized_quality_regret": 0.0,
+            "baseline_energy_wh": 423.61780774511624,
+            "stopped_energy_wh": 423.61780774511624,
+            "energy_saving_fraction": 0.0,
+            "normalized_stop_error": 0.2,
+            "stopped_early": false,
+            "stop_reason": "rapec_stop: epoch=100, state=plateau, horizon=9, dynamic_gain=0.002532, expected_gain=0.000000, prob_gain=0.0561, utility=0.000000, utility_threshold=0.000084"
+          }
+        ]
+      }
+    }
+  },
+  "semantic_segmentation": {
+    "training_tasks": [
+      "image_classification",
+      "object_detection"
+    ],
+    "holdout_task": "semantic_segmentation",
+    "profiles": {
+      "conservative": {
+        "selected_on_training_tasks": {
+          "trial_number": 7,
+          "parameters": {
+            "horizon_epochs": 14,
+            "min_fit_points": 17,
+            "patience": 6,
+            "trend_window": 24,
+            "bootstrap_samples": 64,
+            "knn_neighbors": 7,
+            "min_epochs_floor": 15,
+            "max_probability_gain_gt_threshold": 0.39378931744671614,
+            "max_uncertainty_to_gain_ratio": 4.1508190145933375,
+            "minimum_quality_floor": 0.0,
+            "noise_multiplier": 0.6668395320163063,
+            "recent_gain_fraction": 0.21070097837302884,
+            "remaining_room_fraction": 0.0016687548926843194,
+            "late_stage_relaxation": 0.7884347937041504,
+            "min_meaningful_gain": 4.269586961191152e-05,
+            "utility_quantile": 0.3100736152347674
+          },
+          "metrics": {
+            "maximum_quality_regret": 0.0,
+            "mean_energy_saving_fraction": 0.0,
+            "mean_quality_regret": 0.0,
+            "median_energy_saving_fraction": 0.0,
+            "minimum_energy_saving_fraction": 0.0,
+            "quality_constraint": -0.0027052939757986508,
+            "worst_normalized_quality_regret": 0.0
+          },
+          "quality_feasible": true
+        },
+        "holdout_metrics": {
+          "mean_quality_regret": 0.0,
+          "worst_normalized_quality_regret": 0.0,
+          "median_energy_saving_fraction": 0.0,
+          "quality_constraint": -0.005588702998168535,
+          "mean_energy_saving_fraction": 0.0,
+          "minimum_energy_saving_fraction": 0.0,
+          "maximum_quality_regret": 0.0
+        },
+        "holdout_cases": [
+          {
+            "case_id": "oxford-pet-segmentation",
+            "stage": "semantic_segmentation",
+            "task_type": "semantic_segmentation",
+            "stop_epoch": 100,
+            "ideal_stop_epoch": 61,
+            "baseline_best_quality": 0.8208607766954419,
+            "stopped_best_quality": 0.8208607766954419,
+            "quality_regret": 0.0,
+            "dynamic_quality_tolerance": 0.007917108319119643,
+            "normalized_quality_regret": 0.0,
+            "baseline_energy_wh": 107.87778618816823,
+            "stopped_energy_wh": 107.87778618816823,
+            "energy_saving_fraction": 0.0,
+            "normalized_stop_error": 0.39,
+            "stopped_early": false,
+            "stop_reason": "maximum_epochs_reached"
+          },
+          {
+            "case_id": "pascal-voc2012-segmentation",
+            "stage": "semantic_segmentation",
+            "task_type": "semantic_segmentation",
+            "stop_epoch": 100,
+            "ideal_stop_epoch": 66,
+            "baseline_best_quality": 0.10413598980549384,
+            "stopped_best_quality": 0.10413598980549384,
+            "quality_regret": 0.0,
+            "dynamic_quality_tolerance": 0.005588702998168535,
+            "normalized_quality_regret": 0.0,
+            "baseline_energy_wh": 40.99492389654169,
+            "stopped_energy_wh": 40.99492389654169,
+            "energy_saving_fraction": 0.0,
+            "normalized_stop_error": 0.34,
+            "stopped_early": false,
+            "stop_reason": "maximum_epochs_reached"
+          },
+          {
+            "case_id": "uavid-segmentation",
+            "stage": "semantic_segmentation",
+            "task_type": "semantic_segmentation",
+            "stop_epoch": 100,
+            "ideal_stop_epoch": 48,
+            "baseline_best_quality": 0.47163237619614085,
+            "stopped_best_quality": 0.47163237619614085,
+            "quality_regret": 0.0,
+            "dynamic_quality_tolerance": 0.02248202217041802,
+            "normalized_quality_regret": 0.0,
+            "baseline_energy_wh": 126.89005392357856,
+            "stopped_energy_wh": 126.89005392357856,
+            "energy_saving_fraction": 0.0,
+            "normalized_stop_error": 0.52,
+            "stopped_early": false,
+            "stop_reason": "maximum_epochs_reached"
+          }
+        ]
+      },
+      "balanced": {
+        "selected_on_training_tasks": {
+          "trial_number": 7,
+          "parameters": {
+            "horizon_epochs": 14,
+            "min_fit_points": 17,
+            "patience": 6,
+            "trend_window": 24,
+            "bootstrap_samples": 64,
+            "knn_neighbors": 7,
+            "min_epochs_floor": 15,
+            "max_probability_gain_gt_threshold": 0.39378931744671614,
+            "max_uncertainty_to_gain_ratio": 4.1508190145933375,
+            "minimum_quality_floor": 0.0,
+            "noise_multiplier": 0.6668395320163063,
+            "recent_gain_fraction": 0.21070097837302884,
+            "remaining_room_fraction": 0.0016687548926843194,
+            "late_stage_relaxation": 0.7884347937041504,
+            "min_meaningful_gain": 4.269586961191152e-05,
+            "utility_quantile": 0.3100736152347674
+          },
+          "metrics": {
+            "maximum_quality_regret": 0.0,
+            "mean_energy_saving_fraction": 0.0,
+            "mean_quality_regret": 0.0,
+            "median_energy_saving_fraction": 0.0,
+            "minimum_energy_saving_fraction": 0.0,
+            "quality_constraint": -0.0027052939757986508,
+            "worst_normalized_quality_regret": 0.0
+          },
+          "quality_feasible": true
+        },
+        "holdout_metrics": {
+          "mean_quality_regret": 0.0,
+          "worst_normalized_quality_regret": 0.0,
+          "median_energy_saving_fraction": 0.0,
+          "quality_constraint": -0.005588702998168535,
+          "mean_energy_saving_fraction": 0.0,
+          "minimum_energy_saving_fraction": 0.0,
+          "maximum_quality_regret": 0.0
+        },
+        "holdout_cases": [
+          {
+            "case_id": "oxford-pet-segmentation",
+            "stage": "semantic_segmentation",
+            "task_type": "semantic_segmentation",
+            "stop_epoch": 100,
+            "ideal_stop_epoch": 61,
+            "baseline_best_quality": 0.8208607766954419,
+            "stopped_best_quality": 0.8208607766954419,
+            "quality_regret": 0.0,
+            "dynamic_quality_tolerance": 0.007917108319119643,
+            "normalized_quality_regret": 0.0,
+            "baseline_energy_wh": 107.87778618816823,
+            "stopped_energy_wh": 107.87778618816823,
+            "energy_saving_fraction": 0.0,
+            "normalized_stop_error": 0.39,
+            "stopped_early": false,
+            "stop_reason": "maximum_epochs_reached"
+          },
+          {
+            "case_id": "pascal-voc2012-segmentation",
+            "stage": "semantic_segmentation",
+            "task_type": "semantic_segmentation",
+            "stop_epoch": 100,
+            "ideal_stop_epoch": 66,
+            "baseline_best_quality": 0.10413598980549384,
+            "stopped_best_quality": 0.10413598980549384,
+            "quality_regret": 0.0,
+            "dynamic_quality_tolerance": 0.005588702998168535,
+            "normalized_quality_regret": 0.0,
+            "baseline_energy_wh": 40.99492389654169,
+            "stopped_energy_wh": 40.99492389654169,
+            "energy_saving_fraction": 0.0,
+            "normalized_stop_error": 0.34,
+            "stopped_early": false,
+            "stop_reason": "maximum_epochs_reached"
+          },
+          {
+            "case_id": "uavid-segmentation",
+            "stage": "semantic_segmentation",
+            "task_type": "semantic_segmentation",
+            "stop_epoch": 100,
+            "ideal_stop_epoch": 48,
+            "baseline_best_quality": 0.47163237619614085,
+            "stopped_best_quality": 0.47163237619614085,
+            "quality_regret": 0.0,
+            "dynamic_quality_tolerance": 0.02248202217041802,
+            "normalized_quality_regret": 0.0,
+            "baseline_energy_wh": 126.89005392357856,
+            "stopped_energy_wh": 126.89005392357856,
+            "energy_saving_fraction": 0.0,
+            "normalized_stop_error": 0.52,
+            "stopped_early": false,
+            "stop_reason": "maximum_epochs_reached"
+          }
+        ]
+      },
+      "aggressive": {
+        "selected_on_training_tasks": {
+          "trial_number": 7,
+          "parameters": {
+            "horizon_epochs": 14,
+            "min_fit_points": 17,
+            "patience": 6,
+            "trend_window": 24,
+            "bootstrap_samples": 64,
+            "knn_neighbors": 7,
+            "min_epochs_floor": 15,
+            "max_probability_gain_gt_threshold": 0.39378931744671614,
+            "max_uncertainty_to_gain_ratio": 4.1508190145933375,
+            "minimum_quality_floor": 0.0,
+            "noise_multiplier": 0.6668395320163063,
+            "recent_gain_fraction": 0.21070097837302884,
+            "remaining_room_fraction": 0.0016687548926843194,
+            "late_stage_relaxation": 0.7884347937041504,
+            "min_meaningful_gain": 4.269586961191152e-05,
+            "utility_quantile": 0.3100736152347674
+          },
+          "metrics": {
+            "maximum_quality_regret": 0.0,
+            "mean_energy_saving_fraction": 0.0,
+            "mean_quality_regret": 0.0,
+            "median_energy_saving_fraction": 0.0,
+            "minimum_energy_saving_fraction": 0.0,
+            "quality_constraint": -0.0027052939757986508,
+            "worst_normalized_quality_regret": 0.0
+          },
+          "quality_feasible": true
+        },
+        "holdout_metrics": {
+          "mean_quality_regret": 0.0,
+          "worst_normalized_quality_regret": 0.0,
+          "median_energy_saving_fraction": 0.0,
+          "quality_constraint": -0.005588702998168535,
+          "mean_energy_saving_fraction": 0.0,
+          "minimum_energy_saving_fraction": 0.0,
+          "maximum_quality_regret": 0.0
+        },
+        "holdout_cases": [
+          {
+            "case_id": "oxford-pet-segmentation",
+            "stage": "semantic_segmentation",
+            "task_type": "semantic_segmentation",
+            "stop_epoch": 100,
+            "ideal_stop_epoch": 61,
+            "baseline_best_quality": 0.8208607766954419,
+            "stopped_best_quality": 0.8208607766954419,
+            "quality_regret": 0.0,
+            "dynamic_quality_tolerance": 0.007917108319119643,
+            "normalized_quality_regret": 0.0,
+            "baseline_energy_wh": 107.87778618816823,
+            "stopped_energy_wh": 107.87778618816823,
+            "energy_saving_fraction": 0.0,
+            "normalized_stop_error": 0.39,
+            "stopped_early": false,
+            "stop_reason": "maximum_epochs_reached"
+          },
+          {
+            "case_id": "pascal-voc2012-segmentation",
+            "stage": "semantic_segmentation",
+            "task_type": "semantic_segmentation",
+            "stop_epoch": 100,
+            "ideal_stop_epoch": 66,
+            "baseline_best_quality": 0.10413598980549384,
+            "stopped_best_quality": 0.10413598980549384,
+            "quality_regret": 0.0,
+            "dynamic_quality_tolerance": 0.005588702998168535,
+            "normalized_quality_regret": 0.0,
+            "baseline_energy_wh": 40.99492389654169,
+            "stopped_energy_wh": 40.99492389654169,
+            "energy_saving_fraction": 0.0,
+            "normalized_stop_error": 0.34,
+            "stopped_early": false,
+            "stop_reason": "maximum_epochs_reached"
+          },
+          {
+            "case_id": "uavid-segmentation",
+            "stage": "semantic_segmentation",
+            "task_type": "semantic_segmentation",
+            "stop_epoch": 100,
+            "ideal_stop_epoch": 48,
+            "baseline_best_quality": 0.47163237619614085,
+            "stopped_best_quality": 0.47163237619614085,
+            "quality_regret": 0.0,
+            "dynamic_quality_tolerance": 0.02248202217041802,
+            "normalized_quality_regret": 0.0,
+            "baseline_energy_wh": 126.89005392357856,
+            "stopped_energy_wh": 126.89005392357856,
+            "energy_saving_fraction": 0.0,
+            "normalized_stop_error": 0.52,
+            "stopped_early": false,
+            "stop_reason": "maximum_epochs_reached"
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,144 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-07-18T16:28:06.909748+00:00",
+  "method": "split-conformal upper remaining-gain calibration with moving-block residual bootstrap",
+  "metric": "best_so_far_map50_95",
+  "alpha": 0.05,
+  "target_epoch": 100,
+  "regret_tolerance": 0.015,
+  "calibration_curves": 8,
+  "excluded_training_seeds": [
+    0
+  ],
+  "sources": [
+    "D:\\Masterarbeit_Vergleichssicherung\\CARPK_StopPolicy_60Jobs_Multiseed_2026-07-14_2026-07-14_102125\\data\\energy_metrics\\epoch_summary_job_13.json",
+    "D:\\Masterarbeit_Vergleichssicherung\\CARPK_StopPolicy_60Jobs_Multiseed_2026-07-14_2026-07-14_102125\\data\\energy_metrics\\epoch_summary_job_24.json",
+    "D:\\Masterarbeit_Vergleichssicherung\\CARPK_StopPolicy_60Jobs_Multiseed_2026-07-14_2026-07-14_102125\\data\\energy_metrics\\epoch_summary_job_28.json",
+    "D:\\Masterarbeit_Vergleichssicherung\\CARPK_StopPolicy_60Jobs_Multiseed_2026-07-14_2026-07-14_102125\\data\\energy_metrics\\epoch_summary_job_40.json",
+    "D:\\Masterarbeit_Vergleichssicherung\\CARPK_StopPolicy_60Jobs_Multiseed_2026-07-14_2026-07-14_102125\\data\\energy_metrics\\epoch_summary_job_44.json",
+    "D:\\Masterarbeit_Vergleichssicherung\\CARPK_StopPolicy_60Jobs_Multiseed_2026-07-14_2026-07-14_102125\\data\\energy_metrics\\epoch_summary_job_54.json",
+    "D:\\Masterarbeit_Vergleichssicherung\\CARPK_StopPolicy_60Jobs_Multiseed_2026-07-14_2026-07-14_102125\\data\\energy_metrics\\epoch_summary_job_59.json",
+    "D:\\Masterarbeit_Vergleichssicherung\\CARPK_StopPolicy_60Jobs_Multiseed_2026-07-14_2026-07-14_102125\\data\\energy_metrics\\epoch_summary_job_9.json"
+  ],
+  "scenarios": {
+    "train128-scratch": {
+      "global_correction": 0.015841232172871367,
+      "samples": 64,
+      "bins": [
+        {
+          "start_epoch": 20,
+          "end_epoch": 39,
+          "correction": 0.0,
+          "samples": 16
+        },
+        {
+          "start_epoch": 40,
+          "end_epoch": 59,
+          "correction": 0.025395571862986244,
+          "samples": 16
+        },
+        {
+          "start_epoch": 60,
+          "end_epoch": 79,
+          "correction": 0.015274792447074415,
+          "samples": 16
+        },
+        {
+          "start_epoch": 80,
+          "end_epoch": 99,
+          "correction": 0.0,
+          "samples": 16
+        }
+      ]
+    },
+    "train256-pretrained": {
+      "global_correction": 0.03401500000000002,
+      "samples": 64,
+      "bins": [
+        {
+          "start_epoch": 20,
+          "end_epoch": 39,
+          "correction": 0.03401500000000002,
+          "samples": 16
+        },
+        {
+          "start_epoch": 40,
+          "end_epoch": 59,
+          "correction": 0.018324999999999925,
+          "samples": 16
+        },
+        {
+          "start_epoch": 60,
+          "end_epoch": 79,
+          "correction": 0.007888724673864034,
+          "samples": 16
+        },
+        {
+          "start_epoch": 80,
+          "end_epoch": 99,
+          "correction": 0.0033512145651134473,
+          "samples": 16
+        }
+      ]
+    }
+  },
+  "oracle_definition": "first epoch t where best(T)-best(t) <= regret_tolerance",
+  "oracle_rows": [
+    {
+      "scenario": "train128-scratch",
+      "training_seed": 2,
+      "job_id": "13",
+      "oracle_stop_epoch": 79,
+      "final_best_map50_95": 0.71501
+    },
+    {
+      "scenario": "train128-scratch",
+      "training_seed": 3,
+      "job_id": "24",
+      "oracle_stop_epoch": 76,
+      "final_best_map50_95": 0.70915
+    },
+    {
+      "scenario": "train128-scratch",
+      "training_seed": 4,
+      "job_id": "28",
+      "oracle_stop_epoch": 79,
+      "final_best_map50_95": 0.71501
+    },
+    {
+      "scenario": "train256-pretrained",
+      "training_seed": 1,
+      "job_id": "40",
+      "oracle_stop_epoch": 58,
+      "final_best_map50_95": 0.844
+    },
+    {
+      "scenario": "train256-pretrained",
+      "training_seed": 2,
+      "job_id": "44",
+      "oracle_stop_epoch": 58,
+      "final_best_map50_95": 0.844
+    },
+    {
+      "scenario": "train256-pretrained",
+      "training_seed": 3,
+      "job_id": "54",
+      "oracle_stop_epoch": 58,
+      "final_best_map50_95": 0.844
+    },
+    {
+      "scenario": "train256-pretrained",
+      "training_seed": 4,
+      "job_id": "59",
+      "oracle_stop_epoch": 58,
+      "final_best_map50_95": 0.844
+    },
+    {
+      "scenario": "train128-scratch",
+      "training_seed": 1,
+      "job_id": "9",
+      "oracle_stop_epoch": 79,
+      "final_best_map50_95": 0.71501
+    }
+  ]
+}

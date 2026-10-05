@@ -1,4 +1,5 @@
 import argparse
+import base64
 import json
 import logging
 import os
@@ -94,13 +95,24 @@ def _evaluate_best_checkpoint(model, data_yaml_path: Path, image_size: int, batc
         verbose=False,
     )
     box = result.box
-    return {
+    metrics = {
         "test_best_map50": float(box.map50),
         "test_best_map50_95": float(box.map),
         "test_best_precision": float(box.mp),
         "test_best_recall": float(box.mr),
         "test_evaluated_checkpoint": str(best_path),
     }
+    if os.environ.get("BENCHMARK_STAGE") == "aerial_vehicle_counting":
+        from controller_benchmark.runners.detection_count_metrics import evaluate_count_metrics
+
+        metrics.update(
+            evaluate_count_metrics(
+                best_path,
+                data_yaml_path,
+                image_size=image_size,
+            )
+        )
+    return metrics
 
 
 def _export_job_model_artifacts(
@@ -208,7 +220,16 @@ def parse_args():
     p.add_argument("--adaptive-enabled", action="store_true")
     p.add_argument(
         "--controller-mode",
-        choices=["none", "metric_early_stopping", "delta_mape", "uncertainty_aware"],
+        choices=[
+            "none",
+            "metric_early_stopping",
+            "delta_mape",
+            "uncertainty_aware",
+            "conformal_energy_aware",
+            "hybrid_pareto_energy_aware",
+            "generalized_energy_guard",
+            "plugin",
+        ],
         default="none",
     )
     p.add_argument("--comparison-strategy", default="unspecified")
@@ -231,6 +252,40 @@ def parse_args():
     p.add_argument("--standard-min-delta", type=float, default=0.0005)
     p.add_argument("--uncertainty-min-quality", type=float, default=0.55)
     p.add_argument("--uncertainty-require-low-mape", default="true")
+    p.add_argument("--conformal-calibration-path", default="")
+    p.add_argument("--conformal-regret-tolerance", type=float, default=0.015)
+    p.add_argument("--conformal-future-efficiency-threshold", type=float, default=0.05)
+    p.add_argument("--conformal-max-interval-width", type=float, default=0.08)
+    p.add_argument("--conformal-energy-window", type=int, default=5)
+    p.add_argument("--conformal-require-calibration", default="true")
+    p.add_argument("--controller-evaluation-interval", type=int, default=1)
+    p.add_argument("--hybrid-quality-target", type=float, default=0.68)
+    p.add_argument("--hybrid-plateau-window", type=int, default=12)
+    p.add_argument("--hybrid-plateau-slope-threshold", type=float, default=0.0015)
+    p.add_argument("--hybrid-threshold-growth", type=float, default=0.25)
+    p.add_argument("--hybrid-candidate-decay", type=float, default=0.5)
+    p.add_argument("--hybrid-late-epoch-fraction", type=float, default=0.90)
+    p.add_argument("--hybrid-late-patience", type=int, default=2)
+    p.add_argument("--hybrid-max-epoch-budget", type=int, default=95)
+    p.add_argument("--hybrid-max-net-energy-wh", type=float, default=0.0)
+    p.add_argument("--hybrid-regret-weight", type=float, default=1.0)
+    p.add_argument("--hybrid-energy-weight", type=float, default=0.05)
+    p.add_argument("--energy-guard-target-saving-fraction", type=float, default=0.20)
+    p.add_argument("--energy-guard-safety-margin-fraction", type=float, default=0.01)
+    p.add_argument("--energy-guard-post-training-reserve-wh", type=float, default=0.90)
+    p.add_argument("--energy-guard-window", type=int, default=5)
+    p.add_argument("--energy-guard-fallback-epoch-fraction", type=float, default=0.77)
+    p.add_argument("--energy-guard-strict", default="true")
+    p.add_argument("--controller-plugin", default="")
+    p.add_argument("--controller-parameters-json", default="{}")
+    p.add_argument("--controller-parameters-base64", default="")
+    p.add_argument("--controller-id", default="unspecified")
+    p.add_argument("--benchmark-version", default="unversioned")
+    p.add_argument("--benchmark-run-id", default="none")
+    p.add_argument("--benchmark-case-id", default="none")
+    p.add_argument("--benchmark-stage", default="none")
+    p.add_argument("--task-type", default="object_detection")
+    p.add_argument("--quality-metric", default="map50_95")
     p.add_argument("--override", action="append", default=[])
     return p.parse_args()
 
@@ -256,6 +311,35 @@ def _log_epoch_summary_metrics(epoch_summary: dict):
         "predicted_final_metric_upper",
         "predicted_remaining_gain_upper",
         "predicted_prob_gain_gt_epsilon",
+        "uncertainty_interval_width",
+        "conformal_correction",
+        "conformal_remaining_gain_upper",
+        "predicted_remaining_energy_wh",
+        "predicted_future_efficiency_per_wh",
+        "controller_decision_state",
+        "plateau_slope_per_epoch",
+        "recent_best_gain",
+        "observed_efficiency_per_wh",
+        "adaptive_efficiency_threshold",
+        "pareto_continue_utility",
+        "controller_evidence",
+        "dynamic_patience",
+        "quality_target_reached",
+        "budget_triggered",
+        "observed_job_energy_wh",
+        "projected_full_job_energy_wh",
+        "projected_stopped_job_energy_wh",
+        "projected_energy_saving_fraction",
+        "projected_next_energy_saving_fraction",
+        "energy_guard_target_saving_fraction",
+        "energy_guard_remaining_budget_wh",
+        "energy_guard_boundary_reached",
+        "energy_guard_fallback_triggered",
+        "energy_guard_quality_conflict",
+        "controller_plugin_confidence",
+        "controller_plugin_predicted_energy_saving_fraction",
+        "controller_plugin_predicted_quality_regret",
+        "controller_plugin_compute_seconds",
     ):
         value = epoch_summary.get(key)
         if value is not None:
@@ -323,6 +407,12 @@ def main():
     job_metrics_path = Path(args.job_metrics_path)
     epoch_timeline_path = Path(args.epoch_timeline_path) if args.epoch_timeline_path else None
     epoch_summary_path = Path(args.epoch_summary_path) if args.epoch_summary_path else None
+    controller_parameters_json = args.controller_parameters_json
+    if args.controller_parameters_base64:
+        controller_parameters_json = base64.b64decode(
+            args.controller_parameters_base64, validate=True
+        ).decode("utf-8")
+
     adaptive_config = EnergyAdaptiveConfig(
         enabled=args.adaptive_enabled or args.controller_mode != "none",
         controller_mode=("delta_mape" if args.adaptive_enabled and args.controller_mode == "none" else args.controller_mode),
@@ -341,6 +431,40 @@ def main():
         uncertainty_min_fit_points=args.uncertainty_min_fit_points,
         uncertainty_min_quality=args.uncertainty_min_quality,
         uncertainty_require_low_mape=_parse_bool(args.uncertainty_require_low_mape),
+        scenario=args.scenario,
+        conformal_calibration_path=args.conformal_calibration_path,
+        conformal_regret_tolerance=args.conformal_regret_tolerance,
+        conformal_future_efficiency_threshold=args.conformal_future_efficiency_threshold,
+        conformal_max_interval_width=args.conformal_max_interval_width,
+        conformal_energy_window=args.conformal_energy_window,
+        conformal_require_calibration=_parse_bool(args.conformal_require_calibration),
+        controller_evaluation_interval=args.controller_evaluation_interval,
+        hybrid_quality_target=args.hybrid_quality_target,
+        hybrid_plateau_window=args.hybrid_plateau_window,
+        hybrid_plateau_slope_threshold=args.hybrid_plateau_slope_threshold,
+        hybrid_threshold_growth=args.hybrid_threshold_growth,
+        hybrid_candidate_decay=args.hybrid_candidate_decay,
+        hybrid_late_epoch_fraction=args.hybrid_late_epoch_fraction,
+        hybrid_late_patience=args.hybrid_late_patience,
+        hybrid_max_epoch_budget=args.hybrid_max_epoch_budget,
+        hybrid_max_net_energy_wh=args.hybrid_max_net_energy_wh,
+        hybrid_regret_weight=args.hybrid_regret_weight,
+        hybrid_energy_weight=args.hybrid_energy_weight,
+        energy_guard_target_saving_fraction=args.energy_guard_target_saving_fraction,
+        energy_guard_safety_margin_fraction=args.energy_guard_safety_margin_fraction,
+        energy_guard_post_training_reserve_wh=args.energy_guard_post_training_reserve_wh,
+        energy_guard_window=args.energy_guard_window,
+        energy_guard_fallback_epoch_fraction=args.energy_guard_fallback_epoch_fraction,
+        energy_guard_strict=_parse_bool(args.energy_guard_strict),
+        controller_plugin=args.controller_plugin,
+        controller_parameters_json=controller_parameters_json,
+        controller_id=args.controller_id,
+        benchmark_version=args.benchmark_version,
+        benchmark_run_id=args.benchmark_run_id,
+        benchmark_case_id=args.benchmark_case_id,
+        benchmark_stage=args.benchmark_stage,
+        task_type=args.task_type,
+        quality_metric=args.quality_metric,
     )
 
     LOGGER.info("Using config: dataset=%s model=%s experiment=%s", args.dataset, args.model, cfg["experiment"])
@@ -424,6 +548,38 @@ def main():
                         mlflow.log_param("standard_min_delta", args.standard_min_delta)
                         mlflow.log_param("uncertainty_min_quality", args.uncertainty_min_quality)
                         mlflow.log_param("uncertainty_require_low_mape", adaptive_config.uncertainty_require_low_mape)
+                        mlflow.log_param("conformal_calibration_path", args.conformal_calibration_path)
+                        mlflow.log_param("conformal_regret_tolerance", args.conformal_regret_tolerance)
+                        mlflow.log_param("conformal_future_efficiency_threshold", args.conformal_future_efficiency_threshold)
+                        mlflow.log_param("conformal_max_interval_width", args.conformal_max_interval_width)
+                        mlflow.log_param("conformal_energy_window", args.conformal_energy_window)
+                        mlflow.log_param("conformal_require_calibration", adaptive_config.conformal_require_calibration)
+                        mlflow.log_param("controller_evaluation_interval", args.controller_evaluation_interval)
+                        mlflow.log_param("hybrid_quality_target", args.hybrid_quality_target)
+                        mlflow.log_param("hybrid_plateau_window", args.hybrid_plateau_window)
+                        mlflow.log_param("hybrid_plateau_slope_threshold", args.hybrid_plateau_slope_threshold)
+                        mlflow.log_param("hybrid_threshold_growth", args.hybrid_threshold_growth)
+                        mlflow.log_param("hybrid_candidate_decay", args.hybrid_candidate_decay)
+                        mlflow.log_param("hybrid_late_epoch_fraction", args.hybrid_late_epoch_fraction)
+                        mlflow.log_param("hybrid_late_patience", args.hybrid_late_patience)
+                        mlflow.log_param("hybrid_max_epoch_budget", args.hybrid_max_epoch_budget)
+                        mlflow.log_param("hybrid_max_net_energy_wh", args.hybrid_max_net_energy_wh)
+                        mlflow.log_param("hybrid_regret_weight", args.hybrid_regret_weight)
+                        mlflow.log_param("hybrid_energy_weight", args.hybrid_energy_weight)
+                        mlflow.log_param("energy_guard_target_saving_fraction", args.energy_guard_target_saving_fraction)
+                        mlflow.log_param("energy_guard_safety_margin_fraction", args.energy_guard_safety_margin_fraction)
+                        mlflow.log_param("energy_guard_post_training_reserve_wh", args.energy_guard_post_training_reserve_wh)
+                        mlflow.log_param("energy_guard_window", args.energy_guard_window)
+                        mlflow.log_param("energy_guard_fallback_epoch_fraction", args.energy_guard_fallback_epoch_fraction)
+                        mlflow.log_param("energy_guard_strict", adaptive_config.energy_guard_strict)
+                        mlflow.log_param("controller_plugin", args.controller_plugin)
+                        mlflow.log_param("controller_id", args.controller_id)
+                        mlflow.log_param("benchmark_version", args.benchmark_version)
+                        mlflow.log_param("benchmark_run_id", args.benchmark_run_id)
+                        mlflow.log_param("benchmark_case_id", args.benchmark_case_id)
+                        mlflow.log_param("benchmark_stage", args.benchmark_stage)
+                        mlflow.log_param("task_type", args.task_type)
+                        mlflow.log_param("quality_metric", args.quality_metric)
                         mlflow.log_param("idle_power_w", args.idle_power_w)
                         run_metadata_path = Path(os.environ.get("RUN_METADATA_JSON", ""))
                         if run_metadata_path.exists():
@@ -442,6 +598,7 @@ def main():
                             )
                             model.add_callback("on_train_epoch_start", controller.on_train_epoch_start)
                             model.add_callback("on_fit_epoch_end", controller.on_fit_epoch_end)
+                            model.add_callback("on_train_end", controller.on_train_end)
 
                         model.train(
                             data=str(data_yaml_path),
@@ -465,6 +622,8 @@ def main():
                             flipud=float(flat_param_dict.get("flipud", 0.0)),
                             mixup=0.0,
                             workers=0,
+                            seed=int(seed),
+                            deterministic=True,
                         )
 
                         _export_job_model_artifacts(
@@ -491,6 +650,13 @@ def main():
                                 training_seed=args.training_seed,
                                 split_seed=args.split_seed,
                                 cache_policy=args.cache_policy,
+                                controller_id=args.controller_id,
+                                benchmark_version=args.benchmark_version,
+                                benchmark_run_id=args.benchmark_run_id,
+                                benchmark_case_id=args.benchmark_case_id,
+                                benchmark_stage=args.benchmark_stage,
+                                task_type=args.task_type,
+                                quality_metric=args.quality_metric,
                             )
                             _log_epoch_summary_metrics(epoch_summary)
                             if not auth:

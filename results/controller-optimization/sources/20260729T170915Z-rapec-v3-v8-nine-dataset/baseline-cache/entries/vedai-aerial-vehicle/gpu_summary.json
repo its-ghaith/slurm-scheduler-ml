@@ -1,0 +1,61 @@
+{
+  "job_id": "147",
+  "samples": 3456,
+  "gpu_power_avg_w": 94.04353587962984,
+  "gpu_power_max_w": 139.43,
+  "gpu_util_avg_pct": 21.15133101851852,
+  "gpu_mem_used_avg_mb": 1747.6226851851852,
+  "gpu_temp_avg_c": 28.356770833333332,
+  "gpu_energy_kwh_integrated": 0.04912740463717051,
+  "gpu_energy_kwh_estimated": 0.049125958944460306,
+  "gpu_energy_kwh": 0.04912740463717051,
+  "duration_seconds": 1880.5487325191498,
+  "scenario": "vedai512-fold1-scratch-yolov8n-nine-dataset",
+  "comparison_strategy": "full100",
+  "training_seed": 0,
+  "split_seed": 0,
+  "cache_policy": "persistent-disk",
+  "controller_id": "full100",
+  "benchmark_version": "controller-benchmark-v3-nine-dataset-fresh",
+  "benchmark_run_id": "20260729T170915Z-rapec-v3-v8-nine-dataset",
+  "benchmark_case_id": "vedai-aerial-vehicle",
+  "benchmark_stage": "aerial_vehicle_counting",
+  "task_type": "object_detection",
+  "quality_metric": "quality_score",
+  "adaptive_monitor_metric": "quality_score",
+  "training_energy_kwh": 0.04912740463717051,
+  "estimated_electricity_cost_eur": 0.014738221391151152,
+  "estimated_co2_kg": 0.019650961854868206,
+  "codecarbon_job_total_energy_kwh": 0.1905058315048498,
+  "codecarbon_job_total_gpu_energy_kwh": 0.04891574968809209,
+  "codecarbon_job_total_cpu_energy_kwh": 0.1050931250002661,
+  "codecarbon_measurement_available": 1,
+  "codecarbon_estimated_electricity_cost_eur": 0.05715174945145493,
+  "codecarbon_estimated_co2_kg": 0.07620233260193993,
+  "phase_metrics": {
+    "training": {
+      "gpu_energy_kwh": 0.04912740463717051,
+      "codecarbon_gpu_energy_kwh": 0.04891574968809209,
+      "codecarbon_energy_kwh": 0.1905058315048498
+    }
+  },
+  "price_eur_kwh": 0.3,
+  "co2_kg_kwh": 0.4,
+  "pue_factor": 1.0,
+  "run_metadata": {
+    "captured_at": 1785359749.0714352,
+    "runtime_image_id": "ghcr.io/its-ghaith/slurm-scheduler-ml/mlops-slurm-runtime@sha256:579d927d427b8f5fa677780db338bae740eb1c0c012a133d529c06bf24ad3b55",
+    "scenario": "vedai512-fold1-scratch-yolov8n-nine-dataset",
+    "training_seed": 0,
+    "split_seed": 0,
+    "cache_policy": "persistent-disk",
+    "gpu": {
+      "name": "NVIDIA A100-SXM4-80GB",
+      "driver_version": "580.105.08",
+      "power_limit_w": "400.00",
+      "graphics_clock_mhz": "1155",
+      "memory_clock_mhz": "1593",
+      "temperature_c": "28"
+    }
+  }
+}

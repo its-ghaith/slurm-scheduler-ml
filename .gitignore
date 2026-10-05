@@ -1,8 +1,18 @@
 .venv/
+results/controller-optimization/.venv/
 __pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
 .env
 rotationally-invariant-cnns/mlruns_shared_no_artifacts/
 rotationally-invariant-cnns/models/*.pth
+
+# Local authoring and assistant workspaces (never part of the appendix)
+.codex_*/
+.codex_result_files.txt
+.tmp_*/
+tmp/
 
 # Generated runtime artifacts
 logs/*.out
@@ -11,6 +21,15 @@ energy_metrics/gpu_metrics_job_*.csv
 energy_metrics/gpu_summary_job_*.json
 energy_metrics/node_exporter/*.prom
 mlflow_data/*.db
+mlflow_data/
+mlruns/
+mlartifacts/
+*.db-journal
+*.db-shm
+*.db-wal
+
+# Grafana runtime state; exported dashboards remain versioned
+grafana/runtime/
 
 # Rancher / kubeconfig secrets
 rancherConfigs/main.yaml
@@ -19,3 +38,6 @@ rancherConfigs/*.secret.yaml
 
 # Downloaded/generated research outputs (the versioned run matrix stays tracked)
 results/**/raw-metrics/
+results/controller-benchmark/
+results/controller-optimizer-comparison/replay-cache/
+results/controller-optimizer-comparison/launch-logs/

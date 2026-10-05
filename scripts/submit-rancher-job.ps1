@@ -20,7 +20,7 @@ param(
     [string]$ScenarioName = "custom",
     [ValidateSet("none", "ram", "disk")]
     [string]$CachePolicy = "ram",
-    [ValidateSet("none", "metric_early_stopping", "delta_mape", "uncertainty_aware")]
+    [ValidateSet("none", "metric_early_stopping", "delta_mape", "uncertainty_aware", "conformal_energy_aware", "hybrid_pareto_energy_aware", "generalized_energy_guard", "plugin")]
     [string]$ControllerMode = "none",
     [string]$ComparisonStrategy = "unspecified",
     [ValidateSet("map50", "map50_95")]
@@ -41,12 +41,54 @@ param(
     [double]$UncertaintyMinQuality = 0.55,
     [ValidateSet("true", "false")]
     [string]$UncertaintyRequireLowMape = "true",
+    [string]$ConformalCalibrationPath = "/workspace/slurm/conformal_calibration.json",
+    [double]$ConformalRegretTolerance = 0.015,
+    [double]$ConformalFutureEfficiencyThreshold = 0.05,
+    [double]$ConformalMaxIntervalWidth = 0.08,
+    [int]$ConformalEnergyWindow = 5,
+    [ValidateSet("true", "false")]
+    [string]$ConformalRequireCalibration = "true",
+    [ValidateRange(1, 100)]
+    [int]$ControllerEvaluationInterval = 1,
+    [double]$HybridQualityTarget = 0.68,
+    [int]$HybridPlateauWindow = 12,
+    [double]$HybridPlateauSlopeThreshold = 0.0015,
+    [double]$HybridThresholdGrowth = 0.25,
+    [double]$HybridCandidateDecay = 0.5,
+    [double]$HybridLateEpochFraction = 0.90,
+    [int]$HybridLatePatience = 2,
+    [int]$HybridMaxEpochBudget = 95,
+    [double]$HybridMaxNetEnergyWh = 0.0,
+    [double]$HybridRegretWeight = 1.0,
+    [double]$HybridEnergyWeight = 0.05,
+    [ValidateRange(0.01, 0.95)]
+    [double]$EnergyGuardTargetSavingFraction = 0.20,
+    [ValidateRange(0.0, 0.50)]
+    [double]$EnergyGuardSafetyMarginFraction = 0.01,
+    [ValidateRange(0.0, 1000.0)]
+    [double]$EnergyGuardPostTrainingReserveWh = 0.90,
+    [ValidateRange(1, 100)]
+    [int]$EnergyGuardWindow = 5,
+    [ValidateRange(0.01, 1.0)]
+    [double]$EnergyGuardFallbackEpochFraction = 0.77,
+    [ValidateSet("true", "false")]
+    [string]$EnergyGuardStrict = "true",
+    [string]$ControllerPlugin = "",
+    [string]$ControllerParametersJson = "{}",
+    [string]$ControllerId = "unspecified",
+    [string]$BenchmarkVersion = "unversioned",
+    [string]$BenchmarkRunId = "none",
+    [string]$BenchmarkCaseId = "none",
+    [string]$BenchmarkStage = "none",
+    [string]$TaskType = "object_detection",
+    [string]$QualityMetric = "map50_95",
     [int]$IdleSampleSeconds = 10,
     [switch]$InstallDependencies,
     [switch]$SkipDependencyInstall,
     [switch]$ForceWorkspaceSync,
     [switch]$ForceDatasetSync,
-    [switch]$WaitForCompletion
+    [switch]$WaitForCompletion,
+    [switch]$ValidateMlflowViaSlurmd
 )
 
 $ErrorActionPreference = "Stop"
@@ -244,8 +286,9 @@ function New-WorkspaceBundle {
     $repoDir = Join-Path $bundleDirRelative "rotationally-invariant-cnns"
     $slurmDir = Join-Path $bundleDirRelative "slurm"
     $containersDir = Join-Path $bundleDirRelative "containers"
+    $benchmarkDir = Join-Path $bundleDirRelative "controller_benchmark"
 
-    New-Item -ItemType Directory -Force -Path $repoDir, $slurmDir, $containersDir | Out-Null
+    New-Item -ItemType Directory -Force -Path $repoDir, $slurmDir, $containersDir, $benchmarkDir | Out-Null
     Copy-Item -Recurse -Force "rotationally-invariant-cnns/src" $repoDir
     if (Test-Path "rotationally-invariant-cnns/pyproject.toml") {
         Copy-Item -Force "rotationally-invariant-cnns/pyproject.toml" $repoDir
@@ -255,6 +298,7 @@ function New-WorkspaceBundle {
     }
     Copy-Item -Recurse -Force "slurm/*" $slurmDir
     Copy-Item -Force "containers/runtime-requirements.txt" $containersDir
+    Copy-Item -Recurse -Force "controller_benchmark/*" $benchmarkDir
 
     return @{
         Root = $bundleRootRelative
@@ -382,7 +426,7 @@ try {
         "exec", "deploy/slurmd",
         "-c", "slurmd",
         "--", "bash", "-lc",
-        "mkdir -p /workspace/rotationally-invariant-cnns /workspace/slurm /workspace/containers && cp -a /workspace/workspace_bundle/rotationally-invariant-cnns/. /workspace/rotationally-invariant-cnns/ && cp -a /workspace/workspace_bundle/slurm/. /workspace/slurm/ && cp -a /workspace/workspace_bundle/containers/. /workspace/containers/ && rm -rf /workspace/workspace_bundle"
+        "mkdir -p /workspace/rotationally-invariant-cnns /workspace/slurm /workspace/containers /workspace/controller_benchmark && cp -a /workspace/workspace_bundle/rotationally-invariant-cnns/. /workspace/rotationally-invariant-cnns/ && cp -a /workspace/workspace_bundle/slurm/. /workspace/slurm/ && cp -a /workspace/workspace_bundle/containers/. /workspace/containers/ && cp -a /workspace/workspace_bundle/controller_benchmark/. /workspace/controller_benchmark/ && rm -rf /workspace/workspace_bundle"
     )
 }
 finally {
@@ -490,6 +534,7 @@ Assert-PathExistsInPod -Deployment "slurmd" -Container "slurmd" -Path "/workspac
 Assert-PathExistsInPod -Deployment "slurmd" -Container "slurmd" -Path "/workspace/slurm/train_repro_phase_tracked.py"
 Assert-PathExistsInPod -Deployment "slurmd" -Container "slurmd" -Path "/workspace/slurm/train_repro_rotacnn_job.slurm"
 Assert-PathExistsInPod -Deployment "slurmd" -Container "slurmd" -Path "/workspace/containers/runtime-requirements.txt"
+Assert-PathExistsInPod -Deployment "slurmd" -Container "slurmd" -Path "/workspace/controller_benchmark/api.py"
 Assert-PathExistsInPod -Deployment "slurmctld" -Container "slurmctld" -Path "/workspace/slurm/train_repro_rotacnn_job.slurm"
 
 Write-Host "Bereite deterministische CARPK-Labels außerhalb des gemessenen Jobs vor ..." -ForegroundColor Cyan
@@ -534,6 +579,12 @@ Write-Host "ControllerMode: $effectiveControllerMode, ComparisonStrategy: $Compa
 
 Write-Host "Reiche Job ein ..." -ForegroundColor Cyan
 $controllerEnabled = $AdaptiveEnabled.IsPresent -or $effectiveControllerMode -ne "none"
+try {
+    $null = $ControllerParametersJson | ConvertFrom-Json
+} catch {
+    throw "ControllerParametersJson is not valid JSON: $($_.Exception.Message)"
+}
+$controllerParametersBase64 = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($ControllerParametersJson))
 $submitPairs = @(
     "REPRO_DATASET=$Dataset",
     "REPRO_MODEL=$Model",
@@ -556,6 +607,39 @@ $submitPairs = @(
     "STANDARD_EARLY_STOP_MIN_DELTA=$StandardMinDelta",
     "UNCERTAINTY_MIN_QUALITY=$UncertaintyMinQuality",
     "UNCERTAINTY_REQUIRE_LOW_MAPE=$UncertaintyRequireLowMape",
+    "CONFORMAL_CALIBRATION_PATH=$ConformalCalibrationPath",
+    "CONFORMAL_REGRET_TOLERANCE=$ConformalRegretTolerance",
+    "CONFORMAL_FUTURE_EFFICIENCY_THRESHOLD=$ConformalFutureEfficiencyThreshold",
+    "CONFORMAL_MAX_INTERVAL_WIDTH=$ConformalMaxIntervalWidth",
+    "CONFORMAL_ENERGY_WINDOW=$ConformalEnergyWindow",
+    "CONFORMAL_REQUIRE_CALIBRATION=$ConformalRequireCalibration",
+    "CONTROLLER_EVALUATION_INTERVAL=$ControllerEvaluationInterval",
+    "HYBRID_QUALITY_TARGET=$HybridQualityTarget",
+    "HYBRID_PLATEAU_WINDOW=$HybridPlateauWindow",
+    "HYBRID_PLATEAU_SLOPE_THRESHOLD=$HybridPlateauSlopeThreshold",
+    "HYBRID_THRESHOLD_GROWTH=$HybridThresholdGrowth",
+    "HYBRID_CANDIDATE_DECAY=$HybridCandidateDecay",
+    "HYBRID_LATE_EPOCH_FRACTION=$HybridLateEpochFraction",
+    "HYBRID_LATE_PATIENCE=$HybridLatePatience",
+    "HYBRID_MAX_EPOCH_BUDGET=$HybridMaxEpochBudget",
+    "HYBRID_MAX_NET_ENERGY_WH=$HybridMaxNetEnergyWh",
+    "HYBRID_REGRET_WEIGHT=$HybridRegretWeight",
+    "HYBRID_ENERGY_WEIGHT=$HybridEnergyWeight",
+    "ENERGY_GUARD_TARGET_SAVING_FRACTION=$EnergyGuardTargetSavingFraction",
+    "ENERGY_GUARD_SAFETY_MARGIN_FRACTION=$EnergyGuardSafetyMarginFraction",
+    "ENERGY_GUARD_POST_TRAINING_RESERVE_WH=$EnergyGuardPostTrainingReserveWh",
+    "ENERGY_GUARD_WINDOW=$EnergyGuardWindow",
+    "ENERGY_GUARD_FALLBACK_EPOCH_FRACTION=$EnergyGuardFallbackEpochFraction",
+    "ENERGY_GUARD_STRICT=$EnergyGuardStrict",
+    "CONTROLLER_PLUGIN=$ControllerPlugin",
+    "CONTROLLER_PARAMETERS_BASE64=$controllerParametersBase64",
+    "CONTROLLER_ID=$ControllerId",
+    "BENCHMARK_VERSION=$BenchmarkVersion",
+    "BENCHMARK_RUN_ID=$BenchmarkRunId",
+    "BENCHMARK_CASE_ID=$BenchmarkCaseId",
+    "BENCHMARK_STAGE=$BenchmarkStage",
+    "BENCHMARK_TASK_TYPE=$TaskType",
+    "BENCHMARK_QUALITY_METRIC=$QualityMetric",
     "EXPERIMENT_SCENARIO=$ScenarioName",
     "TRAINING_SEED=$effectiveTrainingSeed",
     "SPLIT_SEED=$SplitSeed",
@@ -626,13 +710,17 @@ if ($finalState -ne "COMPLETED") {
     throw "Job $jobId endete mit Status $finalState.`n$jobLogs"
 }
 
-$mlflowPython = "from mlflow.tracking import MlflowClient; client=MlflowClient('http://localhost:5000'); exp=client.get_experiment_by_name('$ExperimentName'); assert exp is not None, 'Experiment not found'; runs=client.search_runs([exp.experiment_id], order_by=['attributes.start_time DESC'], max_results=5); matching=[r for r in runs if r.data.tags.get('mlflow.runName') == 'job-energy-$jobId']; assert matching, 'Matching MLflow run not found'; r=matching[0]; print('run_id=' + r.info.run_id); print('status=' + r.info.status)"
-$mlflowCheck = Get-KubectlOutputWithRetry -Arguments @(
-    "--kubeconfig", $Kubeconfig,
-    "-n", $Namespace,
-    "exec", "deploy/mlflow",
-    "--", "python", "-c", $mlflowPython
-)
+$mlflowUri = if ($ValidateMlflowViaSlurmd) { "http://mlflow:5000" } else { "http://localhost:5000" }
+$mlflowPython = "from mlflow.tracking import MlflowClient; client=MlflowClient('$mlflowUri'); exp=client.get_experiment_by_name('$ExperimentName'); assert exp is not None, 'Experiment not found'; runs=client.search_runs([exp.experiment_id], order_by=['attributes.start_time DESC'], max_results=5); matching=[r for r in runs if r.data.tags.get('mlflow.runName') == 'job-energy-$jobId']; assert matching, 'Matching MLflow run not found'; r=matching[0]; print('run_id=' + r.info.run_id); print('status=' + r.info.status)"
+$mlflowExec = if ($ValidateMlflowViaSlurmd) {
+    @("exec", "deploy/slurmd", "-c", "slurmd")
+} else {
+    @("exec", "deploy/mlflow")
+}
+$mlflowArguments = @("--kubeconfig", $Kubeconfig, "-n", $Namespace)
+$mlflowArguments += $mlflowExec
+$mlflowArguments += @("--", "python", "-c", $mlflowPython)
+$mlflowCheck = Get-KubectlOutputWithRetry -Arguments $mlflowArguments
 
 Write-Host ""
 Write-Host "Job erfolgreich abgeschlossen." -ForegroundColor Green

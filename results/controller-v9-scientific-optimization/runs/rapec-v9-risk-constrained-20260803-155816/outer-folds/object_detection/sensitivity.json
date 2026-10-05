@@ -1,0 +1,71 @@
+{
+  "method": "Morris elementary-effects screening",
+  "selected_parameters": [
+    "model_window",
+    "minimum_calibration_points",
+    "calibration_window",
+    "quality_risk_alpha",
+    "quality_noise_quantile",
+    "evidence_decay",
+    "evidence_stop_probability"
+  ],
+  "evaluations": 128,
+  "parameters": [
+    {
+      "parameter": "evidence_decay",
+      "quality_mu_star": 0.00720858469520988,
+      "quality_sigma": 0.006930923155298196,
+      "energy_mu_star": 0.0027966231173432656,
+      "energy_sigma": 0.006446265653041186,
+      "combined_score": 1.0
+    },
+    {
+      "parameter": "quality_noise_quantile",
+      "quality_mu_star": 0.004117688000272453,
+      "quality_sigma": 0.006194567655440444,
+      "energy_mu_star": 0.0033492328013766262,
+      "energy_sigma": 0.007248869748740503,
+      "combined_score": 1.0
+    },
+    {
+      "parameter": "evidence_stop_probability",
+      "quality_mu_star": 0.0034193291135933114,
+      "quality_sigma": 0.0064645025011486335,
+      "energy_mu_star": 0.002585400584154377,
+      "energy_sigma": 0.005225479101537705,
+      "combined_score": 0.7719381534456807
+    },
+    {
+      "parameter": "model_window",
+      "quality_mu_star": 0.0037402622904671957,
+      "quality_sigma": 0.007186015201425699,
+      "energy_mu_star": 0.0004791396728997007,
+      "energy_sigma": 0.001392578960428858,
+      "combined_score": 0.5188622245019342
+    },
+    {
+      "parameter": "quality_risk_alpha",
+      "quality_mu_star": 0.002853190548885428,
+      "quality_sigma": 0.0061341753626996615,
+      "energy_mu_star": 0.0007774142249866249,
+      "energy_sigma": 0.0016676494603709887,
+      "combined_score": 0.3958045399371362
+    },
+    {
+      "parameter": "calibration_window",
+      "quality_mu_star": 0.001264497451387025,
+      "quality_sigma": 0.0029053936685476357,
+      "energy_mu_star": 0.0005268677193400328,
+      "energy_sigma": 0.001440435810845003,
+      "combined_score": 0.17541549483732727
+    },
+    {
+      "parameter": "minimum_calibration_points",
+      "quality_mu_star": 0.0,
+      "quality_sigma": 0.0,
+      "energy_mu_star": 0.0,
+      "energy_sigma": 0.0,
+      "combined_score": 0.0
+    }
+  ]
+}

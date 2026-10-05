@@ -1,0 +1,14 @@
+experiment_id,name,runs,appendix_scope,appendix_group,lifecycle_stage
+875470005888067930,rapec-g-v4-live-shadow-cv-nonvision-pretrained-hardest,24,primary,01-live-shadow-v4,active
+399467849854288444,rapec-g-v4-live-shadow-cv-nonvision-scratch,24,primary,01-live-shadow-v4,active
+327740174990578325,rapec-generalized-nonvision-hard-v1,48,supporting,02-generalisation,active
+450362208821598474,rapec-generalized-nonvision-hardest-v1,17,supporting,02-generalisation,active
+273362211853220896,rapec-generalized-nonvision-v2,48,supporting,02-generalisation,active
+742465350094043625,controller-benchmark-v2-shared-seed,108,supporting,03-controller-benchmark,active
+802698448361641094,controller-benchmark-v3-nine-dataset-fresh,42,supporting,03-controller-benchmark,active
+360015398829204186,controller-benchmark-v3-v10-selected-four,4,supporting,03-controller-benchmark,active
+208470117611486394,controller-benchmark-v3-v3-pf-selected-four,12,supporting,03-controller-benchmark,active
+991239466659231613,controller-benchmark-v3-v9-selected-four,5,supporting,03-controller-benchmark,active
+476908241748412586,controller-live-shadow-classification-macro-f1,3,supporting,03-controller-benchmark,active
+590083136921743970,controller-live-shadow-pretrained-nine-dataset,12,supporting,03-controller-benchmark,active
+776247140126205855,controller-live-shadow-development,9,development,99-development,active

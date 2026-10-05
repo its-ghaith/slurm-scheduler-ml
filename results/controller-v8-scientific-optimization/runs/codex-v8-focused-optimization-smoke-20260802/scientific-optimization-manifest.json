@@ -1,0 +1,147 @@
+{
+  "schema_version": 2,
+  "optimization_id": "codex-v8-focused-optimization-smoke-20260802",
+  "created_at": "2026-08-02T19:33:15.306908+00:00",
+  "method": "Morris screening + constrained qLogNEHVI + Nash bargaining",
+  "backend": "sobol",
+  "controller_plugin": "controller_benchmark.controllers.bayesian_guarded_rapec_v3:BayesianGuardedRapecV3Controller",
+  "base_controller_id": "rapec-v8",
+  "controller_id_prefix": "rapec-v8-focused-nash",
+  "base_parameters": {
+    "horizon_epochs": 5,
+    "min_fit_points": 10,
+    "patience": 3,
+    "trend_window": 10,
+    "bootstrap_samples": 96,
+    "knn_neighbors": 9,
+    "min_epochs_floor": 12,
+    "max_probability_gain_gt_threshold": 0.25,
+    "max_uncertainty_to_gain_ratio": 4.0,
+    "minimum_quality_floor": 0.0,
+    "noise_multiplier": 1.25,
+    "recent_gain_fraction": 0.35,
+    "remaining_room_fraction": 0.015,
+    "late_stage_relaxation": 0.55,
+    "min_meaningful_gain": 0.0001,
+    "utility_quantile": 0.25,
+    "bayesian_window": 20,
+    "bayesian_samples": 512,
+    "bayesian_min_observations": 8,
+    "bayesian_probability_limit": 0.35,
+    "bayesian_prior_strength": 0.5,
+    "bayesian_prior_alpha": 2.0,
+    "bayesian_confirmation_patience": 1
+  },
+  "search_space": {
+    "schema_version": 1,
+    "method": "Sobol-ALE-informed constrained qLogNEHVI for RAPEC-v8",
+    "selection_basis": "The focused RAPEC-v8 Sobol-ALE analysis achieved reliable surrogate fidelity for energy saving, quality regret, stop epoch, and joint success. It identified these four parameters as the practical control levers; trend_window remains fixed because its overall total-order effects were small.",
+    "mandatory_parameters": [
+      "min_epochs_floor",
+      "utility_quantile",
+      "noise_multiplier",
+      "minimum_quality_floor"
+    ],
+    "fixed_parameters": {
+      "trend_window": 10
+    },
+    "parameters": {
+      "min_epochs_floor": {
+        "type": "int",
+        "low": 12,
+        "high": 97,
+        "safe": "high",
+        "aggressive": "low"
+      },
+      "utility_quantile": {
+        "type": "float",
+        "low": 0.01,
+        "high": 0.75,
+        "safe": "low",
+        "aggressive": "high"
+      },
+      "noise_multiplier": {
+        "type": "float",
+        "low": 0.25,
+        "high": 4.0,
+        "safe": "low",
+        "aggressive": "high"
+      },
+      "minimum_quality_floor": {
+        "type": "float",
+        "low": 0.0,
+        "high": 0.7,
+        "safe": "high",
+        "aggressive": "low"
+      }
+    }
+  },
+  "source_locks": [
+    {
+      "source_dir": "D:\\OLD\\Sync\\Projekte\\Masterarbeit\\Project\\PoC4\\results\\controller-optimization\\sources\\20260729T170915Z-rapec-v3-v8-nine-dataset",
+      "schema_version": 1,
+      "created_at": "2026-07-31T14:18:14.173226+00:00",
+      "benchmark_run_id": "20260729T170915Z-rapec-v3-v8-nine-dataset",
+      "benchmark_version": "controller-benchmark-v3-nine-dataset-fresh",
+      "cases": 9,
+      "read_only_source": true,
+      "files": {
+        "baseline-cache/catalog.json": "983a4ed9315d1a040dfa48fb4dc83d24ec4ce062961314ee613b12ea1edfb698",
+        "baseline-cache/entries/carpk-aerial-vehicle/epoch_summary.json": "322ad1fd282dc8e498db87a119a72a80465258d9c3d7d11ad1195402b1a3fdac",
+        "baseline-cache/entries/carpk-aerial-vehicle/gpu_summary.json": "3f4bb855254d7ea7cf8889bc2f8ad7769b2f39532ff7c1ee8d175c8a74c25831",
+        "baseline-cache/entries/cifar10-classification/epoch_summary.json": "6ac1043c3dcc6b0ac01ab61b377d05fe97195d84bf22f4b995ebd69202f280c1",
+        "baseline-cache/entries/cifar10-classification/gpu_summary.json": "afb39e0ea7abddb9e7f8b38042ab5dd9141c6614c9376df3773b4d88d37fe852",
+        "baseline-cache/entries/cifar100-classification/epoch_summary.json": "37968b3c2554c284c26f4f507ebe4ed557962bd12735db8f7af39982f16e820c",
+        "baseline-cache/entries/cifar100-classification/gpu_summary.json": "03e9c55a7d8b3f6d984105a5aeffad118a241826057d7459fdf4b2fdf74a5260",
+        "baseline-cache/entries/oxford-pet-segmentation/epoch_summary.json": "97c5293170a1e519528d8506775c03e67696e7eff195b8b45bfa522cbbd9a0cf",
+        "baseline-cache/entries/oxford-pet-segmentation/gpu_summary.json": "9c21a544255e61e559e27bb23c249e96a072620f16fd38f364c2e5390225e6a7",
+        "baseline-cache/entries/pascal-voc2012-segmentation/epoch_summary.json": "a6fbdbf60c7d84b7fe52db4fd31781e0654404751d11e303facef732d50cae16",
+        "baseline-cache/entries/pascal-voc2012-segmentation/gpu_summary.json": "d29d95fb7cfb3c1e386f87fb3db5f4e59aa5476610b7177f6b29574f797c25a5",
+        "baseline-cache/entries/tiny-imagenet-classification/epoch_summary.json": "384c8d5116729f8d9339dd2180b5d8b82181ab9e6dca3ed2520e29ef4977800b",
+        "baseline-cache/entries/tiny-imagenet-classification/gpu_summary.json": "c170e413cec6bafe2aabbad3eff75a17bb0b42a12d4e9b411ced8c927df86f6a",
+        "baseline-cache/entries/uavid-segmentation/epoch_summary.json": "23d8fa990e6b2dc363bb3d08b8e8a3479a8f5751dc1d8d9645165c533eb11b87",
+        "baseline-cache/entries/uavid-segmentation/gpu_summary.json": "ba80b33d701774f11736fbedfad49629aaef50192a700f6764d0d612ddefce1a",
+        "baseline-cache/entries/vedai-aerial-vehicle/epoch_summary.json": "9147468449a0fb2a41ad5bed8ece3d02f9c4e99a746883814f4f32b71c3287db",
+        "baseline-cache/entries/vedai-aerial-vehicle/gpu_summary.json": "be4363755e2a03a2e92aa83312081efe6f7ba86540a794972382c6bb31615c12",
+        "baseline-cache/entries/visdrone-aerial-vehicle/epoch_summary.json": "ad7a7bae671d50c0b60fc0af97c9808fdfe6928b14ba1a447713230411ac2808",
+        "baseline-cache/entries/visdrone-aerial-vehicle/gpu_summary.json": "1e45bb004393fb6a92bae34da62989334f415b5c3416c400bc4b5f935f239790",
+        "manifest.json": "592a863a4d689ec459bd9a3c9a8b04456bcf7a11131c201bac786cf0e8b8cc0b",
+        "run-matrix.json": "366f29c3819fe3ed591c472dff14095206f5e7b11a1fd15b027f2bdf4b83c6d7"
+      }
+    }
+  ],
+  "source_data_were_modified": false,
+  "replication_audit": {
+    "dataset_groups": 9,
+    "traces": 9,
+    "replicates_per_group": {
+      "carpk-project-copy-v1": 1,
+      "cifar10-python-c58f30108f718f92721af3b95e74349a": 1,
+      "cifar100-python-eb9058c3a382ffc7106e4002c42a8d85": 1,
+      "oxford-iiit-pet-torchvision-trimap-v1": 1,
+      "pascal-voc2012-segmentation-official": 1,
+      "tiny-imagenet-200-official-90528d7ca1a48142e341f4ef8d21d0de": 1,
+      "uavid2020-official-content-hf-repack-v1": 1,
+      "vedai512-official-fold01-aa0085fb-542aba4a-da9626f8": 1,
+      "visdrone2019-det-vehicle-classes-3-4-5-8-v1": 1
+    },
+    "minimum_replicates": 1,
+    "recommended_minimum_replicates": 3,
+    "repeated_seed_inference_available": false
+  },
+  "sensitivity_top_k": 4,
+  "sensitivity_trajectories": 2,
+  "trials": 6,
+  "trials_per_outer_fold": 64,
+  "objectives": {
+    "quality": "minimize CVaR90 of dataset-normalized quality regret",
+    "energy": "maximize lower-quartile relative training-energy saving"
+  },
+  "constraint": "bootstrap P(regret <= data-derived Full100 tolerance) >= 0.950 for every dataset group",
+  "profile_selection": "Nash product on the feasible Pareto front",
+  "selected_quality_feasible": true,
+  "cross_validation": "outer leave-one-task-type-out; dataset groups remain intact",
+  "offline_replay_limitation": "Replay assumes the Full100 path up to the selected epoch. The selected controller must be confirmed on fresh Rancher seeds before scientific reporting.",
+  "ideal_stop_metric_used": false,
+  "old_results_overwritten": false
+}

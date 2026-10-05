@@ -1,0 +1,879 @@
+{
+  "verified": true,
+  "benchmark_run_id": "20260729T170915Z-rapec-v3-v8-nine-dataset",
+  "benchmark_version": "controller-benchmark-v3-nine-dataset-fresh",
+  "cases": 9,
+  "files": 21
+}
+RAPEC-v9 constraint-first scientific optimization: rapec-v9-risk-constrained-20260803-155816
+Quality is a hard non-inferiority constraint; energy Q25 is maximized only among feasible trials.
+Output: D:\OLD\Sync\Projekte\Masterarbeit\Project\PoC4\results\controller-v9-scientific-optimization\runs\rapec-v9-risk-constrained-20260803-155816
+Status: powershell -ExecutionPolicy Bypass -File .\controller_benchmark\scripts\watch-rapec-v9-scientific-optimization.ps1 -OptimizationId 'rapec-v9-risk-constrained-20260803-155816'
+[00:00:00] optimization_started | backend=qnehvi
+[00:00:00] outer_fold_started | fold=1 | holdout_task=image_classification | total=3
+[00:00:00] search_started | search=outer-holdout-image_classification | backend=qnehvi
+[00:01:22] morris_evaluation_completed | search=outer-holdout-image_classification | completed=1 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[00:02:45] morris_evaluation_completed | search=outer-holdout-image_classification | completed=2 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[00:03:31] morris_evaluation_completed | search=outer-holdout-image_classification | completed=3 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[00:04:18] morris_evaluation_completed | search=outer-holdout-image_classification | completed=4 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[00:05:07] morris_evaluation_completed | search=outer-holdout-image_classification | completed=5 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[00:05:55] morris_evaluation_completed | search=outer-holdout-image_classification | completed=6 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[00:06:43] morris_evaluation_completed | search=outer-holdout-image_classification | completed=7 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[00:07:29] morris_evaluation_completed | search=outer-holdout-image_classification | completed=8 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[00:08:53] morris_evaluation_completed | search=outer-holdout-image_classification | completed=9 | total=128 | quality_cvar90=0.010942 | energy_saving_q25=0.002606
+[00:10:19] morris_evaluation_completed | search=outer-holdout-image_classification | completed=10 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[00:11:43] morris_evaluation_completed | search=outer-holdout-image_classification | completed=11 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[00:13:12] morris_evaluation_completed | search=outer-holdout-image_classification | completed=12 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[00:14:41] morris_evaluation_completed | search=outer-holdout-image_classification | completed=13 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[00:16:09] morris_evaluation_completed | search=outer-holdout-image_classification | completed=14 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[00:17:38] morris_evaluation_completed | search=outer-holdout-image_classification | completed=15 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[00:18:28] morris_evaluation_completed | search=outer-holdout-image_classification | completed=16 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[00:20:08] morris_evaluation_completed | search=outer-holdout-image_classification | completed=17 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[00:21:44] morris_evaluation_completed | search=outer-holdout-image_classification | completed=18 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[00:23:23] morris_evaluation_completed | search=outer-holdout-image_classification | completed=19 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[00:24:57] morris_evaluation_completed | search=outer-holdout-image_classification | completed=20 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[00:26:11] morris_evaluation_completed | search=outer-holdout-image_classification | completed=21 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[00:27:26] morris_evaluation_completed | search=outer-holdout-image_classification | completed=22 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[00:28:41] morris_evaluation_completed | search=outer-holdout-image_classification | completed=23 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[00:29:55] morris_evaluation_completed | search=outer-holdout-image_classification | completed=24 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[00:31:09] morris_evaluation_completed | search=outer-holdout-image_classification | completed=25 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[00:32:21] morris_evaluation_completed | search=outer-holdout-image_classification | completed=26 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[00:33:34] morris_evaluation_completed | search=outer-holdout-image_classification | completed=27 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[00:35:06] morris_evaluation_completed | search=outer-holdout-image_classification | completed=28 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[00:36:38] morris_evaluation_completed | search=outer-holdout-image_classification | completed=29 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[00:38:09] morris_evaluation_completed | search=outer-holdout-image_classification | completed=30 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[00:39:45] morris_evaluation_completed | search=outer-holdout-image_classification | completed=31 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[00:41:33] morris_evaluation_completed | search=outer-holdout-image_classification | completed=32 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[00:43:20] morris_evaluation_completed | search=outer-holdout-image_classification | completed=33 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[00:44:17] morris_evaluation_completed | search=outer-holdout-image_classification | completed=34 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[00:45:14] morris_evaluation_completed | search=outer-holdout-image_classification | completed=35 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[00:46:11] morris_evaluation_completed | search=outer-holdout-image_classification | completed=36 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[00:47:05] morris_evaluation_completed | search=outer-holdout-image_classification | completed=37 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[00:47:57] morris_evaluation_completed | search=outer-holdout-image_classification | completed=38 | total=128 | quality_cvar90=0.010942 | energy_saving_q25=0.002163
+[00:48:51] morris_evaluation_completed | search=outer-holdout-image_classification | completed=39 | total=128 | quality_cvar90=0.010942 | energy_saving_q25=0.002163
+[00:49:41] morris_evaluation_completed | search=outer-holdout-image_classification | completed=40 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[00:51:00] morris_evaluation_completed | search=outer-holdout-image_classification | completed=41 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[00:52:13] morris_evaluation_completed | search=outer-holdout-image_classification | completed=42 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[00:53:30] morris_evaluation_completed | search=outer-holdout-image_classification | completed=43 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[00:54:46] morris_evaluation_completed | search=outer-holdout-image_classification | completed=44 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[00:56:00] morris_evaluation_completed | search=outer-holdout-image_classification | completed=45 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[00:57:16] morris_evaluation_completed | search=outer-holdout-image_classification | completed=46 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[00:58:38] morris_evaluation_completed | search=outer-holdout-image_classification | completed=47 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[01:00:20] morris_evaluation_completed | search=outer-holdout-image_classification | completed=48 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[01:01:56] morris_evaluation_completed | search=outer-holdout-image_classification | completed=49 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[01:03:09] morris_evaluation_completed | search=outer-holdout-image_classification | completed=50 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[01:04:22] morris_evaluation_completed | search=outer-holdout-image_classification | completed=51 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[01:05:35] morris_evaluation_completed | search=outer-holdout-image_classification | completed=52 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[01:06:49] morris_evaluation_completed | search=outer-holdout-image_classification | completed=53 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[01:08:04] morris_evaluation_completed | search=outer-holdout-image_classification | completed=54 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[01:09:21] morris_evaluation_completed | search=outer-holdout-image_classification | completed=55 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[01:10:38] morris_evaluation_completed | search=outer-holdout-image_classification | completed=56 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[01:11:26] morris_evaluation_completed | search=outer-holdout-image_classification | completed=57 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[01:12:13] morris_evaluation_completed | search=outer-holdout-image_classification | completed=58 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[01:12:58] morris_evaluation_completed | search=outer-holdout-image_classification | completed=59 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[01:14:24] morris_evaluation_completed | search=outer-holdout-image_classification | completed=60 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[01:15:48] morris_evaluation_completed | search=outer-holdout-image_classification | completed=61 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[01:17:13] morris_evaluation_completed | search=outer-holdout-image_classification | completed=62 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[01:18:38] morris_evaluation_completed | search=outer-holdout-image_classification | completed=63 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[01:20:05] morris_evaluation_completed | search=outer-holdout-image_classification | completed=64 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[01:21:30] morris_evaluation_completed | search=outer-holdout-image_classification | completed=65 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[01:22:54] morris_evaluation_completed | search=outer-holdout-image_classification | completed=66 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[01:24:18] morris_evaluation_completed | search=outer-holdout-image_classification | completed=67 | total=128 | quality_cvar90=0.010942 | energy_saving_q25=0.0
+[01:25:41] morris_evaluation_completed | search=outer-holdout-image_classification | completed=68 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[01:27:08] morris_evaluation_completed | search=outer-holdout-image_classification | completed=69 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[01:27:55] morris_evaluation_completed | search=outer-holdout-image_classification | completed=70 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[01:28:40] morris_evaluation_completed | search=outer-holdout-image_classification | completed=71 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[01:29:27] morris_evaluation_completed | search=outer-holdout-image_classification | completed=72 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[01:31:00] morris_evaluation_completed | search=outer-holdout-image_classification | completed=73 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[01:32:32] morris_evaluation_completed | search=outer-holdout-image_classification | completed=74 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[01:34:04] morris_evaluation_completed | search=outer-holdout-image_classification | completed=75 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[01:35:35] morris_evaluation_completed | search=outer-holdout-image_classification | completed=76 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[01:37:07] morris_evaluation_completed | search=outer-holdout-image_classification | completed=77 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[01:38:38] morris_evaluation_completed | search=outer-holdout-image_classification | completed=78 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[01:39:51] morris_evaluation_completed | search=outer-holdout-image_classification | completed=79 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[01:41:08] morris_evaluation_completed | search=outer-holdout-image_classification | completed=80 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[01:42:48] morris_evaluation_completed | search=outer-holdout-image_classification | completed=81 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[01:44:01] morris_evaluation_completed | search=outer-holdout-image_classification | completed=82 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[01:45:11] morris_evaluation_completed | search=outer-holdout-image_classification | completed=83 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.00239
+[01:46:26] morris_evaluation_completed | search=outer-holdout-image_classification | completed=84 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[01:47:38] morris_evaluation_completed | search=outer-holdout-image_classification | completed=85 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[01:48:46] morris_evaluation_completed | search=outer-holdout-image_classification | completed=86 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[01:49:54] morris_evaluation_completed | search=outer-holdout-image_classification | completed=87 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[01:51:02] morris_evaluation_completed | search=outer-holdout-image_classification | completed=88 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[01:52:17] morris_evaluation_completed | search=outer-holdout-image_classification | completed=89 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[01:53:44] morris_evaluation_completed | search=outer-holdout-image_classification | completed=90 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.00239
+[01:55:13] morris_evaluation_completed | search=outer-holdout-image_classification | completed=91 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[01:56:41] morris_evaluation_completed | search=outer-holdout-image_classification | completed=92 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[01:58:10] morris_evaluation_completed | search=outer-holdout-image_classification | completed=93 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[01:59:39] morris_evaluation_completed | search=outer-holdout-image_classification | completed=94 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[02:01:09] morris_evaluation_completed | search=outer-holdout-image_classification | completed=95 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[02:02:38] morris_evaluation_completed | search=outer-holdout-image_classification | completed=96 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[02:03:18] morris_evaluation_completed | search=outer-holdout-image_classification | completed=97 | total=128 | quality_cvar90=0.039287 | energy_saving_q25=0.021209
+[02:04:00] morris_evaluation_completed | search=outer-holdout-image_classification | completed=98 | total=128 | quality_cvar90=0.010942 | energy_saving_q25=0.002163
+[02:05:15] morris_evaluation_completed | search=outer-holdout-image_classification | completed=99 | total=128 | quality_cvar90=0.010942 | energy_saving_q25=0.002606
+[02:06:32] morris_evaluation_completed | search=outer-holdout-image_classification | completed=100 | total=128 | quality_cvar90=0.010942 | energy_saving_q25=0.002606
+[02:07:50] morris_evaluation_completed | search=outer-holdout-image_classification | completed=101 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[02:09:10] morris_evaluation_completed | search=outer-holdout-image_classification | completed=102 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[02:10:30] morris_evaluation_completed | search=outer-holdout-image_classification | completed=103 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[02:11:50] morris_evaluation_completed | search=outer-holdout-image_classification | completed=104 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[02:13:18] morris_evaluation_completed | search=outer-holdout-image_classification | completed=105 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[02:14:47] morris_evaluation_completed | search=outer-holdout-image_classification | completed=106 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[02:16:24] morris_evaluation_completed | search=outer-holdout-image_classification | completed=107 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[02:18:00] morris_evaluation_completed | search=outer-holdout-image_classification | completed=108 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[02:19:23] morris_evaluation_completed | search=outer-holdout-image_classification | completed=109 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[02:20:49] morris_evaluation_completed | search=outer-holdout-image_classification | completed=110 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[02:22:10] morris_evaluation_completed | search=outer-holdout-image_classification | completed=111 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[02:23:31] morris_evaluation_completed | search=outer-holdout-image_classification | completed=112 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[02:25:03] morris_evaluation_completed | search=outer-holdout-image_classification | completed=113 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[02:26:39] morris_evaluation_completed | search=outer-holdout-image_classification | completed=114 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[02:28:13] morris_evaluation_completed | search=outer-holdout-image_classification | completed=115 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[02:29:46] morris_evaluation_completed | search=outer-holdout-image_classification | completed=116 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[02:31:01] morris_evaluation_completed | search=outer-holdout-image_classification | completed=117 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[02:32:18] morris_evaluation_completed | search=outer-holdout-image_classification | completed=118 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[02:33:34] morris_evaluation_completed | search=outer-holdout-image_classification | completed=119 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[02:34:47] morris_evaluation_completed | search=outer-holdout-image_classification | completed=120 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[02:36:00] morris_evaluation_completed | search=outer-holdout-image_classification | completed=121 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[02:37:35] morris_evaluation_completed | search=outer-holdout-image_classification | completed=122 | total=128 | quality_cvar90=0.010942 | energy_saving_q25=0.0
+[02:39:11] morris_evaluation_completed | search=outer-holdout-image_classification | completed=123 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[02:40:44] morris_evaluation_completed | search=outer-holdout-image_classification | completed=124 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[02:42:13] morris_evaluation_completed | search=outer-holdout-image_classification | completed=125 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.002163
+[02:43:45] morris_evaluation_completed | search=outer-holdout-image_classification | completed=126 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.002163
+[02:45:23] morris_evaluation_completed | search=outer-holdout-image_classification | completed=127 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[02:46:51] morris_evaluation_completed | search=outer-holdout-image_classification | completed=128 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[02:46:51] morris_screening_completed | search=outer-holdout-image_classification | completed=128 | total=128
+[02:48:14] optimization_trial_completed | search=outer-holdout-image_classification | completed=1 | total=72 | trial=1 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[02:49:44] optimization_trial_completed | search=outer-holdout-image_classification | completed=2 | total=72 | trial=2 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[02:50:24] optimization_trial_completed | search=outer-holdout-image_classification | completed=3 | total=72 | trial=3 | backend=qnehvi-initial-sobol | quality_cvar90=0.159204 | energy_saving_q25=0.002403 | quality_feasible=True
+[02:51:45] optimization_trial_completed | search=outer-holdout-image_classification | completed=4 | total=72 | trial=4 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[02:53:00] optimization_trial_completed | search=outer-holdout-image_classification | completed=5 | total=72 | trial=5 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[02:54:05] optimization_trial_completed | search=outer-holdout-image_classification | completed=6 | total=72 | trial=6 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[02:55:38] optimization_trial_completed | search=outer-holdout-image_classification | completed=7 | total=72 | trial=7 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[02:57:10] optimization_trial_completed | search=outer-holdout-image_classification | completed=8 | total=72 | trial=8 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[02:58:19] optimization_trial_completed | search=outer-holdout-image_classification | completed=9 | total=72 | trial=9 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[02:59:36] optimization_trial_completed | search=outer-holdout-image_classification | completed=10 | total=72 | trial=10 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[03:01:11] optimization_trial_completed | search=outer-holdout-image_classification | completed=11 | total=72 | trial=11 | backend=qnehvi-initial-sobol | quality_cvar90=0.001812 | energy_saving_q25=0.0 | quality_feasible=True
+[03:02:54] optimization_trial_completed | search=outer-holdout-image_classification | completed=12 | total=72 | trial=12 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[03:04:16] optimization_trial_completed | search=outer-holdout-image_classification | completed=13 | total=72 | trial=13 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[03:05:28] optimization_trial_completed | search=outer-holdout-image_classification | completed=14 | total=72 | trial=14 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[03:06:53] optimization_trial_completed | search=outer-holdout-image_classification | completed=15 | total=72 | trial=15 | backend=qnehvi-initial-sobol | quality_cvar90=0.001812 | energy_saving_q25=0.0 | quality_feasible=True
+[03:08:26] optimization_trial_completed | search=outer-holdout-image_classification | completed=16 | total=72 | trial=16 | backend=qnehvi-initial-sobol | quality_cvar90=0.001812 | energy_saving_q25=0.0 | quality_feasible=True
+[03:09:12] optimization_trial_completed | search=outer-holdout-image_classification | completed=17 | total=72 | trial=17 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[03:10:28] optimization_trial_completed | search=outer-holdout-image_classification | completed=18 | total=72 | trial=18 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[03:11:44] optimization_trial_completed | search=outer-holdout-image_classification | completed=19 | total=72 | trial=19 | backend=qnehvi-initial-sobol | quality_cvar90=0.001812 | energy_saving_q25=0.0 | quality_feasible=True
+[03:13:08] optimization_trial_completed | search=outer-holdout-image_classification | completed=20 | total=72 | trial=20 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[03:14:24] optimization_trial_completed | search=outer-holdout-image_classification | completed=21 | total=72 | trial=21 | backend=qnehvi-initial-sobol | quality_cvar90=0.010942 | energy_saving_q25=0.012499 | quality_feasible=True
+[03:15:16] optimization_trial_completed | search=outer-holdout-image_classification | completed=22 | total=72 | trial=22 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[03:17:03] optimization_trial_completed | search=outer-holdout-image_classification | completed=23 | total=72 | trial=23 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[03:18:53] optimization_trial_completed | search=outer-holdout-image_classification | completed=24 | total=72 | trial=24 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[03:20:22] optimization_trial_completed | search=outer-holdout-image_classification | completed=25 | total=72 | trial=25 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[03:21:52] optimization_trial_completed | search=outer-holdout-image_classification | completed=26 | total=72 | trial=26 | backend=qnehvi-initial-sobol | quality_cvar90=0.010942 | energy_saving_q25=0.002606 | quality_feasible=True
+[03:23:32] optimization_trial_completed | search=outer-holdout-image_classification | completed=27 | total=72 | trial=27 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[03:25:14] optimization_trial_completed | search=outer-holdout-image_classification | completed=28 | total=72 | trial=28 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[03:26:41] optimization_trial_completed | search=outer-holdout-image_classification | completed=29 | total=72 | trial=29 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[03:28:02] optimization_trial_completed | search=outer-holdout-image_classification | completed=30 | total=72 | trial=30 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[03:29:51] optimization_trial_completed | search=outer-holdout-image_classification | completed=31 | total=72 | trial=31 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[03:31:45] optimization_trial_completed | search=outer-holdout-image_classification | completed=32 | total=72 | trial=32 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[03:31:45] bayesian_surrogate_fit_started | search=outer-holdout-image_classification | completed=32 | total=72 | trial=33
+[03:33:14] optimization_trial_completed | search=outer-holdout-image_classification | completed=33 | total=72 | trial=33 | backend=qnehvi | quality_cvar90=0.010942 | energy_saving_q25=0.0 | quality_feasible=True
+[03:33:14] bayesian_surrogate_fit_started | search=outer-holdout-image_classification | completed=33 | total=72 | trial=34
+[03:34:42] optimization_trial_completed | search=outer-holdout-image_classification | completed=34 | total=72 | trial=34 | backend=qnehvi | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[03:34:42] bayesian_surrogate_fit_started | search=outer-holdout-image_classification | completed=34 | total=72 | trial=35
+[03:36:09] optimization_trial_completed | search=outer-holdout-image_classification | completed=35 | total=72 | trial=35 | backend=qnehvi | quality_cvar90=0.001812 | energy_saving_q25=0.0 | quality_feasible=True
+[03:36:09] bayesian_surrogate_fit_started | search=outer-holdout-image_classification | completed=35 | total=72 | trial=36
+[03:37:40] optimization_trial_completed | search=outer-holdout-image_classification | completed=36 | total=72 | trial=36 | backend=qnehvi | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[03:37:40] bayesian_surrogate_fit_started | search=outer-holdout-image_classification | completed=36 | total=72 | trial=37
+[03:39:15] optimization_trial_completed | search=outer-holdout-image_classification | completed=37 | total=72 | trial=37 | backend=qnehvi | quality_cvar90=0.010942 | energy_saving_q25=0.002606 | quality_feasible=True
+[03:39:15] bayesian_surrogate_fit_started | search=outer-holdout-image_classification | completed=37 | total=72 | trial=38
+[03:40:35] optimization_trial_completed | search=outer-holdout-image_classification | completed=38 | total=72 | trial=38 | backend=qnehvi | quality_cvar90=0.001812 | energy_saving_q25=0.0 | quality_feasible=True
+[03:40:35] bayesian_surrogate_fit_started | search=outer-holdout-image_classification | completed=38 | total=72 | trial=39
+[03:41:58] optimization_trial_completed | search=outer-holdout-image_classification | completed=39 | total=72 | trial=39 | backend=qnehvi | quality_cvar90=0.001812 | energy_saving_q25=0.0 | quality_feasible=True
+[03:41:58] bayesian_surrogate_fit_started | search=outer-holdout-image_classification | completed=39 | total=72 | trial=40
+[03:43:32] optimization_trial_completed | search=outer-holdout-image_classification | completed=40 | total=72 | trial=40 | backend=qnehvi | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[03:43:32] bayesian_surrogate_fit_started | search=outer-holdout-image_classification | completed=40 | total=72 | trial=41
+[03:45:02] optimization_trial_completed | search=outer-holdout-image_classification | completed=41 | total=72 | trial=41 | backend=qnehvi | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[03:45:02] bayesian_surrogate_fit_started | search=outer-holdout-image_classification | completed=41 | total=72 | trial=42
+[03:46:28] optimization_trial_completed | search=outer-holdout-image_classification | completed=42 | total=72 | trial=42 | backend=qnehvi | quality_cvar90=0.010942 | energy_saving_q25=0.00239 | quality_feasible=True
+[03:46:28] bayesian_surrogate_fit_started | search=outer-holdout-image_classification | completed=42 | total=72 | trial=43
+[03:48:07] optimization_trial_completed | search=outer-holdout-image_classification | completed=43 | total=72 | trial=43 | backend=qnehvi | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[03:48:07] bayesian_surrogate_fit_started | search=outer-holdout-image_classification | completed=43 | total=72 | trial=44
+[03:48:58] optimization_trial_completed | search=outer-holdout-image_classification | completed=44 | total=72 | trial=44 | backend=qnehvi | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[03:48:58] bayesian_surrogate_fit_started | search=outer-holdout-image_classification | completed=44 | total=72 | trial=45
+[03:50:18] optimization_trial_completed | search=outer-holdout-image_classification | completed=45 | total=72 | trial=45 | backend=qnehvi | quality_cvar90=0.010942 | energy_saving_q25=0.00239 | quality_feasible=True
+[03:50:18] bayesian_surrogate_fit_started | search=outer-holdout-image_classification | completed=45 | total=72 | trial=46
+[03:52:28] optimization_trial_completed | search=outer-holdout-image_classification | completed=46 | total=72 | trial=46 | backend=qnehvi | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[03:52:28] bayesian_surrogate_fit_started | search=outer-holdout-image_classification | completed=46 | total=72 | trial=47
+[03:53:59] optimization_trial_completed | search=outer-holdout-image_classification | completed=47 | total=72 | trial=47 | backend=qnehvi | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[03:53:59] bayesian_surrogate_fit_started | search=outer-holdout-image_classification | completed=47 | total=72 | trial=48
+[03:55:15] optimization_trial_completed | search=outer-holdout-image_classification | completed=48 | total=72 | trial=48 | backend=qnehvi | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[03:55:15] bayesian_surrogate_fit_started | search=outer-holdout-image_classification | completed=48 | total=72 | trial=49
+[03:56:42] optimization_trial_completed | search=outer-holdout-image_classification | completed=49 | total=72 | trial=49 | backend=qnehvi | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[03:56:42] bayesian_surrogate_fit_started | search=outer-holdout-image_classification | completed=49 | total=72 | trial=50
+[03:58:15] optimization_trial_completed | search=outer-holdout-image_classification | completed=50 | total=72 | trial=50 | backend=qnehvi | quality_cvar90=0.010942 | energy_saving_q25=0.0 | quality_feasible=True
+[03:58:15] bayesian_surrogate_fit_started | search=outer-holdout-image_classification | completed=50 | total=72 | trial=51
+[03:59:52] optimization_trial_completed | search=outer-holdout-image_classification | completed=51 | total=72 | trial=51 | backend=qnehvi | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[03:59:52] bayesian_surrogate_fit_started | search=outer-holdout-image_classification | completed=51 | total=72 | trial=52
+[04:01:16] optimization_trial_completed | search=outer-holdout-image_classification | completed=52 | total=72 | trial=52 | backend=qnehvi | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[04:01:16] bayesian_surrogate_fit_started | search=outer-holdout-image_classification | completed=52 | total=72 | trial=53
+[04:02:58] optimization_trial_completed | search=outer-holdout-image_classification | completed=53 | total=72 | trial=53 | backend=qnehvi | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[04:02:58] bayesian_surrogate_fit_started | search=outer-holdout-image_classification | completed=53 | total=72 | trial=54
+[04:04:40] optimization_trial_completed | search=outer-holdout-image_classification | completed=54 | total=72 | trial=54 | backend=qnehvi | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[04:04:40] bayesian_surrogate_fit_started | search=outer-holdout-image_classification | completed=54 | total=72 | trial=55
+[04:06:27] optimization_trial_completed | search=outer-holdout-image_classification | completed=55 | total=72 | trial=55 | backend=qnehvi | quality_cvar90=0.001812 | energy_saving_q25=0.0 | quality_feasible=True
+[04:06:27] bayesian_surrogate_fit_started | search=outer-holdout-image_classification | completed=55 | total=72 | trial=56
+[04:07:18] optimization_trial_completed | search=outer-holdout-image_classification | completed=56 | total=72 | trial=56 | backend=qnehvi | quality_cvar90=0.112618 | energy_saving_q25=0.033326 | quality_feasible=True
+[04:07:18] bayesian_surrogate_fit_started | search=outer-holdout-image_classification | completed=56 | total=72 | trial=57
+[04:09:15] optimization_trial_completed | search=outer-holdout-image_classification | completed=57 | total=72 | trial=57 | backend=qnehvi | quality_cvar90=0.116746 | energy_saving_q25=0.059683 | quality_feasible=True
+[04:09:15] bayesian_surrogate_fit_started | search=outer-holdout-image_classification | completed=57 | total=72 | trial=58
+[04:11:07] optimization_trial_completed | search=outer-holdout-image_classification | completed=58 | total=72 | trial=58 | backend=qnehvi | quality_cvar90=0.116746 | energy_saving_q25=0.007164 | quality_feasible=True
+[04:11:07] bayesian_surrogate_fit_started | search=outer-holdout-image_classification | completed=58 | total=72 | trial=59
+[04:12:59] optimization_trial_completed | search=outer-holdout-image_classification | completed=59 | total=72 | trial=59 | backend=qnehvi | quality_cvar90=0.010942 | energy_saving_q25=0.008891 | quality_feasible=True
+[04:12:59] bayesian_surrogate_fit_started | search=outer-holdout-image_classification | completed=59 | total=72 | trial=60
+[04:14:45] optimization_trial_completed | search=outer-holdout-image_classification | completed=60 | total=72 | trial=60 | backend=qnehvi | quality_cvar90=0.116746 | energy_saving_q25=0.059683 | quality_feasible=True
+[04:14:45] bayesian_surrogate_fit_started | search=outer-holdout-image_classification | completed=60 | total=72 | trial=61
+[04:15:45] optimization_trial_completed | search=outer-holdout-image_classification | completed=61 | total=72 | trial=61 | backend=qnehvi | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[04:15:45] bayesian_surrogate_fit_started | search=outer-holdout-image_classification | completed=61 | total=72 | trial=62
+[04:17:39] optimization_trial_completed | search=outer-holdout-image_classification | completed=62 | total=72 | trial=62 | backend=qnehvi | quality_cvar90=0.001812 | energy_saving_q25=0.008878 | quality_feasible=True
+[04:17:39] bayesian_surrogate_fit_started | search=outer-holdout-image_classification | completed=62 | total=72 | trial=63
+[04:19:27] optimization_trial_completed | search=outer-holdout-image_classification | completed=63 | total=72 | trial=63 | backend=qnehvi | quality_cvar90=0.116746 | energy_saving_q25=0.057785 | quality_feasible=True
+[04:19:27] bayesian_surrogate_fit_started | search=outer-holdout-image_classification | completed=63 | total=72 | trial=64
+[04:21:12] optimization_trial_completed | search=outer-holdout-image_classification | completed=64 | total=72 | trial=64 | backend=qnehvi | quality_cvar90=0.116746 | energy_saving_q25=0.057785 | quality_feasible=True
+[04:21:12] bayesian_surrogate_fit_started | search=outer-holdout-image_classification | completed=64 | total=72 | trial=65
+[04:23:08] optimization_trial_completed | search=outer-holdout-image_classification | completed=65 | total=72 | trial=65 | backend=qnehvi | quality_cvar90=0.010942 | energy_saving_q25=0.0 | quality_feasible=True
+[04:23:08] bayesian_surrogate_fit_started | search=outer-holdout-image_classification | completed=65 | total=72 | trial=66
+[04:25:00] optimization_trial_completed | search=outer-holdout-image_classification | completed=66 | total=72 | trial=66 | backend=qnehvi | quality_cvar90=0.010942 | energy_saving_q25=0.008891 | quality_feasible=True
+[04:25:00] bayesian_surrogate_fit_started | search=outer-holdout-image_classification | completed=66 | total=72 | trial=67
+[04:26:45] optimization_trial_completed | search=outer-holdout-image_classification | completed=67 | total=72 | trial=67 | backend=qnehvi | quality_cvar90=0.116746 | energy_saving_q25=0.059683 | quality_feasible=True
+[04:26:45] bayesian_surrogate_fit_started | search=outer-holdout-image_classification | completed=67 | total=72 | trial=68
+[04:28:18] optimization_trial_completed | search=outer-holdout-image_classification | completed=68 | total=72 | trial=68 | backend=qnehvi | quality_cvar90=0.112618 | energy_saving_q25=0.043285 | quality_feasible=True
+[04:28:18] bayesian_surrogate_fit_started | search=outer-holdout-image_classification | completed=68 | total=72 | trial=69
+[04:29:59] optimization_trial_completed | search=outer-holdout-image_classification | completed=69 | total=72 | trial=69 | backend=qnehvi | quality_cvar90=0.116746 | energy_saving_q25=0.021575 | quality_feasible=True
+[04:29:59] bayesian_surrogate_fit_started | search=outer-holdout-image_classification | completed=69 | total=72 | trial=70
+[04:31:25] optimization_trial_completed | search=outer-holdout-image_classification | completed=70 | total=72 | trial=70 | backend=qnehvi | quality_cvar90=0.116746 | energy_saving_q25=0.014365 | quality_feasible=True
+[04:31:25] bayesian_surrogate_fit_started | search=outer-holdout-image_classification | completed=70 | total=72 | trial=71
+[04:32:10] optimization_trial_completed | search=outer-holdout-image_classification | completed=71 | total=72 | trial=71 | backend=qnehvi | quality_cvar90=0.001812 | energy_saving_q25=0.0 | quality_feasible=True
+[04:32:10] bayesian_surrogate_fit_started | search=outer-holdout-image_classification | completed=71 | total=72 | trial=72
+[04:32:54] optimization_trial_completed | search=outer-holdout-image_classification | completed=72 | total=72 | trial=72 | backend=qnehvi | quality_cvar90=0.001812 | energy_saving_q25=0.0 | quality_feasible=True
+[04:32:54] search_completed | search=outer-holdout-image_classification | completed=72 | total=72 | trial=67 | quality_cvar90=0.11674585053627443 | energy_saving_q25=0.059683129298814905 | quality_feasible=True
+[04:33:41] outer_fold_completed | fold=1 | holdout_task=image_classification | completed=1 | total=3 | quality_cvar90=0.0 | energy_saving_q25=0.004964733279438 | quality_feasible=True
+[04:33:41] outer_fold_started | fold=2 | holdout_task=object_detection | total=3
+[04:33:41] search_started | search=outer-holdout-object_detection | backend=qnehvi
+[04:35:06] morris_evaluation_completed | search=outer-holdout-object_detection | completed=1 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[04:36:31] morris_evaluation_completed | search=outer-holdout-object_detection | completed=2 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[04:37:55] morris_evaluation_completed | search=outer-holdout-object_detection | completed=3 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[04:39:20] morris_evaluation_completed | search=outer-holdout-object_detection | completed=4 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[04:40:45] morris_evaluation_completed | search=outer-holdout-object_detection | completed=5 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[04:41:32] morris_evaluation_completed | search=outer-holdout-object_detection | completed=6 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[04:42:19] morris_evaluation_completed | search=outer-holdout-object_detection | completed=7 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[04:43:05] morris_evaluation_completed | search=outer-holdout-object_detection | completed=8 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[04:44:18] morris_evaluation_completed | search=outer-holdout-object_detection | completed=9 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[04:45:45] morris_evaluation_completed | search=outer-holdout-object_detection | completed=10 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[04:47:14] morris_evaluation_completed | search=outer-holdout-object_detection | completed=11 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[04:48:40] morris_evaluation_completed | search=outer-holdout-object_detection | completed=12 | total=128 | quality_cvar90=0.010942 | energy_saving_q25=0.0
+[04:50:07] morris_evaluation_completed | search=outer-holdout-object_detection | completed=13 | total=128 | quality_cvar90=0.010942 | energy_saving_q25=0.0
+[04:51:35] morris_evaluation_completed | search=outer-holdout-object_detection | completed=14 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[04:53:04] morris_evaluation_completed | search=outer-holdout-object_detection | completed=15 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[04:54:34] morris_evaluation_completed | search=outer-holdout-object_detection | completed=16 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[04:55:55] morris_evaluation_completed | search=outer-holdout-object_detection | completed=17 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[04:57:15] morris_evaluation_completed | search=outer-holdout-object_detection | completed=18 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[04:58:48] morris_evaluation_completed | search=outer-holdout-object_detection | completed=19 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[05:00:21] morris_evaluation_completed | search=outer-holdout-object_detection | completed=20 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[05:01:49] morris_evaluation_completed | search=outer-holdout-object_detection | completed=21 | total=128 | quality_cvar90=0.010942 | energy_saving_q25=0.004824
+[05:03:19] morris_evaluation_completed | search=outer-holdout-object_detection | completed=22 | total=128 | quality_cvar90=0.010942 | energy_saving_q25=0.004824
+[05:04:52] morris_evaluation_completed | search=outer-holdout-object_detection | completed=23 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[05:06:25] morris_evaluation_completed | search=outer-holdout-object_detection | completed=24 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[05:07:46] morris_evaluation_completed | search=outer-holdout-object_detection | completed=25 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[05:09:06] morris_evaluation_completed | search=outer-holdout-object_detection | completed=26 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[05:10:39] morris_evaluation_completed | search=outer-holdout-object_detection | completed=27 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[05:12:11] morris_evaluation_completed | search=outer-holdout-object_detection | completed=28 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[05:13:44] morris_evaluation_completed | search=outer-holdout-object_detection | completed=29 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[05:15:17] morris_evaluation_completed | search=outer-holdout-object_detection | completed=30 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[05:16:50] morris_evaluation_completed | search=outer-holdout-object_detection | completed=31 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[05:18:23] morris_evaluation_completed | search=outer-holdout-object_detection | completed=32 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[05:19:36] morris_evaluation_completed | search=outer-holdout-object_detection | completed=33 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[05:20:49] morris_evaluation_completed | search=outer-holdout-object_detection | completed=34 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[05:22:02] morris_evaluation_completed | search=outer-holdout-object_detection | completed=35 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[05:23:14] morris_evaluation_completed | search=outer-holdout-object_detection | completed=36 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[05:24:27] morris_evaluation_completed | search=outer-holdout-object_detection | completed=37 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[05:25:40] morris_evaluation_completed | search=outer-holdout-object_detection | completed=38 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[05:26:51] morris_evaluation_completed | search=outer-holdout-object_detection | completed=39 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[05:28:17] morris_evaluation_completed | search=outer-holdout-object_detection | completed=40 | total=128 | quality_cvar90=0.010942 | energy_saving_q25=0.0
+[05:29:36] morris_evaluation_completed | search=outer-holdout-object_detection | completed=41 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[05:30:54] morris_evaluation_completed | search=outer-holdout-object_detection | completed=42 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.002482
+[05:32:24] morris_evaluation_completed | search=outer-holdout-object_detection | completed=43 | total=128 | quality_cvar90=0.010942 | energy_saving_q25=0.002482
+[05:33:56] morris_evaluation_completed | search=outer-holdout-object_detection | completed=44 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[05:35:30] morris_evaluation_completed | search=outer-holdout-object_detection | completed=45 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[05:37:03] morris_evaluation_completed | search=outer-holdout-object_detection | completed=46 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[05:38:36] morris_evaluation_completed | search=outer-holdout-object_detection | completed=47 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[05:40:09] morris_evaluation_completed | search=outer-holdout-object_detection | completed=48 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[05:41:41] morris_evaluation_completed | search=outer-holdout-object_detection | completed=49 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[05:43:14] morris_evaluation_completed | search=outer-holdout-object_detection | completed=50 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[05:44:46] morris_evaluation_completed | search=outer-holdout-object_detection | completed=51 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[05:46:18] morris_evaluation_completed | search=outer-holdout-object_detection | completed=52 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[05:47:36] morris_evaluation_completed | search=outer-holdout-object_detection | completed=53 | total=128 | quality_cvar90=0.010942 | energy_saving_q25=0.0
+[05:48:54] morris_evaluation_completed | search=outer-holdout-object_detection | completed=54 | total=128 | quality_cvar90=0.010942 | energy_saving_q25=0.0
+[05:50:15] morris_evaluation_completed | search=outer-holdout-object_detection | completed=55 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[05:51:35] morris_evaluation_completed | search=outer-holdout-object_detection | completed=56 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[05:53:09] morris_evaluation_completed | search=outer-holdout-object_detection | completed=57 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[05:54:42] morris_evaluation_completed | search=outer-holdout-object_detection | completed=58 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[05:56:15] morris_evaluation_completed | search=outer-holdout-object_detection | completed=59 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[05:57:47] morris_evaluation_completed | search=outer-holdout-object_detection | completed=60 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[05:59:20] morris_evaluation_completed | search=outer-holdout-object_detection | completed=61 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[06:00:41] morris_evaluation_completed | search=outer-holdout-object_detection | completed=62 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[06:02:01] morris_evaluation_completed | search=outer-holdout-object_detection | completed=63 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[06:03:21] morris_evaluation_completed | search=outer-holdout-object_detection | completed=64 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[06:04:08] morris_evaluation_completed | search=outer-holdout-object_detection | completed=65 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[06:04:55] morris_evaluation_completed | search=outer-holdout-object_detection | completed=66 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[06:05:41] morris_evaluation_completed | search=outer-holdout-object_detection | completed=67 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[06:06:26] morris_evaluation_completed | search=outer-holdout-object_detection | completed=68 | total=128 | quality_cvar90=0.010942 | energy_saving_q25=0.004824
+[06:07:48] morris_evaluation_completed | search=outer-holdout-object_detection | completed=69 | total=128 | quality_cvar90=0.010942 | energy_saving_q25=0.00249
+[06:09:11] morris_evaluation_completed | search=outer-holdout-object_detection | completed=70 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[06:10:34] morris_evaluation_completed | search=outer-holdout-object_detection | completed=71 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[06:11:57] morris_evaluation_completed | search=outer-holdout-object_detection | completed=72 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[06:13:17] morris_evaluation_completed | search=outer-holdout-object_detection | completed=73 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[06:14:37] morris_evaluation_completed | search=outer-holdout-object_detection | completed=74 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[06:15:57] morris_evaluation_completed | search=outer-holdout-object_detection | completed=75 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[06:17:18] morris_evaluation_completed | search=outer-holdout-object_detection | completed=76 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[06:18:38] morris_evaluation_completed | search=outer-holdout-object_detection | completed=77 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[06:19:58] morris_evaluation_completed | search=outer-holdout-object_detection | completed=78 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[06:21:31] morris_evaluation_completed | search=outer-holdout-object_detection | completed=79 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[06:23:03] morris_evaluation_completed | search=outer-holdout-object_detection | completed=80 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[06:24:23] morris_evaluation_completed | search=outer-holdout-object_detection | completed=81 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[06:25:43] morris_evaluation_completed | search=outer-holdout-object_detection | completed=82 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[06:27:17] morris_evaluation_completed | search=outer-holdout-object_detection | completed=83 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[06:28:48] morris_evaluation_completed | search=outer-holdout-object_detection | completed=84 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[06:30:20] morris_evaluation_completed | search=outer-holdout-object_detection | completed=85 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[06:31:51] morris_evaluation_completed | search=outer-holdout-object_detection | completed=86 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[06:33:20] morris_evaluation_completed | search=outer-holdout-object_detection | completed=87 | total=128 | quality_cvar90=0.010942 | energy_saving_q25=0.010053
+[06:34:52] morris_evaluation_completed | search=outer-holdout-object_detection | completed=88 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[06:35:37] morris_evaluation_completed | search=outer-holdout-object_detection | completed=89 | total=128 | quality_cvar90=0.010942 | energy_saving_q25=0.0
+[06:36:22] morris_evaluation_completed | search=outer-holdout-object_detection | completed=90 | total=128 | quality_cvar90=0.010942 | energy_saving_q25=0.002606
+[06:37:07] morris_evaluation_completed | search=outer-holdout-object_detection | completed=91 | total=128 | quality_cvar90=0.010942 | energy_saving_q25=0.010053
+[06:38:28] morris_evaluation_completed | search=outer-holdout-object_detection | completed=92 | total=128 | quality_cvar90=0.010942 | energy_saving_q25=0.012295
+[06:39:49] morris_evaluation_completed | search=outer-holdout-object_detection | completed=93 | total=128 | quality_cvar90=0.010942 | energy_saving_q25=0.012295
+[06:41:12] morris_evaluation_completed | search=outer-holdout-object_detection | completed=94 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[06:42:34] morris_evaluation_completed | search=outer-holdout-object_detection | completed=95 | total=128 | quality_cvar90=0.010942 | energy_saving_q25=0.002477
+[06:43:58] morris_evaluation_completed | search=outer-holdout-object_detection | completed=96 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[06:45:22] morris_evaluation_completed | search=outer-holdout-object_detection | completed=97 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[06:46:46] morris_evaluation_completed | search=outer-holdout-object_detection | completed=98 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[06:48:10] morris_evaluation_completed | search=outer-holdout-object_detection | completed=99 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[06:49:35] morris_evaluation_completed | search=outer-holdout-object_detection | completed=100 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[06:50:21] morris_evaluation_completed | search=outer-holdout-object_detection | completed=101 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[06:51:08] morris_evaluation_completed | search=outer-holdout-object_detection | completed=102 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[06:51:54] morris_evaluation_completed | search=outer-holdout-object_detection | completed=103 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[06:52:40] morris_evaluation_completed | search=outer-holdout-object_detection | completed=104 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[06:53:53] morris_evaluation_completed | search=outer-holdout-object_detection | completed=105 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[06:55:05] morris_evaluation_completed | search=outer-holdout-object_detection | completed=106 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[06:56:18] morris_evaluation_completed | search=outer-holdout-object_detection | completed=107 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[06:57:29] morris_evaluation_completed | search=outer-holdout-object_detection | completed=108 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[06:58:42] morris_evaluation_completed | search=outer-holdout-object_detection | completed=109 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[06:59:55] morris_evaluation_completed | search=outer-holdout-object_detection | completed=110 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[07:01:08] morris_evaluation_completed | search=outer-holdout-object_detection | completed=111 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[07:02:37] morris_evaluation_completed | search=outer-holdout-object_detection | completed=112 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[07:04:08] morris_evaluation_completed | search=outer-holdout-object_detection | completed=113 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[07:05:35] morris_evaluation_completed | search=outer-holdout-object_detection | completed=114 | total=128 | quality_cvar90=0.010942 | energy_saving_q25=0.014723
+[07:06:52] morris_evaluation_completed | search=outer-holdout-object_detection | completed=115 | total=128 | quality_cvar90=0.004238 | energy_saving_q25=0.014747
+[07:08:08] morris_evaluation_completed | search=outer-holdout-object_detection | completed=116 | total=128 | quality_cvar90=0.010942 | energy_saving_q25=0.012295
+[07:09:26] morris_evaluation_completed | search=outer-holdout-object_detection | completed=117 | total=128 | quality_cvar90=0.004238 | energy_saving_q25=0.00249
+[07:10:46] morris_evaluation_completed | search=outer-holdout-object_detection | completed=118 | total=128 | quality_cvar90=0.004238 | energy_saving_q25=0.002477
+[07:12:05] morris_evaluation_completed | search=outer-holdout-object_detection | completed=119 | total=128 | quality_cvar90=0.004238 | energy_saving_q25=0.002477
+[07:13:23] morris_evaluation_completed | search=outer-holdout-object_detection | completed=120 | total=128 | quality_cvar90=0.004238 | energy_saving_q25=0.00249
+[07:14:10] morris_evaluation_completed | search=outer-holdout-object_detection | completed=121 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[07:14:56] morris_evaluation_completed | search=outer-holdout-object_detection | completed=122 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[07:15:43] morris_evaluation_completed | search=outer-holdout-object_detection | completed=123 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[07:16:29] morris_evaluation_completed | search=outer-holdout-object_detection | completed=124 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[07:17:16] morris_evaluation_completed | search=outer-holdout-object_detection | completed=125 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[07:18:02] morris_evaluation_completed | search=outer-holdout-object_detection | completed=126 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[07:18:49] morris_evaluation_completed | search=outer-holdout-object_detection | completed=127 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[07:20:13] morris_evaluation_completed | search=outer-holdout-object_detection | completed=128 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[07:20:13] morris_screening_completed | search=outer-holdout-object_detection | completed=128 | total=128
+[07:21:39] optimization_trial_completed | search=outer-holdout-object_detection | completed=1 | total=72 | trial=1 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[07:23:12] optimization_trial_completed | search=outer-holdout-object_detection | completed=2 | total=72 | trial=2 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[07:23:49] optimization_trial_completed | search=outer-holdout-object_detection | completed=3 | total=72 | trial=3 | backend=qnehvi-initial-sobol | quality_cvar90=3.613343 | energy_saving_q25=0.002482 | quality_feasible=False
+[07:25:17] optimization_trial_completed | search=outer-holdout-object_detection | completed=4 | total=72 | trial=4 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[07:26:05] optimization_trial_completed | search=outer-holdout-object_detection | completed=5 | total=72 | trial=5 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[07:27:23] optimization_trial_completed | search=outer-holdout-object_detection | completed=6 | total=72 | trial=6 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[07:28:55] optimization_trial_completed | search=outer-holdout-object_detection | completed=7 | total=72 | trial=7 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[07:30:26] optimization_trial_completed | search=outer-holdout-object_detection | completed=8 | total=72 | trial=8 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[07:31:47] optimization_trial_completed | search=outer-holdout-object_detection | completed=9 | total=72 | trial=9 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[07:32:59] optimization_trial_completed | search=outer-holdout-object_detection | completed=10 | total=72 | trial=10 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[07:34:21] optimization_trial_completed | search=outer-holdout-object_detection | completed=11 | total=72 | trial=11 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[07:35:48] optimization_trial_completed | search=outer-holdout-object_detection | completed=12 | total=72 | trial=12 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[07:36:59] optimization_trial_completed | search=outer-holdout-object_detection | completed=13 | total=72 | trial=13 | backend=qnehvi-initial-sobol | quality_cvar90=0.001812 | energy_saving_q25=0.0 | quality_feasible=True
+[07:38:18] optimization_trial_completed | search=outer-holdout-object_detection | completed=14 | total=72 | trial=14 | backend=qnehvi-initial-sobol | quality_cvar90=0.001812 | energy_saving_q25=0.012362 | quality_feasible=True
+[07:39:48] optimization_trial_completed | search=outer-holdout-object_detection | completed=15 | total=72 | trial=15 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[07:41:20] optimization_trial_completed | search=outer-holdout-object_detection | completed=16 | total=72 | trial=16 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[07:42:34] optimization_trial_completed | search=outer-holdout-object_detection | completed=17 | total=72 | trial=17 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[07:43:22] optimization_trial_completed | search=outer-holdout-object_detection | completed=18 | total=72 | trial=18 | backend=qnehvi-initial-sobol | quality_cvar90=0.001812 | energy_saving_q25=0.0 | quality_feasible=True
+[07:44:48] optimization_trial_completed | search=outer-holdout-object_detection | completed=19 | total=72 | trial=19 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[07:46:12] optimization_trial_completed | search=outer-holdout-object_detection | completed=20 | total=72 | trial=20 | backend=qnehvi-initial-sobol | quality_cvar90=0.001812 | energy_saving_q25=0.0 | quality_feasible=True
+[07:47:01] optimization_trial_completed | search=outer-holdout-object_detection | completed=21 | total=72 | trial=21 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[07:48:16] optimization_trial_completed | search=outer-holdout-object_detection | completed=22 | total=72 | trial=22 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[07:49:49] optimization_trial_completed | search=outer-holdout-object_detection | completed=23 | total=72 | trial=23 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[07:51:17] optimization_trial_completed | search=outer-holdout-object_detection | completed=24 | total=72 | trial=24 | backend=qnehvi-initial-sobol | quality_cvar90=0.001812 | energy_saving_q25=0.0 | quality_feasible=True
+[07:52:37] optimization_trial_completed | search=outer-holdout-object_detection | completed=25 | total=72 | trial=25 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[07:53:47] optimization_trial_completed | search=outer-holdout-object_detection | completed=26 | total=72 | trial=26 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[07:55:09] optimization_trial_completed | search=outer-holdout-object_detection | completed=27 | total=72 | trial=27 | backend=qnehvi-initial-sobol | quality_cvar90=0.010942 | energy_saving_q25=0.0 | quality_feasible=True
+[07:56:32] optimization_trial_completed | search=outer-holdout-object_detection | completed=28 | total=72 | trial=28 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[07:57:45] optimization_trial_completed | search=outer-holdout-object_detection | completed=29 | total=72 | trial=29 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[07:59:04] optimization_trial_completed | search=outer-holdout-object_detection | completed=30 | total=72 | trial=30 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[08:00:34] optimization_trial_completed | search=outer-holdout-object_detection | completed=31 | total=72 | trial=31 | backend=qnehvi-initial-sobol | quality_cvar90=0.001812 | energy_saving_q25=0.0 | quality_feasible=True
+[08:02:04] optimization_trial_completed | search=outer-holdout-object_detection | completed=32 | total=72 | trial=32 | backend=qnehvi-initial-sobol | quality_cvar90=0.001812 | energy_saving_q25=0.0 | quality_feasible=True
+[08:02:04] bayesian_surrogate_fit_started | search=outer-holdout-object_detection | completed=32 | total=72 | trial=33
+[08:03:30] optimization_trial_completed | search=outer-holdout-object_detection | completed=33 | total=72 | trial=33 | backend=qnehvi | quality_cvar90=0.001812 | energy_saving_q25=0.009913 | quality_feasible=True
+[08:03:30] bayesian_surrogate_fit_started | search=outer-holdout-object_detection | completed=33 | total=72 | trial=34
+[08:04:54] optimization_trial_completed | search=outer-holdout-object_detection | completed=34 | total=72 | trial=34 | backend=qnehvi | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[08:04:54] bayesian_surrogate_fit_started | search=outer-holdout-object_detection | completed=34 | total=72 | trial=35
+[08:06:18] optimization_trial_completed | search=outer-holdout-object_detection | completed=35 | total=72 | trial=35 | backend=qnehvi | quality_cvar90=0.004238 | energy_saving_q25=0.009913 | quality_feasible=True
+[08:06:18] bayesian_surrogate_fit_started | search=outer-holdout-object_detection | completed=35 | total=72 | trial=36
+[08:07:41] optimization_trial_completed | search=outer-holdout-object_detection | completed=36 | total=72 | trial=36 | backend=qnehvi | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[08:07:41] bayesian_surrogate_fit_started | search=outer-holdout-object_detection | completed=36 | total=72 | trial=37
+[08:09:04] optimization_trial_completed | search=outer-holdout-object_detection | completed=37 | total=72 | trial=37 | backend=qnehvi | quality_cvar90=0.004238 | energy_saving_q25=0.009938 | quality_feasible=True
+[08:09:04] bayesian_surrogate_fit_started | search=outer-holdout-object_detection | completed=37 | total=72 | trial=38
+[08:10:23] optimization_trial_completed | search=outer-holdout-object_detection | completed=38 | total=72 | trial=38 | backend=qnehvi | quality_cvar90=0.004238 | energy_saving_q25=0.012386 | quality_feasible=True
+[08:10:23] bayesian_surrogate_fit_started | search=outer-holdout-object_detection | completed=38 | total=72 | trial=39
+[08:11:45] optimization_trial_completed | search=outer-holdout-object_detection | completed=39 | total=72 | trial=39 | backend=qnehvi | quality_cvar90=0.004238 | energy_saving_q25=0.014747 | quality_feasible=True
+[08:11:45] bayesian_surrogate_fit_started | search=outer-holdout-object_detection | completed=39 | total=72 | trial=40
+[08:12:55] optimization_trial_completed | search=outer-holdout-object_detection | completed=40 | total=72 | trial=40 | backend=qnehvi | quality_cvar90=0.010942 | energy_saving_q25=0.004824 | quality_feasible=True
+[08:12:55] bayesian_surrogate_fit_started | search=outer-holdout-object_detection | completed=40 | total=72 | trial=41
+[08:14:17] optimization_trial_completed | search=outer-holdout-object_detection | completed=41 | total=72 | trial=41 | backend=qnehvi | quality_cvar90=0.004238 | energy_saving_q25=0.012386 | quality_feasible=True
+[08:14:17] bayesian_surrogate_fit_started | search=outer-holdout-object_detection | completed=41 | total=72 | trial=42
+[08:15:40] optimization_trial_completed | search=outer-holdout-object_detection | completed=42 | total=72 | trial=42 | backend=qnehvi | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[08:15:40] bayesian_surrogate_fit_started | search=outer-holdout-object_detection | completed=42 | total=72 | trial=43
+[08:17:00] optimization_trial_completed | search=outer-holdout-object_detection | completed=43 | total=72 | trial=43 | backend=qnehvi | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[08:17:00] bayesian_surrogate_fit_started | search=outer-holdout-object_detection | completed=43 | total=72 | trial=44
+[08:18:19] optimization_trial_completed | search=outer-holdout-object_detection | completed=44 | total=72 | trial=44 | backend=qnehvi | quality_cvar90=0.010942 | energy_saving_q25=0.012295 | quality_feasible=True
+[08:18:19] bayesian_surrogate_fit_started | search=outer-holdout-object_detection | completed=44 | total=72 | trial=45
+[19:54:30] optimization_trial_completed | search=outer-holdout-object_detection | completed=45 | total=72 | trial=45 | backend=qnehvi | quality_cvar90=0.011394 | energy_saving_q25=0.019674 | quality_feasible=True
+[19:54:30] bayesian_surrogate_fit_started | search=outer-holdout-object_detection | completed=45 | total=72 | trial=46
+[19:56:01] optimization_trial_completed | search=outer-holdout-object_detection | completed=46 | total=72 | trial=46 | backend=qnehvi | quality_cvar90=0.011394 | energy_saving_q25=0.019674 | quality_feasible=True
+[19:56:01] bayesian_surrogate_fit_started | search=outer-holdout-object_detection | completed=46 | total=72 | trial=47
+[19:57:32] optimization_trial_completed | search=outer-holdout-object_detection | completed=47 | total=72 | trial=47 | backend=qnehvi | quality_cvar90=0.001812 | energy_saving_q25=0.012362 | quality_feasible=True
+[19:57:32] bayesian_surrogate_fit_started | search=outer-holdout-object_detection | completed=47 | total=72 | trial=48
+[19:59:01] optimization_trial_completed | search=outer-holdout-object_detection | completed=48 | total=72 | trial=48 | backend=qnehvi | quality_cvar90=0.011394 | energy_saving_q25=0.019674 | quality_feasible=True
+[19:59:01] bayesian_surrogate_fit_started | search=outer-holdout-object_detection | completed=48 | total=72 | trial=49
+[20:00:15] optimization_trial_completed | search=outer-holdout-object_detection | completed=49 | total=72 | trial=49 | backend=qnehvi | quality_cvar90=0.13866 | energy_saving_q25=0.012386 | quality_feasible=True
+[20:00:16] bayesian_surrogate_fit_started | search=outer-holdout-object_detection | completed=49 | total=72 | trial=50
+[20:01:44] optimization_trial_completed | search=outer-holdout-object_detection | completed=50 | total=72 | trial=50 | backend=qnehvi | quality_cvar90=0.011394 | energy_saving_q25=0.029129 | quality_feasible=True
+[20:01:44] bayesian_surrogate_fit_started | search=outer-holdout-object_detection | completed=50 | total=72 | trial=51
+[20:03:15] optimization_trial_completed | search=outer-holdout-object_detection | completed=51 | total=72 | trial=51 | backend=qnehvi | quality_cvar90=0.011394 | energy_saving_q25=0.022067 | quality_feasible=True
+[20:03:15] bayesian_surrogate_fit_started | search=outer-holdout-object_detection | completed=51 | total=72 | trial=52
+[20:04:29] optimization_trial_completed | search=outer-holdout-object_detection | completed=52 | total=72 | trial=52 | backend=qnehvi | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[20:04:29] bayesian_surrogate_fit_started | search=outer-holdout-object_detection | completed=52 | total=72 | trial=53
+[20:05:56] optimization_trial_completed | search=outer-holdout-object_detection | completed=53 | total=72 | trial=53 | backend=qnehvi | quality_cvar90=0.011394 | energy_saving_q25=0.029129 | quality_feasible=True
+[20:05:56] bayesian_surrogate_fit_started | search=outer-holdout-object_detection | completed=53 | total=72 | trial=54
+[20:07:27] optimization_trial_completed | search=outer-holdout-object_detection | completed=54 | total=72 | trial=54 | backend=qnehvi | quality_cvar90=0.011394 | energy_saving_q25=0.019674 | quality_feasible=True
+[20:07:27] bayesian_surrogate_fit_started | search=outer-holdout-object_detection | completed=54 | total=72 | trial=55
+[20:08:59] optimization_trial_completed | search=outer-holdout-object_detection | completed=55 | total=72 | trial=55 | backend=qnehvi | quality_cvar90=0.011394 | energy_saving_q25=0.019674 | quality_feasible=True
+[20:08:59] bayesian_surrogate_fit_started | search=outer-holdout-object_detection | completed=55 | total=72 | trial=56
+[20:10:29] optimization_trial_completed | search=outer-holdout-object_detection | completed=56 | total=72 | trial=56 | backend=qnehvi | quality_cvar90=0.011394 | energy_saving_q25=0.022067 | quality_feasible=True
+[20:10:29] bayesian_surrogate_fit_started | search=outer-holdout-object_detection | completed=56 | total=72 | trial=57
+[20:11:43] optimization_trial_completed | search=outer-holdout-object_detection | completed=57 | total=72 | trial=57 | backend=qnehvi | quality_cvar90=0.13866 | energy_saving_q25=0.019674 | quality_feasible=True
+[20:11:43] bayesian_surrogate_fit_started | search=outer-holdout-object_detection | completed=57 | total=72 | trial=58
+[20:13:09] optimization_trial_completed | search=outer-holdout-object_detection | completed=58 | total=72 | trial=58 | backend=qnehvi | quality_cvar90=0.13866 | energy_saving_q25=0.019674 | quality_feasible=True
+[20:13:09] bayesian_surrogate_fit_started | search=outer-holdout-object_detection | completed=58 | total=72 | trial=59
+[20:14:41] optimization_trial_completed | search=outer-holdout-object_detection | completed=59 | total=72 | trial=59 | backend=qnehvi | quality_cvar90=0.011394 | energy_saving_q25=0.019674 | quality_feasible=True
+[20:14:41] bayesian_surrogate_fit_started | search=outer-holdout-object_detection | completed=59 | total=72 | trial=60
+[20:16:04] optimization_trial_completed | search=outer-holdout-object_detection | completed=60 | total=72 | trial=60 | backend=qnehvi | quality_cvar90=0.011394 | energy_saving_q25=0.019674 | quality_feasible=True
+[20:16:05] bayesian_surrogate_fit_started | search=outer-holdout-object_detection | completed=60 | total=72 | trial=61
+[20:17:35] optimization_trial_completed | search=outer-holdout-object_detection | completed=61 | total=72 | trial=61 | backend=qnehvi | quality_cvar90=0.011394 | energy_saving_q25=0.022067 | quality_feasible=True
+[20:17:35] bayesian_surrogate_fit_started | search=outer-holdout-object_detection | completed=61 | total=72 | trial=62
+[20:18:45] optimization_trial_completed | search=outer-holdout-object_detection | completed=62 | total=72 | trial=62 | backend=qnehvi | quality_cvar90=0.13866 | energy_saving_q25=0.012386 | quality_feasible=True
+[20:18:45] bayesian_surrogate_fit_started | search=outer-holdout-object_detection | completed=62 | total=72 | trial=63
+[20:19:54] optimization_trial_completed | search=outer-holdout-object_detection | completed=63 | total=72 | trial=63 | backend=qnehvi | quality_cvar90=0.13866 | energy_saving_q25=0.009938 | quality_feasible=True
+[20:19:54] bayesian_surrogate_fit_started | search=outer-holdout-object_detection | completed=63 | total=72 | trial=64
+[20:21:26] optimization_trial_completed | search=outer-holdout-object_detection | completed=64 | total=72 | trial=64 | backend=qnehvi | quality_cvar90=0.011394 | energy_saving_q25=0.019674 | quality_feasible=True
+[20:21:26] bayesian_surrogate_fit_started | search=outer-holdout-object_detection | completed=64 | total=72 | trial=65
+[20:22:55] optimization_trial_completed | search=outer-holdout-object_detection | completed=65 | total=72 | trial=65 | backend=qnehvi | quality_cvar90=0.011394 | energy_saving_q25=0.022067 | quality_feasible=True
+[20:22:55] bayesian_surrogate_fit_started | search=outer-holdout-object_detection | completed=65 | total=72 | trial=66
+[20:24:21] optimization_trial_completed | search=outer-holdout-object_detection | completed=66 | total=72 | trial=66 | backend=qnehvi | quality_cvar90=0.011394 | energy_saving_q25=0.029129 | quality_feasible=True
+[20:24:21] bayesian_surrogate_fit_started | search=outer-holdout-object_detection | completed=66 | total=72 | trial=67
+[20:25:51] optimization_trial_completed | search=outer-holdout-object_detection | completed=67 | total=72 | trial=67 | backend=qnehvi | quality_cvar90=0.011394 | energy_saving_q25=0.022067 | quality_feasible=True
+[20:25:51] bayesian_surrogate_fit_started | search=outer-holdout-object_detection | completed=67 | total=72 | trial=68
+[20:26:43] optimization_trial_completed | search=outer-holdout-object_detection | completed=68 | total=72 | trial=68 | backend=qnehvi | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[20:26:43] bayesian_surrogate_fit_started | search=outer-holdout-object_detection | completed=68 | total=72 | trial=69
+[20:27:31] optimization_trial_completed | search=outer-holdout-object_detection | completed=69 | total=72 | trial=69 | backend=qnehvi | quality_cvar90=0.159204 | energy_saving_q25=0.002477 | quality_feasible=True
+[20:27:31] bayesian_surrogate_fit_started | search=outer-holdout-object_detection | completed=69 | total=72 | trial=70
+[20:28:52] optimization_trial_completed | search=outer-holdout-object_detection | completed=70 | total=72 | trial=70 | backend=qnehvi | quality_cvar90=0.011394 | energy_saving_q25=0.019674 | quality_feasible=True
+[20:28:52] bayesian_surrogate_fit_started | search=outer-holdout-object_detection | completed=70 | total=72 | trial=71
+[20:30:23] optimization_trial_completed | search=outer-holdout-object_detection | completed=71 | total=72 | trial=71 | backend=qnehvi | quality_cvar90=0.011394 | energy_saving_q25=0.022067 | quality_feasible=True
+[20:30:23] bayesian_surrogate_fit_started | search=outer-holdout-object_detection | completed=71 | total=72 | trial=72
+[20:31:56] optimization_trial_completed | search=outer-holdout-object_detection | completed=72 | total=72 | trial=72 | backend=qnehvi | quality_cvar90=0.011394 | energy_saving_q25=0.022067 | quality_feasible=True
+[20:31:56] search_completed | search=outer-holdout-object_detection | completed=72 | total=72 | trial=53 | quality_cvar90=0.01139365321501683 | energy_saving_q25=0.02912865770330479 | quality_feasible=True
+[20:32:38] outer_fold_completed | fold=2 | holdout_task=object_detection | completed=2 | total=3 | quality_cvar90=0.0 | energy_saving_q25=0.009132050383014201 | quality_feasible=True
+[20:32:38] outer_fold_started | fold=3 | holdout_task=semantic_segmentation | total=3
+[20:32:38] search_started | search=outer-holdout-semantic_segmentation | backend=qnehvi
+[20:34:10] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=1 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[20:35:41] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=2 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[20:37:12] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=3 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[20:38:42] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=4 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[20:39:59] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=5 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[20:41:15] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=6 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[20:42:32] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=7 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[20:43:48] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=8 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[20:45:05] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=9 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[20:46:23] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=10 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[20:47:41] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=11 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[20:48:59] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=12 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[20:50:16] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=13 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[20:51:33] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=14 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[20:53:04] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=15 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[20:54:35] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=16 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[20:55:45] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=17 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[20:56:55] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=18 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[20:58:05] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=19 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[20:59:14] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=20 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[21:00:25] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=21 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[21:01:35] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=22 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[21:03:05] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=23 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[21:04:34] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=24 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[21:06:02] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=25 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[21:07:30] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=26 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[21:08:58] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=27 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[21:10:25] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=28 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[21:11:52] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=29 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[21:13:19] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=30 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[21:14:28] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=31 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[21:15:38] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=32 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[21:17:01] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=33 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[21:18:23] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=34 | total=128 | quality_cvar90=0.004238 | energy_saving_q25=0.008891
+[21:19:44] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=35 | total=128 | quality_cvar90=0.004238 | energy_saving_q25=0.008891
+[21:21:05] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=36 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[21:22:27] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=37 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[21:23:48] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=38 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[21:25:08] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=39 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[21:25:52] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=40 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[21:27:18] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=41 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[21:28:45] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=42 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[21:30:12] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=43 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[21:31:41] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=44 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[21:33:09] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=45 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[21:34:19] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=46 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[21:35:29] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=47 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[21:36:38] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=48 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[21:38:01] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=49 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[21:39:23] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=50 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[21:40:45] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=51 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[21:42:07] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=52 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[21:42:52] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=53 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[21:43:36] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=54 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[21:44:20] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=55 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[21:45:04] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=56 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[21:46:23] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=57 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[21:47:40] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=58 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[21:48:58] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=59 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[21:50:16] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=60 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[21:51:33] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=61 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[21:53:05] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=62 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[21:54:37] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=63 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[21:56:09] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=64 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[21:56:53] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=65 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[21:57:38] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=66 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[21:59:01] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=67 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[22:00:24] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=68 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[22:01:46] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=69 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[22:03:08] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=70 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[22:04:29] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=71 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[22:05:50] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=72 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[22:06:33] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=73 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[22:07:17] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=74 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[22:08:00] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=75 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[22:09:20] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=76 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[22:10:41] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=77 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[22:12:02] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=78 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[22:13:23] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=79 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[22:14:43] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=80 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[22:15:26] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=81 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[22:16:09] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=82 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[22:17:30] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=83 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[22:18:50] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=84 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[22:20:10] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=85 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[22:21:30] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=86 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[22:22:50] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=87 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[22:24:10] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=88 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[22:24:53] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=89 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[22:25:36] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=90 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[22:26:19] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=91 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[22:27:02] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=92 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[22:27:45] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=93 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[22:28:28] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=94 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[22:29:47] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=95 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[22:31:06] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=96 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[22:32:32] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=97 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[22:33:58] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=98 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[22:35:24] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=99 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[22:36:50] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=100 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[22:38:16] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=101 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[22:39:24] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=102 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[22:40:33] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=103 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[22:41:40] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=104 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[22:42:49] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=105 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[22:43:57] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=106 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[22:45:23] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=107 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[22:46:50] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=108 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[22:48:18] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=109 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[22:49:46] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=110 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[22:51:12] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=111 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[22:52:39] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=112 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[22:54:06] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=113 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[22:55:32] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=114 | total=128 | quality_cvar90=0.011394 | energy_saving_q25=0.008878
+[22:56:59] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=115 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[22:58:08] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=116 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[22:59:17] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=117 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[23:00:27] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=118 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[23:01:36] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=119 | total=128 | quality_cvar90=0.004238 | energy_saving_q25=0.0
+[23:02:44] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=120 | total=128 | quality_cvar90=0.004238 | energy_saving_q25=0.0
+[23:03:53] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=121 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[23:05:02] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=122 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[23:06:13] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=123 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[23:07:23] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=124 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[23:08:32] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=125 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[23:10:01] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=126 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[23:11:28] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=127 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[23:12:56] morris_evaluation_completed | search=outer-holdout-semantic_segmentation | completed=128 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[23:12:56] morris_screening_completed | search=outer-holdout-semantic_segmentation | completed=128 | total=128
+[23:14:19] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=1 | total=72 | trial=1 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[23:15:48] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=2 | total=72 | trial=2 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[23:16:24] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=3 | total=72 | trial=3 | backend=qnehvi-initial-sobol | quality_cvar90=3.613343 | energy_saving_q25=0.002163 | quality_feasible=False
+[23:17:50] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=4 | total=72 | trial=4 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[23:19:09] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=5 | total=72 | trial=5 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[23:19:53] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=6 | total=72 | trial=6 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[23:21:17] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=7 | total=72 | trial=7 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[23:22:38] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=8 | total=72 | trial=8 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[23:23:46] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=9 | total=72 | trial=9 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[23:24:57] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=10 | total=72 | trial=10 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[23:26:26] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=11 | total=72 | trial=11 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[23:27:55] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=12 | total=72 | trial=12 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[23:29:09] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=13 | total=72 | trial=13 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[23:30:15] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=14 | total=72 | trial=14 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[23:31:35] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=15 | total=72 | trial=15 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[23:33:00] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=16 | total=72 | trial=16 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[23:33:44] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=17 | total=72 | trial=17 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[23:34:58] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=18 | total=72 | trial=18 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[23:36:26] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=19 | total=72 | trial=19 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[23:37:55] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=20 | total=72 | trial=20 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[23:39:13] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=21 | total=72 | trial=21 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[23:39:59] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=22 | total=72 | trial=22 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[23:41:24] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=23 | total=72 | trial=23 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[23:42:46] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=24 | total=72 | trial=24 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[23:43:52] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=25 | total=72 | trial=25 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[23:45:06] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=26 | total=72 | trial=26 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[23:46:34] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=27 | total=72 | trial=27 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[23:48:04] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=28 | total=72 | trial=28 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[23:49:14] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=29 | total=72 | trial=29 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[23:50:23] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=30 | total=72 | trial=30 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[23:51:41] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=31 | total=72 | trial=31 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[23:53:05] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=32 | total=72 | trial=32 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[23:53:05] bayesian_surrogate_fit_started | search=outer-holdout-semantic_segmentation | completed=32 | total=72 | trial=33
+[23:53:52] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=33 | total=72 | trial=33 | backend=qnehvi | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[23:53:52] bayesian_surrogate_fit_started | search=outer-holdout-semantic_segmentation | completed=33 | total=72 | trial=34
+[23:54:41] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=34 | total=72 | trial=34 | backend=qnehvi | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[23:54:41] bayesian_surrogate_fit_started | search=outer-holdout-semantic_segmentation | completed=34 | total=72 | trial=35
+[23:56:17] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=35 | total=72 | trial=35 | backend=qnehvi | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[23:56:17] bayesian_surrogate_fit_started | search=outer-holdout-semantic_segmentation | completed=35 | total=72 | trial=36
+[23:57:05] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=36 | total=72 | trial=36 | backend=qnehvi | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[23:57:05] bayesian_surrogate_fit_started | search=outer-holdout-semantic_segmentation | completed=36 | total=72 | trial=37
+[23:57:54] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=37 | total=72 | trial=37 | backend=qnehvi | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[23:57:54] bayesian_surrogate_fit_started | search=outer-holdout-semantic_segmentation | completed=37 | total=72 | trial=38
+[23:59:28] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=38 | total=72 | trial=38 | backend=qnehvi | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[23:59:28] bayesian_surrogate_fit_started | search=outer-holdout-semantic_segmentation | completed=38 | total=72 | trial=39
+[24:00:58] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=39 | total=72 | trial=39 | backend=qnehvi | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[24:00:58] bayesian_surrogate_fit_started | search=outer-holdout-semantic_segmentation | completed=39 | total=72 | trial=40
+[24:01:47] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=40 | total=72 | trial=40 | backend=qnehvi | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[24:01:47] bayesian_surrogate_fit_started | search=outer-holdout-semantic_segmentation | completed=40 | total=72 | trial=41
+[24:02:33] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=41 | total=72 | trial=41 | backend=qnehvi | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[24:02:33] bayesian_surrogate_fit_started | search=outer-holdout-semantic_segmentation | completed=41 | total=72 | trial=42
+[24:03:59] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=42 | total=72 | trial=42 | backend=qnehvi | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[24:03:59] bayesian_surrogate_fit_started | search=outer-holdout-semantic_segmentation | completed=42 | total=72 | trial=43
+[24:05:31] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=43 | total=72 | trial=43 | backend=qnehvi | quality_cvar90=0.011394 | energy_saving_q25=0.0 | quality_feasible=True
+[24:05:31] bayesian_surrogate_fit_started | search=outer-holdout-semantic_segmentation | completed=43 | total=72 | trial=44
+[24:07:05] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=44 | total=72 | trial=44 | backend=qnehvi | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[24:07:05] bayesian_surrogate_fit_started | search=outer-holdout-semantic_segmentation | completed=44 | total=72 | trial=45
+[24:07:52] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=45 | total=72 | trial=45 | backend=qnehvi | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[24:07:52] bayesian_surrogate_fit_started | search=outer-holdout-semantic_segmentation | completed=45 | total=72 | trial=46
+[24:08:40] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=46 | total=72 | trial=46 | backend=qnehvi | quality_cvar90=0.0 | energy_saving_q25=0.002482 | quality_feasible=True
+[24:08:40] bayesian_surrogate_fit_started | search=outer-holdout-semantic_segmentation | completed=46 | total=72 | trial=47
+[24:09:25] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=47 | total=72 | trial=47 | backend=qnehvi | quality_cvar90=0.112618 | energy_saving_q25=0.012128 | quality_feasible=True
+[24:09:25] bayesian_surrogate_fit_started | search=outer-holdout-semantic_segmentation | completed=47 | total=72 | trial=48
+[24:10:11] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=48 | total=72 | trial=48 | backend=qnehvi | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[24:10:11] bayesian_surrogate_fit_started | search=outer-holdout-semantic_segmentation | completed=48 | total=72 | trial=49
+[24:10:55] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=49 | total=72 | trial=49 | backend=qnehvi | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[24:10:55] bayesian_surrogate_fit_started | search=outer-holdout-semantic_segmentation | completed=49 | total=72 | trial=50
+[24:12:28] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=50 | total=72 | trial=50 | backend=qnehvi | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[24:12:28] bayesian_surrogate_fit_started | search=outer-holdout-semantic_segmentation | completed=50 | total=72 | trial=51
+[24:13:58] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=51 | total=72 | trial=51 | backend=qnehvi | quality_cvar90=0.116746 | energy_saving_q25=0.009692 | quality_feasible=True
+[24:13:58] bayesian_surrogate_fit_started | search=outer-holdout-semantic_segmentation | completed=51 | total=72 | trial=52
+[24:14:45] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=52 | total=72 | trial=52 | backend=qnehvi | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[24:14:45] bayesian_surrogate_fit_started | search=outer-holdout-semantic_segmentation | completed=52 | total=72 | trial=53
+[24:15:32] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=53 | total=72 | trial=53 | backend=qnehvi | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[24:15:32] bayesian_surrogate_fit_started | search=outer-holdout-semantic_segmentation | completed=53 | total=72 | trial=54
+[24:16:45] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=54 | total=72 | trial=54 | backend=qnehvi | quality_cvar90=0.112618 | energy_saving_q25=0.009938 | quality_feasible=True
+[24:16:45] bayesian_surrogate_fit_started | search=outer-holdout-semantic_segmentation | completed=54 | total=72 | trial=55
+[24:17:53] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=55 | total=72 | trial=55 | backend=qnehvi | quality_cvar90=0.112618 | energy_saving_q25=0.021907 | quality_feasible=True
+[24:17:53] bayesian_surrogate_fit_started | search=outer-holdout-semantic_segmentation | completed=55 | total=72 | trial=56
+[24:18:39] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=56 | total=72 | trial=56 | backend=qnehvi | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[24:18:39] bayesian_surrogate_fit_started | search=outer-holdout-semantic_segmentation | completed=56 | total=72 | trial=57
+[24:20:04] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=57 | total=72 | trial=57 | backend=qnehvi | quality_cvar90=0.004238 | energy_saving_q25=0.00897 | quality_feasible=True
+[24:20:04] bayesian_surrogate_fit_started | search=outer-holdout-semantic_segmentation | completed=57 | total=72 | trial=58
+[24:20:50] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=58 | total=72 | trial=58 | backend=qnehvi | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[24:20:50] bayesian_surrogate_fit_started | search=outer-holdout-semantic_segmentation | completed=58 | total=72 | trial=59
+[24:21:39] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=59 | total=72 | trial=59 | backend=qnehvi | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[24:21:39] bayesian_surrogate_fit_started | search=outer-holdout-semantic_segmentation | completed=59 | total=72 | trial=60
+[24:22:27] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=60 | total=72 | trial=60 | backend=qnehvi | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[24:22:27] bayesian_surrogate_fit_started | search=outer-holdout-semantic_segmentation | completed=60 | total=72 | trial=61
+[24:23:16] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=61 | total=72 | trial=61 | backend=qnehvi | quality_cvar90=0.011394 | energy_saving_q25=0.012153 | quality_feasible=True
+[24:23:16] bayesian_surrogate_fit_started | search=outer-holdout-semantic_segmentation | completed=61 | total=72 | trial=62
+[24:24:37] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=62 | total=72 | trial=62 | backend=qnehvi | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[24:24:37] bayesian_surrogate_fit_started | search=outer-holdout-semantic_segmentation | completed=62 | total=72 | trial=63
+[24:26:03] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=63 | total=72 | trial=63 | backend=qnehvi | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[24:26:03] bayesian_surrogate_fit_started | search=outer-holdout-semantic_segmentation | completed=63 | total=72 | trial=64
+[24:27:38] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=64 | total=72 | trial=64 | backend=qnehvi | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[24:27:38] bayesian_surrogate_fit_started | search=outer-holdout-semantic_segmentation | completed=64 | total=72 | trial=65
+[24:28:28] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=65 | total=72 | trial=65 | backend=qnehvi | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[24:28:28] bayesian_surrogate_fit_started | search=outer-holdout-semantic_segmentation | completed=65 | total=72 | trial=66
+[24:29:59] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=66 | total=72 | trial=66 | backend=qnehvi | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[24:29:59] bayesian_surrogate_fit_started | search=outer-holdout-semantic_segmentation | completed=66 | total=72 | trial=67
+[24:31:34] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=67 | total=72 | trial=67 | backend=qnehvi | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[24:31:34] bayesian_surrogate_fit_started | search=outer-holdout-semantic_segmentation | completed=67 | total=72 | trial=68
+[24:33:07] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=68 | total=72 | trial=68 | backend=qnehvi | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[24:33:07] bayesian_surrogate_fit_started | search=outer-holdout-semantic_segmentation | completed=68 | total=72 | trial=69
+[24:34:26] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=69 | total=72 | trial=69 | backend=qnehvi | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[24:34:26] bayesian_surrogate_fit_started | search=outer-holdout-semantic_segmentation | completed=69 | total=72 | trial=70
+[24:35:52] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=70 | total=72 | trial=70 | backend=qnehvi | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[24:35:52] bayesian_surrogate_fit_started | search=outer-holdout-semantic_segmentation | completed=70 | total=72 | trial=71
+[24:36:38] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=71 | total=72 | trial=71 | backend=qnehvi | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[24:36:38] bayesian_surrogate_fit_started | search=outer-holdout-semantic_segmentation | completed=71 | total=72 | trial=72
+[24:37:26] optimization_trial_completed | search=outer-holdout-semantic_segmentation | completed=72 | total=72 | trial=72 | backend=qnehvi | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[24:37:26] search_completed | search=outer-holdout-semantic_segmentation | completed=72 | total=72 | trial=55 | quality_cvar90=0.11261795555268532 | energy_saving_q25=0.02190698516376096 | quality_feasible=True
+[24:37:59] outer_fold_completed | fold=3 | holdout_task=semantic_segmentation | completed=3 | total=3 | quality_cvar90=0.010941853163498598 | energy_saving_q25=0.03449220181304469 | quality_feasible=True
+[24:37:59] search_started | search=rapec-v9-risk-constrained-20260803-155816 | backend=qnehvi
+[24:39:55] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=1 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[24:41:51] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=2 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[24:43:47] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=3 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[24:45:43] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=4 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[24:47:38] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=5 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[24:49:32] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=6 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[24:51:28] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=7 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[24:53:43] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=8 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[24:55:37] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=9 | total=128 | quality_cvar90=0.010942 | energy_saving_q25=0.0
+[24:57:50] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=10 | total=128 | quality_cvar90=0.010942 | energy_saving_q25=0.0
+[24:59:58] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=11 | total=128 | quality_cvar90=0.116746 | energy_saving_q25=0.009929
+[25:02:11] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=12 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[25:04:24] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=13 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[25:06:38] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=14 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[25:08:54] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=15 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[25:11:10] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=16 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[25:12:16] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=17 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[25:13:23] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=18 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[25:14:29] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=19 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[25:15:35] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=20 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[25:16:41] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=21 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[25:17:47] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=22 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[25:19:49] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=23 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[25:21:51] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=24 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[25:23:47] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=25 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[25:25:43] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=26 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[25:27:38] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=27 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[25:29:34] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=28 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[25:31:50] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=29 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[25:34:07] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=30 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[25:36:23] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=31 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[25:38:39] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=32 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[25:40:55] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=33 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[25:42:52] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=34 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[25:44:51] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=35 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[25:46:51] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=36 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[25:48:48] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=37 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[25:50:44] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=38 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[25:52:40] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=39 | total=128 | quality_cvar90=0.004238 | energy_saving_q25=0.0
+[25:54:31] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=40 | total=128 | quality_cvar90=0.010942 | energy_saving_q25=0.009962
+[25:56:17] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=41 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[25:58:01] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=42 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[25:59:47] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=43 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[26:01:35] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=44 | total=128 | quality_cvar90=0.004238 | energy_saving_q25=0.0
+[26:03:21] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=45 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[26:05:31] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=46 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[26:07:40] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=47 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[26:09:52] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=48 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[26:12:05] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=49 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[26:14:17] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=50 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[26:16:27] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=51 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[26:18:11] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=52 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[26:19:54] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=53 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[26:21:36] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=54 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[26:23:20] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=55 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[26:25:04] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=56 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[26:26:08] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=57 | total=128 | quality_cvar90=0.010942 | energy_saving_q25=0.0
+[26:27:14] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=58 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[26:28:21] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=59 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[26:29:27] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=60 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[26:30:33] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=61 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[26:31:41] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=62 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[26:33:45] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=63 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[26:35:49] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=64 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[26:37:46] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=65 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[26:39:46] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=66 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[26:41:45] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=67 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[26:43:45] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=68 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[26:45:44] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=69 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[26:48:04] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=70 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[26:50:22] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=71 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[26:52:42] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=72 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[26:54:53] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=73 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[26:57:01] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=74 | total=128 | quality_cvar90=0.010942 | energy_saving_q25=0.0
+[26:59:12] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=75 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[27:01:25] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=76 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[27:03:09] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=77 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[27:04:54] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=78 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[27:06:39] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=79 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[27:08:24] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=80 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[27:10:08] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=81 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[27:11:49] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=82 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[27:13:31] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=83 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[27:15:15] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=84 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[27:16:58] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=85 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[27:19:07] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=86 | total=128 | quality_cvar90=0.010942 | energy_saving_q25=0.0
+[27:21:18] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=87 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[27:23:30] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=88 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[27:25:33] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=89 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[27:27:32] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=90 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[27:29:32] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=91 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[27:31:33] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=92 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[27:32:39] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=93 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[27:33:46] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=94 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[27:34:52] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=95 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[27:35:58] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=96 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[27:37:04] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=97 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[27:38:11] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=98 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[27:39:18] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=99 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[27:40:24] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=100 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[27:41:31] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=101 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[27:43:34] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=102 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[27:45:38] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=103 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[27:47:40] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=104 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[27:49:41] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=105 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[27:51:39] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=106 | total=128 | quality_cvar90=0.112618 | energy_saving_q25=0.009962
+[27:52:43] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=107 | total=128 | quality_cvar90=0.010942 | energy_saving_q25=0.008651
+[27:53:49] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=108 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[27:54:56] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=109 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[27:56:04] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=110 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[27:57:11] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=111 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[27:58:18] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=112 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[28:00:03] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=113 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[28:01:49] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=114 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[28:03:33] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=115 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[28:05:42] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=116 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[28:07:54] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=117 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[28:10:05] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=118 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[28:12:17] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=119 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[28:14:30] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=120 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[28:16:14] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=121 | total=128 | quality_cvar90=0.001812 | energy_saving_q25=0.0
+[28:17:59] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=122 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[28:19:45] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=123 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[28:21:32] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=124 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[28:23:44] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=125 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[28:25:57] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=126 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[28:28:18] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=127 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[28:30:31] morris_evaluation_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=128 | total=128 | quality_cvar90=0.0 | energy_saving_q25=0.0
+[28:30:31] morris_screening_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=128 | total=128
+[28:32:39] optimization_trial_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=1 | total=128 | trial=1 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True
+[28:35:01] optimization_trial_completed | search=rapec-v9-risk-constrained-20260803-155816 | completed=2 | total=128 | trial=2 | backend=qnehvi-initial-sobol | quality_cvar90=0.0 | energy_saving_q25=0.0 | quality_feasible=True

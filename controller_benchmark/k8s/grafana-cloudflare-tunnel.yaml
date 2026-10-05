@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana-cloudflare-tunnel
+  namespace: mlops-energy
+  labels:
+    app: grafana-cloudflare-tunnel
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana-cloudflare-tunnel
+  template:
+    metadata:
+      labels:
+        app: grafana-cloudflare-tunnel
+    spec:
+      containers:
+        - name: cloudflared
+          image: cloudflare/cloudflared:latest
+          imagePullPolicy: IfNotPresent
+          args:
+            - tunnel
+            - --no-autoupdate
+            - --protocol
+            - http2
+            - --url
+            - http://grafana:3000
+          resources:
+            requests:
+              cpu: 25m
+              memory: 64Mi
+            limits:
+              cpu: 250m
+              memory: 256Mi

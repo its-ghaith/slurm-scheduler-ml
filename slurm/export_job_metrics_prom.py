@@ -26,6 +26,15 @@ JOB_METRIC_KEYS = [
     "codecarbon_estimated_co2_kg",
 ]
 
+# These metric families predate the typed exporter and are already registered
+# as UNTYPED in the long-lived Pushgateway.  Keep their samples compatible so a
+# current campaign can coexist with archived groups without deleting history.
+PUSHGATEWAY_UNTYPED_COMPAT_METRICS = {
+    "slurm_job_training_energy_kwh",
+    "slurm_job_estimated_electricity_cost_eur",
+    "slurm_job_estimated_co2_kg",
+}
+
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -73,7 +82,14 @@ def format_job_metrics(summary):
         f'job_id="{label}",scenario="{prom_escape(str(summary.get("scenario", "unspecified")))}",'
         f'comparison_strategy="{prom_escape(str(summary.get("comparison_strategy", "unspecified")))}",'
         f'training_seed="{prom_escape(str(summary.get("training_seed", 0)))}",'
-        f'split_seed="{prom_escape(str(summary.get("split_seed", 0)))}"'
+        f'split_seed="{prom_escape(str(summary.get("split_seed", 0)))}",'
+        f'controller_id="{prom_escape(str(summary.get("controller_id", "unspecified")))}",'
+        f'benchmark_version="{prom_escape(str(summary.get("benchmark_version", "unversioned")))}",'
+        f'benchmark_run_id="{prom_escape(str(summary.get("benchmark_run_id", "none")))}",'
+        f'benchmark_case_id="{prom_escape(str(summary.get("benchmark_case_id", "none")))}",'
+        f'benchmark_stage="{prom_escape(str(summary.get("benchmark_stage", "none")))}",'
+        f'task_type="{prom_escape(str(summary.get("task_type", "object_detection")))}",'
+        f'quality_metric="{prom_escape(str(summary.get("quality_metric", "map50_95")))}"'
     )
     lines = [
         "# HELP slurm_job_info Static metadata for a SLURM job summary.",
@@ -85,7 +101,8 @@ def format_job_metrics(summary):
         value = to_float(summary.get(key, 0.0))
         metric_name = f"slurm_job_{key}"
         lines.append(f"# HELP {metric_name} Job metric derived from GPU summary JSON.")
-        lines.append(f"# TYPE {metric_name} gauge")
+        if metric_name not in PUSHGATEWAY_UNTYPED_COMPAT_METRICS:
+            lines.append(f"# TYPE {metric_name} gauge")
         lines.append(f'{metric_name}{{{labels}}} {value:.12g}')
 
     return "\n".join(lines) + "\n"
