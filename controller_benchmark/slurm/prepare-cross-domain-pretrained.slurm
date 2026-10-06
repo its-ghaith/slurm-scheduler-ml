@@ -14,7 +14,8 @@ set -euo pipefail
 : "${BENCHMARK_MANIFEST:?BENCHMARK_MANIFEST is required}"
 
 cd "$BENCHMARK_WORKSPACE"
-export PYTHONPATH="$BENCHMARK_WORKSPACE${PYTHONPATH:+:$PYTHONPATH}"
+PERSISTENT_PYTHON_DEPS="${PERSISTENT_PYTHON_DEPS:-/workspace-cache/controller-python-deps}"
+export PYTHONPATH="$BENCHMARK_WORKSPACE:$PERSISTENT_PYTHON_DEPS${PYTHONPATH:+:$PYTHONPATH}"
 export CONTROLLER_DATASET_ROOT="${CONTROLLER_DATASET_ROOT:-/workspace-cache/controller-datasets}"
 
 python -m controller_benchmark.prepare_cross_domain_pretrained \

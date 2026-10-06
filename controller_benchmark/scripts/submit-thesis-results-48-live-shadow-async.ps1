@@ -5,6 +5,7 @@ param(
     [string]$Namespace = "mlops-energy",
     [string]$PretrainingJobId = "",
     [switch]$QueueAfterPretraining,
+    [switch]$UpdateDashboard,
     [switch]$PlanOnly
 )
 
@@ -29,7 +30,7 @@ function Get-RunningPodName([string]$LabelSelector) {
     ) | Select-Object -First 1
 }
 
-$benchmarkVersion = "thesis-results-live-shadow-48-v1"
+$benchmarkVersion = "thesis-results-live-shadow-48-v2-real-lifecycle-v5"
 $generatedRoot = Join-Path $RepoRoot "results\controller-benchmark\generated-manifests"
 $manifest = Join-Path $generatedRoot "$benchmarkVersion.json"
 New-Item -ItemType Directory -Force $generatedRoot | Out-Null
@@ -53,8 +54,11 @@ $manifestDocument.execution.timeout_seconds = 172800
 $manifestDocument.execution.cooldown_seconds = 10
 $manifestDocument.execution | Add-Member -NotePropertyName require_complete_lifecycle_metrics -NotePropertyValue $true -Force
 $manifestDocument.execution | Add-Member -NotePropertyName measurement_max_attempts -NotePropertyValue 3 -Force
-$manifestDocument.execution | Add-Member -NotePropertyName dashboard_deployment_mode -NotePropertyValue "provisioned" -Force
-$manifestDocument.execution.dashboard_files = @("thesis-results-energy-adaptive-mlops.json")
+$dashboardDeploymentMode = if ($UpdateDashboard) { "provisioned" } else { "disabled" }
+$manifestDocument.execution | Add-Member -NotePropertyName dashboard_deployment_mode -NotePropertyValue $dashboardDeploymentMode -Force
+$manifestDocument.execution | Add-Member -NotePropertyName require_long_term_archive -NotePropertyValue $true -Force
+$manifestDocument.execution | Add-Member -NotePropertyName long_term_archive_root -NotePropertyValue "/thesis-archive/controller-benchmarks" -Force
+$manifestDocument.execution.dashboard_files = if ($UpdateDashboard) { @("thesis-results-energy-adaptive-mlops.json") } else { @() }
 $utf8 = [Text.UTF8Encoding]::new($false)
 [IO.File]::WriteAllText(
     $manifest,
@@ -66,10 +70,12 @@ $cases = @($manifestDocument.stages | ForEach-Object { $_.cases }).Count
 if ($cases -ne 48) { throw "Expected exactly 48 Full100 cases, generated $cases." }
 
 $dashboardPath = Join-Path $RepoRoot "grafana\dashboards\rapec-g-v4-live-shadow-cv-nv.json"
-& python -m controller_benchmark.dashboard.build_thesis_results_dashboard `
-    --output $dashboardPath --default-run-id $RunId `
-    --uid "rapec-g-v4-live-shadow-cv-nv"
-if ($LASTEXITCODE -ne 0) { throw "Could not generate the thesis dashboard." }
+if ($UpdateDashboard) {
+    & python -m controller_benchmark.dashboard.build_thesis_results_dashboard `
+        --output $dashboardPath --default-run-id $RunId `
+        --uid "rapec-g-v4-live-shadow-cv-nv"
+    if ($LASTEXITCODE -ne 0) { throw "Could not generate the thesis dashboard." }
+}
 
 if (-not $PlanOnly) {
     $slurmdPod = Get-RunningPodName "app=slurmd"
@@ -93,11 +99,12 @@ if (-not $PlanOnly) {
     & kubectl --kubeconfig $Kubeconfig -n $Namespace rollout restart deployment/controller-benchmark-status-web
     if ($LASTEXITCODE -ne 0) { throw "Could not restart the status website." }
 
-    $thesisDashboardConfigMap = "grafana-dashboard-thesis-results"
-    & kubectl --kubeconfig $Kubeconfig -n $Namespace create configmap $thesisDashboardConfigMap `
-        "--from-file=$([IO.Path]::GetFileName($dashboardPath))=$dashboardPath" `
-        --dry-run=client -o yaml | & kubectl --kubeconfig $Kubeconfig -n $Namespace apply -f -
-    if ($LASTEXITCODE -ne 0) { throw "Could not apply the dedicated thesis dashboard ConfigMap." }
+    if ($UpdateDashboard) {
+        $thesisDashboardConfigMap = "grafana-dashboard-thesis-results"
+        & kubectl --kubeconfig $Kubeconfig -n $Namespace create configmap $thesisDashboardConfigMap `
+            "--from-file=$([IO.Path]::GetFileName($dashboardPath))=$dashboardPath" `
+            --dry-run=client -o yaml | & kubectl --kubeconfig $Kubeconfig -n $Namespace apply -f -
+        if ($LASTEXITCODE -ne 0) { throw "Could not apply the dedicated thesis dashboard ConfigMap." }
 
     # Older deployments may contain a previous copy under the same filename.
     # Remove only that key after the dedicated replacement exists, preventing
@@ -164,12 +171,13 @@ if (-not $PlanOnly) {
         }
         Start-Sleep -Seconds 3
     }
-    if (-not $grafanaReloaded) { throw "Could not reload Grafana provisioning after 60 seconds." }
+        if (-not $grafanaReloaded) { throw "Could not reload Grafana provisioning after 60 seconds." }
+    }
 }
 
 $arguments = @{
     Manifest = $manifest
-    Controllers = "controller_benchmark/config/rapec-g-v4-live-shadow-controllers.json"
+    Controllers = "controller_benchmark/config/thesis-live-shadow-es-v4-v5-controllers.json"
     Kubeconfig = $Kubeconfig
     Namespace = $Namespace
     ExpectedCases = 48
@@ -189,7 +197,7 @@ if ($PlanOnly) { $arguments.PlanOnly = $true }
 if ($LASTEXITCODE -ne 0) { throw "Thesis 48-case Live-Shadow submission failed." }
 
 if ($PlanOnly) {
-    Write-Host "Plan validated: 48 real Full100 jobs, 48 virtual Standard-ES jobs, 48 virtual RAPEC-G-v4 jobs." -ForegroundColor Green
+    Write-Host "Plan validated: 48 real Full100 jobs plus 48 virtual jobs each for Standard ES, RAPEC-G v4, and RAPEC-G v5 (192 represented jobs)." -ForegroundColor Green
 } else {
     Write-Host "Rancher now owns the complete campaign; this computer may be switched off." -ForegroundColor Green
     $tunnelPod = & kubectl --kubeconfig $Kubeconfig -n $Namespace get pods `

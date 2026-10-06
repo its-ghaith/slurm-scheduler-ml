@@ -505,6 +505,8 @@ metadata:
   namespace: mlops-energy
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: mlflow
@@ -527,12 +529,12 @@ spec:
           command: ["/bin/bash", "-lc"]
           args:
             - |
-              mkdir -p /mlflow /mlruns && \
+              mkdir -p /mlflow/store /mlruns/artifacts && \
               mlflow server \
                 --host 0.0.0.0 \
                 --port 5000 \
-                --backend-store-uri file:///mlflow \
-                --default-artifact-root /mlruns
+                --backend-store-uri file:///mlflow/store \
+                --default-artifact-root /mlruns/artifacts
           ports:
             - containerPort: 5000
           readinessProbe:
@@ -553,9 +555,11 @@ spec:
               mountPath: /mlruns
       volumes:
         - name: mlflow-data
-          emptyDir: {}
+          persistentVolumeClaim:
+            claimName: mlflow-backend-pvc
         - name: mlruns
-          emptyDir: {}
+          persistentVolumeClaim:
+            claimName: mlflow-artifacts-pvc
 ---
 apiVersion: v1
 kind: Service
@@ -765,9 +769,11 @@ spec:
         - name: state
           emptyDir: {}
         - name: logs
-          emptyDir: {}
+          persistentVolumeClaim:
+            claimName: slurm-logs-pvc
         - name: energy-metrics
-          emptyDir: {}
+          persistentVolumeClaim:
+            claimName: slurm-energy-metrics-pvc
         - name: workspace-cache
           persistentVolumeClaim:
             claimName: slurmd-workspace-cache-pvc
@@ -843,6 +849,11 @@ spec:
               subPath: munge.key
             - name: workspace-cache
               mountPath: /workspace-cache
+            - name: logs
+              mountPath: /workspace/logs
+              readOnly: true
+            - name: thesis-archive
+              mountPath: /thesis-archive
       volumes:
         - name: slurm-conf
           configMap:
@@ -854,6 +865,12 @@ spec:
         - name: workspace-cache
           persistentVolumeClaim:
             claimName: slurmd-workspace-cache-pvc
+        - name: logs
+          persistentVolumeClaim:
+            claimName: slurm-logs-pvc
+        - name: thesis-archive
+          persistentVolumeClaim:
+            claimName: thesis-results-archive-pvc
 ---
 apiVersion: v1
 kind: Service

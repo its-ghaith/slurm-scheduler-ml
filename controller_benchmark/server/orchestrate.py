@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import base64
+import hashlib
 import json
 import os
 import shutil
@@ -28,6 +29,95 @@ def write_json(path: Path, value: dict[str, Any]) -> None:
     temporary = path.with_suffix(path.suffix + ".tmp")
     temporary.write_text(json.dumps(value, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     temporary.replace(path)
+
+
+def sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as source:
+        for chunk in iter(lambda: source.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def archive_completed_run(plan: dict[str, Any], run_dir: Path, status: dict[str, Any]) -> dict[str, Any]:
+    execution = plan.get("execution", {})
+    archive_root = Path(execution.get("long_term_archive_root", "/thesis-archive/controller-benchmarks"))
+    if not archive_root.parent.exists():
+        if execution.get("require_long_term_archive", False):
+            raise RuntimeError(f"Long-term archive volume is unavailable: {archive_root.parent}")
+        return {}
+
+    log_destination = run_dir / "slurm-logs"
+    log_destination.mkdir(parents=True, exist_ok=True)
+    log_root = Path("/workspace/logs")
+    job_ids = {
+        str(record.get("job_id"))
+        for record in status.get("runs", [])
+        if record.get("job_id")
+    }
+    if log_root.exists():
+        for job_id in sorted(job_ids):
+            for source in log_root.glob(f"*{job_id}*"):
+                if source.is_file():
+                    shutil.copy2(source, log_destination / source.name)
+
+    model_destination = run_dir / "model-registry"
+    model_root = Path("/workspace-cache/model_registry")
+    for job_id in sorted(job_ids):
+        source = model_root / f"job_{job_id}"
+        if source.is_dir():
+            shutil.copytree(source, model_destination / source.name, dirs_exist_ok=True)
+
+    checkpoint_roots = {
+        Path(str(item["case"]["pretrained_checkpoint"])).parent
+        for item in plan.get("runs", [])
+        if item.get("case", {}).get("pretrained_checkpoint")
+    }
+    checkpoint_destination = run_dir / "pretraining-checkpoints"
+    for source in sorted(checkpoint_roots):
+        if source.is_dir():
+            shutil.copytree(
+                source,
+                checkpoint_destination / source.name,
+                dirs_exist_ok=True,
+            )
+
+    archive_root.mkdir(parents=True, exist_ok=True)
+    run_archive_root = archive_root / plan["benchmark_run_id"]
+    run_archive_root.mkdir(parents=True, exist_ok=True)
+    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    destination = run_archive_root / stamp
+    suffix = 1
+    while destination.exists():
+        destination = run_archive_root / f"{stamp}-{suffix}"
+        suffix += 1
+    temporary = run_archive_root / f".{destination.name}.copying"
+    shutil.copytree(run_dir, temporary)
+
+    files = []
+    for path in sorted(item for item in temporary.rglob("*") if item.is_file()):
+        files.append(
+            {
+                "path": path.relative_to(temporary).as_posix(),
+                "size_bytes": path.stat().st_size,
+                "sha256": sha256_file(path),
+            }
+        )
+    manifest = {
+        "schema_version": 1,
+        "benchmark_run_id": plan["benchmark_run_id"],
+        "created_at": now(),
+        "source": str(run_dir),
+        "file_count": len(files),
+        "files": files,
+    }
+    write_json(temporary / "archive-manifest.json", manifest)
+    temporary.replace(destination)
+    return {
+        "path": str(destination),
+        "manifest": str(destination / "archive-manifest.json"),
+        "file_count": len(files),
+    }
 
 
 def run(command: list[str], *, cwd: Path | None = None, env: dict[str, str] | None = None) -> str:
@@ -310,14 +400,79 @@ def deploy_dashboard(dashboard_path: Path, benchmark_run_id: str | None = None) 
         post(dashboard)
 
 
+def prometheus_metric_types(exposition: str) -> dict[str, str]:
+    """Return the metric-family types declared in Prometheus text exposition."""
+    return {
+        match.group(1): match.group(2)
+        for match in re.finditer(
+            r"^# TYPE\s+([a-zA-Z_:][a-zA-Z0-9_:]*)\s+(\S+)\s*$",
+            exposition,
+            flags=re.MULTILINE,
+        )
+    }
+
+
+def normalize_prometheus_metric_types(
+    exposition: str, existing_types: dict[str, str]
+) -> str:
+    """Make a payload type-compatible with metric families already in Pushgateway.
+
+    Pushgateway validates metric-family types globally, including groups belonging
+    to historical runs.  Old node-exporter textfiles did not always emit TYPE
+    metadata, so those families are stored as ``untyped``.  Conversely, a few
+    historical epoch families were explicitly gauges.  Preserve the samples and
+    align only their metadata instead of deleting either old or new groups.
+    """
+    source_types = prometheus_metric_types(exposition)
+    emitted_types: set[str] = set()
+    normalized: list[str] = []
+    type_pattern = re.compile(
+        r"^# TYPE\s+([a-zA-Z_:][a-zA-Z0-9_:]*)\s+(\S+)\s*$"
+    )
+    sample_pattern = re.compile(r"^([a-zA-Z_:][a-zA-Z0-9_:]*)(?:\{|\s)")
+
+    for line in exposition.splitlines():
+        type_match = type_pattern.match(line)
+        if type_match:
+            metric = type_match.group(1)
+            metric_type = existing_types.get(metric, type_match.group(2))
+            if metric not in emitted_types:
+                normalized.append(f"# TYPE {metric} {metric_type}")
+                emitted_types.add(metric)
+            continue
+
+        sample_match = sample_pattern.match(line)
+        if sample_match:
+            metric = sample_match.group(1)
+            metric_type = existing_types.get(metric)
+            if metric_type and metric not in emitted_types and metric not in source_types:
+                normalized.append(f"# TYPE {metric} {metric_type}")
+                emitted_types.add(metric)
+        normalized.append(line)
+
+    return "\n".join(normalized) + "\n"
+
+
 def publish_prometheus(prom_path: Path, benchmark_run_id: str) -> None:
     url = f"http://pushgateway:9091/metrics/job/controller_benchmark/benchmark_run_id/{benchmark_run_id}"
+    with urllib.request.urlopen("http://pushgateway:9091/metrics", timeout=30) as response:
+        existing_types = prometheus_metric_types(response.read().decode("utf-8", errors="replace"))
+    payload = normalize_prometheus_metric_types(
+        prom_path.read_text(encoding="utf-8"), existing_types
+    ).encode("utf-8")
     request = urllib.request.Request(
-        url, data=prom_path.read_bytes(), method="PUT", headers={"Content-Type": "text/plain; version=0.0.4"}
+        url, data=payload, method="PUT", headers={"Content-Type": "text/plain; version=0.0.4"}
     )
-    with urllib.request.urlopen(request, timeout=30) as response:
-        if response.status >= 300:
-            raise RuntimeError(f"Prometheus publication failed with HTTP {response.status}")
+    try:
+        with urllib.request.urlopen(request, timeout=30) as response:
+            if response.status >= 300:
+                raise RuntimeError(f"Prometheus publication failed with HTTP {response.status}")
+    except urllib.error.HTTPError as exc:
+        body = exc.read().decode("utf-8", errors="replace")
+        first_error = next((line.strip() for line in body.splitlines() if line.strip()), "")
+        raise RuntimeError(
+            f"Prometheus publication failed with HTTP {exc.code}: {first_error[:1000]}"
+        ) from exc
 
 
 def merge_campaign_prometheus(node_exporter_dir: Path) -> Path:
@@ -516,7 +671,9 @@ def finalize(request: dict[str, Any], plan: dict[str, Any], run_dir: Path, works
     dashboard_files = plan.get("execution", {}).get("dashboard_files", [])
     deployed_dashboards = []
     dashboard_deployment_mode = plan.get("execution", {}).get("dashboard_deployment_mode", "api")
-    if dashboard_deployment_mode == "provisioned":
+    if dashboard_deployment_mode == "disabled":
+        pass
+    elif dashboard_deployment_mode == "provisioned":
         # The submission script installs the stable appendix dashboard once via
         # Grafana provisioning. Avoid creating a run-suffixed duplicate here.
         deployed_dashboards.extend(str(run_dir / dashboard_file) for dashboard_file in dashboard_files)
@@ -692,6 +849,12 @@ def orchestrate(request_path: Path) -> None:
     status.update({"state": "COMPLETED", "completed_at": now(), "updated_at": now(), "result": result})
     status.pop("current_job_id", None)
     write_json(status_path, status)
+    archive = archive_completed_run(plan, run_dir, status)
+    if archive:
+        result["long_term_archive"] = archive
+        status["result"] = result
+        status["updated_at"] = now()
+        write_json(status_path, status)
 
 
 def main() -> None:

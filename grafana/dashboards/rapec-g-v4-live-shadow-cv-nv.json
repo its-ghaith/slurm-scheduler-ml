@@ -2760,17 +2760,17 @@
         "label": "Current Thesis Run",
         "type": "constant",
         "hide": 2,
-        "query": "thesis-presentation-48",
+        "query": "20261005T205600Z-thesis-48-es-v4-v5-real",
         "current": {
           "selected": true,
-          "text": "thesis-presentation-48",
-          "value": "thesis-presentation-48"
+          "text": "20261005T205600Z-thesis-48-es-v4-v5-real",
+          "value": "20261005T205600Z-thesis-48-es-v4-v5-real"
         },
         "options": [
           {
             "selected": true,
-            "text": "thesis-presentation-48",
-            "value": "thesis-presentation-48"
+            "text": "20261005T205600Z-thesis-48-es-v4-v5-real",
+            "value": "20261005T205600Z-thesis-48-es-v4-v5-real"
           }
         ]
       },

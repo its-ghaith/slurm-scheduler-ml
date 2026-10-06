@@ -27,6 +27,8 @@ def load_json(path: Path) -> dict[str, Any]:
 def latest_run_id() -> str:
     if DEFAULT_RUN_ID:
         return DEFAULT_RUN_ID
+    if not ROOT.exists():
+        return ""
     candidates = [p for p in ROOT.iterdir() if p.is_dir() and (p / "status.json").exists()]
     if not candidates:
         return ""

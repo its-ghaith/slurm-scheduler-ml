@@ -48,6 +48,16 @@ def prepare(
                 continue
             output = output_root / f"{case['id']}.pt"
             if output.exists() and not force:
+                document = torch.load(output, map_location="cpu", weights_only=True)
+                source_case_id = str(document.get("source_case_id", ""))
+                if source_case_id != str(case["id"]):
+                    raise RuntimeError(
+                        f"Existing checkpoint {output} belongs to {source_case_id!r}, "
+                        f"not {case['id']!r}."
+                    )
+                rows.append(
+                    {key: value for key, value in document.items() if key != "model_state"}
+                )
                 print(f"SKIP {case['id']}: {output}", flush=True)
                 continue
             spec = {
