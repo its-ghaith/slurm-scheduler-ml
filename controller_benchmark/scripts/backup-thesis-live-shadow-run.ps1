@@ -40,10 +40,16 @@ if ([string]::IsNullOrWhiteSpace($archivePath)) {
 $safeRunId = $RunId -replace '[^A-Za-z0-9_.-]', '_'
 $remotePackage = "/tmp/$safeRunId-final-backup.tar.gz"
 $remotePrefix = "/tmp/$safeRunId-final-backup.part-"
+$archiveSeparator = $archivePath.LastIndexOf('/')
+if ($archiveSeparator -le 0 -or $archiveSeparator -ge ($archivePath.Length - 1)) {
+    throw "Invalid cluster archive path: $archivePath"
+}
+$archiveParent = $archivePath.Substring(0, $archiveSeparator)
+$archiveLeaf = $archivePath.Substring($archiveSeparator + 1)
 $prepare = @"
 set -e
 rm -f '$remotePackage' '$remotePackage.sha256' '$remotePrefix'*
-tar -czf '$remotePackage' -C '`$(dirname '$archivePath')' '`$(basename '$archivePath')'
+tar -czf '$remotePackage' -C '$archiveParent' '$archiveLeaf'
 sha256sum '$remotePackage' > '$remotePackage.sha256'
 split -b ${ChunkMiB}m -a 4 '$remotePackage' '$remotePrefix'
 "@
