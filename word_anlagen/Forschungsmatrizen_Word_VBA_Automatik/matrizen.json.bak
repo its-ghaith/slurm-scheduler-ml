@@ -1,0 +1,92 @@
+{
+  "quellen": {
+    "prechelt": "15",
+    "domhan": "16",
+    "reguero": "22",
+    "lcnet": "23",
+    "lcpfn": "24",
+    "zeus": "35"
+  },
+  "matrix1": {
+    "dateiname": "Matrix_1_Qualitaetsprognose_und_Energiebezug",
+    "y_achse": "Prognose zukünftiger Modellqualität",
+    "y_oben": "Explizite Prognose",
+    "y_unten": "Keine explizite Prognose",
+    "x_achse": "Energie als explizite Ziel- oder Bewertungsgröße",
+    "x_links": "Keine explizite Ziel- oder Bewertungsgröße",
+    "x_rechts": "Explizite Ziel- oder Bewertungsgröße",
+    "quadranten": {
+      "oben_links": {
+        "titel": "Qualitätsprognose ohne Energiebezug",
+        "beschreibung": "Lernkurvenprognose; Energie keine eigene Zielgröße",
+        "arbeiten": [
+          {"text": "Domhan et al.", "quelle": "domhan"},
+          {"text": "LCNet", "quelle": "lcnet"},
+          {"text": "LC-PFN", "quelle": "lcpfn"}
+        ]
+      },
+      "oben_rechts": {
+        "titel": "Qualitätsprognose mit Energiebezug",
+        "beschreibung": "Explizite Verknüpfung prognostizierter Qualität und Energie",
+        "arbeiten": [
+          {"text": "Reguero et al.", "quelle": "reguero", "detail": "Stop, Layer Freezing, Quantisierung"}
+        ]
+      },
+      "unten_links": {
+        "titel": "Reaktive Qualitätskriterien",
+        "beschreibung": "Beobachtete Validierungsentwicklung; keine Zukunftsprognose",
+        "arbeiten": [
+          {"text": "Klassische Kriterien nach Prechelt", "quelle": "prechelt"}
+        ]
+      },
+      "unten_rechts": {
+        "titel": "Energiebezogene Steuerung ohne\nQualitätskurvenprognose",
+        "beschreibung": "Energie als Zielgröße; keine Extrapolation der Qualitätslernkurve",
+        "arbeiten": [
+          {"text": "Zeus", "quelle": "zeus", "detail": "Batchgröße, GPU-Power-Limit;\nZielqualität vorgegeben"}
+        ]
+      }
+    }
+  },
+  "matrix2": {
+    "dateiname": "Matrix_2_Modelllernen_und_probabilistische_Prognose",
+    "y_achse": "Prädiktive Qualitätsverteilung",
+    "y_oben": "Explizite prädiktive Verteilung",
+    "y_unten": "Keine prädiktive Verteilung",
+    "x_achse": "Modelllernen aus anderen realen Trainingsläufen",
+    "x_links": "Kein Modelllernen aus realen Fremdläufen",
+    "x_rechts": "Modelllernen aus realen Fremdläufen",
+    "quadranten": {
+      "oben_links": {
+        "titel": "Probabilistische Prognose ohne Fremdläufe",
+        "beschreibung": "Kurvenanfang oder synthetischer Prior",
+        "arbeiten": [
+          {"text": "Domhan et al.", "quelle": "domhan"},
+          {"text": "LC-PFN", "quelle": "lcpfn", "detail": "Synthetischer Prior"}
+        ]
+      },
+      "oben_rechts": {
+        "titel": "Probabilistische Prognose mit Fremdläufen",
+        "beschreibung": "Reale Lernkurven anderer Konfigurationen",
+        "arbeiten": [
+          {"text": "LCNet", "quelle": "lcnet"}
+        ]
+      },
+      "unten_links": {
+        "titel": "Regelbasierte Verfahren ohne Fremdläufe",
+        "beschreibung": "Feste Regeln; keine probabilistische Prognose",
+        "arbeiten": [
+          {"text": "Klassische Kriterien nach Prechelt", "quelle": "prechelt"}
+        ]
+      },
+      "unten_rechts": {
+        "titel": "Modelllernen ohne Qualitätsverteilung",
+        "beschreibung": "Prognose- und Kostenmodelle aus Fremdläufen",
+        "arbeiten": [
+          {"text": "Reguero et al.", "quelle": "reguero", "detail": "Interventionsdaten anderer Läufe"},
+          {"text": "Zeus", "quelle": "zeus", "detail": "Wiederkehrende Trainingsjobs"}
+        ]
+      }
+    }
+  }
+}

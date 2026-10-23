@@ -1,0 +1,317 @@
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" id="Layer_1" version="1.1" viewBox="0 0 1180.8 799.2">
+  
+  <defs>
+    <style>
+      .st0 {
+        stroke: #95a7b4;
+        stroke-dasharray: 6.25 6.25;
+        stroke-width: 1.25px;
+      }
+
+      .st0, .st1, .st2, .st3 {
+        stroke-linejoin: round;
+      }
+
+      .st0, .st4, .st3 {
+        fill: none;
+      }
+
+      .st5 {
+        clip-path: url(#clippath-6);
+      }
+
+      .st6 {
+        clip-path: url(#clippath-7);
+      }
+
+      .st7 {
+        font-size: 17.5px;
+      }
+
+      .st7, .st8, .st9, .st10, .st11, .st12, .st13 {
+        isolation: isolate;
+      }
+
+      .st7, .st9, .st14 {
+        font-family: Arial-BoldMT, Arial;
+        font-weight: 700;
+      }
+
+      .st7, .st9, .st14, .st13 {
+        fill: #152b47;
+      }
+
+      .st15 {
+        clip-path: url(#clippath-4);
+      }
+
+      .st8 {
+        font-size: 13.8px;
+      }
+
+      .st8, .st16, .st10, .st12 {
+        fill: #627b93;
+      }
+
+      .st8, .st16, .st10, .st12, .st13 {
+        font-family: ArialMT, Arial;
+      }
+
+      .st1 {
+        fill: #172d49;
+      }
+
+      .st1, .st3 {
+        stroke: #172d49;
+        stroke-linecap: round;
+        stroke-width: 2px;
+      }
+
+      .st2 {
+        fill: #2d7fd1;
+        stroke: #fff;
+        stroke-width: 1.1px;
+      }
+
+      .st17 {
+        clip-path: url(#clippath-9);
+      }
+
+      .st18 {
+        clip-path: url(#clippath-10);
+      }
+
+      .st19 {
+        fill: #edf4ff;
+      }
+
+      .st20 {
+        fill: #fff;
+      }
+
+      .st21 {
+        fill: #f0f8e9;
+      }
+
+      .st22 {
+        clip-path: url(#clippath-11);
+      }
+
+      .st9 {
+        font-size: 18px;
+      }
+
+      .st16 {
+        font-size: 14.8px;
+      }
+
+      .st23 {
+        clip-path: url(#clippath-1);
+      }
+
+      .st10 {
+        font-size: 13.2px;
+      }
+
+      .st24 {
+        clip-path: url(#clippath-5);
+      }
+
+      .st25 {
+        clip-path: url(#clippath-8);
+      }
+
+      .st26 {
+        clip-path: url(#clippath-3);
+      }
+
+      .st27 {
+        fill: #e8f6f6;
+      }
+
+      .st12 {
+        font-size: 12.8px;
+      }
+
+      .st14 {
+        font-size: 19px;
+      }
+
+      .st13 {
+        font-size: 17.2px;
+      }
+
+      .st28 {
+        clip-path: url(#clippath-2);
+      }
+
+      .st29 {
+        clip-path: url(#clippath);
+      }
+
+      .st30 {
+        fill: #fff1ea;
+      }
+    </style>
+    <clipPath id="clippath">
+      <rect class="st4" y="0" width="1180.8" height="799.2" />
+    </clipPath>
+    <clipPath id="clippath-1">
+      <rect class="st4" y="0" width="1180.8" height="799.2" />
+    </clipPath>
+    <clipPath id="clippath-2">
+      <rect class="st4" y="0" width="1180.8" height="799.2" />
+    </clipPath>
+    <clipPath id="clippath-3">
+      <rect class="st4" y="0" width="1180.8" height="799.2" />
+    </clipPath>
+    <clipPath id="clippath-4">
+      <rect class="st4" y="0" width="1180.8" height="799.2" />
+    </clipPath>
+    <clipPath id="clippath-5">
+      <rect class="st4" y="0" width="1180.8" height="799.2" />
+    </clipPath>
+    <clipPath id="clippath-6">
+      <rect class="st4" y="0" width="1180.8" height="799.2" />
+    </clipPath>
+    <clipPath id="clippath-7">
+      <rect class="st4" y="0" width="1180.8" height="799.2" />
+    </clipPath>
+    <clipPath id="clippath-8">
+      <rect class="st4" y="0" width="1180.8" height="799.2" />
+    </clipPath>
+    <clipPath id="clippath-9">
+      <rect class="st4" y="0" width="1180.8" height="799.2" />
+    </clipPath>
+    <clipPath id="clippath-10">
+      <rect class="st4" y="0" width="1180.8" height="799.2" />
+    </clipPath>
+    <clipPath id="clippath-11">
+      <rect class="st4" y="0" width="1180.8" height="799.2" />
+    </clipPath>
+  </defs>
+  <g id="figure_1">
+    <g id="patch_1">
+      <path class="st20" d="M0,799.2h1180.8V0H0v799.2Z" />
+    </g>
+    <g id="axes_1">
+      <g id="patch_2">
+        <g class="st29">
+          <path class="st27" d="M118.8,46.8h498.6v315H118.8V46.8Z" />
+        </g>
+      </g>
+      <g id="patch_3">
+        <g class="st23">
+          <path class="st21" d="M617.4,46.8h498.6v315h-498.6V46.8Z" />
+        </g>
+      </g>
+      <g id="patch_4">
+        <g class="st28">
+          <path class="st19" d="M118.8,361.8h498.6v315H118.8v-315Z" />
+        </g>
+      </g>
+      <g id="patch_5">
+        <g class="st26">
+          <path class="st30" d="M617.4,361.8h498.6v315h-498.6v-315Z" />
+        </g>
+      </g>
+      <g id="line2d_1">
+        <g class="st15">
+          <path class="st0" d="M617.4,46.8v630" />
+        </g>
+      </g>
+      <g id="line2d_2">
+        <g class="st24">
+          <path class="st0" d="M118.8,361.8h997.2" />
+        </g>
+      </g>
+      <g id="patch_6">
+        <path class="st3" d="M120.8,676.8h1006.09" />
+        <path class="st1" d="M1119.68,673.2l7.2,3.6-7.2,3.6v-7.2Z" />
+      </g>
+      <g id="patch_7">
+        <path class="st3" d="M118.8,674.8c0-214.67,0-428.59,0-641.77" />
+        <path class="st1" d="M115.2,40.23l3.6-7.2,3.6,7.2h-7.2Z" />
+      </g>
+      <g id="text_1">
+        <text class="st13" transform="translate(196.56 217.56)"><tspan x="0" y="0">Domhan et al. [16]</tspan></text>
+      </g>
+      <g id="text_2">
+        <text class="st13" transform="translate(196.56 260.76)"><tspan x="0" y="0">LCNet [23]</tspan></text>
+      </g>
+      <g id="text_3">
+        <text class="st13" transform="translate(196.56 303.96)"><tspan x="0" y="0">LC-PFN [24]</tspan></text>
+      </g>
+      <g id="text_4">
+        <text class="st13" transform="translate(695.16 240.54)"><tspan x="0" y="0">Reguero et al. [22]</tspan></text>
+      </g>
+      <g id="text_5">
+        <text class="st8" transform="translate(695.16 262.57)"><tspan x="0" y="0">Stop, Layer Freezing, Quantisierung</tspan></text>
+      </g>
+      <g id="text_6">
+        <text class="st13" transform="translate(196.56 555.42)"><tspan x="0" y="0">Klassische Kriterien nach Prechelt [15]</tspan></text>
+      </g>
+      <g id="text_7">
+        <text class="st13" transform="translate(695.16 555.42)"><tspan x="0" y="0">Zeus [35]</tspan></text>
+      </g>
+      <g id="text_8">
+        <text class="st8" transform="translate(695.16 577.66)"><tspan x="0" y="0">Batchgröße, GPU-Power-Limit;</tspan></text>
+        <text class="st8" transform="translate(695.16 591.05)"><tspan x="0" y="0">Zielqualität vorgegeben</tspan></text>
+      </g>
+      <g id="text_9">
+        <text class="st9" transform="translate(60.95 499.01) rotate(-90)"><tspan x="0" y="0">Prognose zukünftiger Modellqualität</tspan></text>
+      </g>
+      <g id="text_10">
+        <text class="st12" transform="translate(59.91 100.16)"><tspan x="0" y="0">Explizite</tspan></text>
+        <text class="st12" transform="translate(54.26 112.45)"><tspan x="0" y="0">Prognose</tspan></text>
+      </g>
+      <g id="text_11">
+        <text class="st12" transform="translate(73.91 605.94)"><tspan x="0" y="0">Keine</tspan></text>
+        <text class="st12" transform="translate(59.8 618.22)"><tspan x="0" y="0">explizite</tspan></text>
+        <text class="st12" transform="translate(54.26 630.51)"><tspan x="0" y="0">Prognose</tspan></text>
+      </g>
+      <g id="text_12">
+        <text class="st10" transform="translate(118.8 710.49)"><tspan x="0" y="0">Keine explizite Ziel- oder Bewertungsgröße</tspan></text>
+      </g>
+      <g id="text_13">
+        <text class="st10" transform="translate(899.57 710.49)"><tspan x="0" y="0">Explizite Ziel- oder Bewertungsgröße</tspan></text>
+      </g>
+      <text class="st7" transform="translate(415.13 762.1)"><tspan x="0" y="0">Energie als explizite Ziel- oder Bewertungsgröße</tspan></text>
+      <text class="st11" transform="translate(196.45 107.67)"><tspan class="st14"><tspan x="0" y="0">Qualitätsprognose ohne Energiebezug</tspan></tspan><tspan class="st16"><tspan x="-.65" y="17.76">Lernkurvenprognose; Energie keine eigene Zielgröße</tspan></tspan></text>
+      <text class="st11" transform="translate(718.38 107.67)"><tspan class="st14"><tspan x="0" y="0">Qualitätsprognose mit Energiebezug</tspan></tspan><tspan class="st16"><tspan x="-28.41" y="17.76">Explizite Verknüpfung prognostizierter Qualität und Energie</tspan></tspan></text>
+      <text class="st11" transform="translate(250.78 422.91)"><tspan class="st14"><tspan x="0" y="0">Reaktive Qualitätskriterien</tspan></tspan><tspan class="st16"><tspan x="-86.24" y="17.76">Beobachtete Validierungsentwicklung; keine Zukunftsprognose</tspan></tspan></text>
+      <text class="st11" transform="translate(723.72 422.92)"><tspan class="st14"><tspan x="0" y="0">Energiebezogene Steuerung ohne</tspan></tspan><tspan class="st14"><tspan x="35.88" y="22.8" xml:space="preserve"> Qualitätskurvenprognose</tspan></tspan><tspan class="st16"><tspan x="-58.22" y="40.56">Energie als Zielgröße; keine Extrapolation der Qualitätslernkurve</tspan></tspan></text>
+      <g id="PathCollection_1">
+        <g class="st5">
+          <path id="m967b55a752" class="st2" d="M166.32,218.64c1.51,0,2.96-.6,4.03-1.67s1.67-2.52,1.67-4.03-.6-2.96-1.67-4.03-2.52-1.67-4.03-1.67-2.96.6-4.03,1.67-1.67,2.52-1.67,4.03.6,2.96,1.67,4.03,2.52,1.67,4.03,1.67Z" />
+        </g>
+      </g>
+      <g id="PathCollection_2">
+        <g class="st6">
+          <path id="m967b55a7521" data-name="m967b55a752" class="st2" d="M166.32,261.84c1.51,0,2.96-.6,4.03-1.67s1.67-2.52,1.67-4.03-.6-2.96-1.67-4.03-2.52-1.67-4.03-1.67-2.96.6-4.03,1.67-1.67,2.52-1.67,4.03.6,2.96,1.67,4.03,2.52,1.67,4.03,1.67Z" />
+        </g>
+      </g>
+      <g id="PathCollection_3">
+        <g class="st25">
+          <path id="m967b55a7522" data-name="m967b55a752" class="st2" d="M166.32,305.04c1.51,0,2.96-.6,4.03-1.67s1.67-2.52,1.67-4.03-.6-2.96-1.67-4.03-2.52-1.67-4.03-1.67-2.96.6-4.03,1.67-1.67,2.52-1.67,4.03.6,2.96,1.67,4.03,2.52,1.67,4.03,1.67Z" />
+        </g>
+      </g>
+      <g id="PathCollection_4">
+        <g class="st17">
+          <path id="m967b55a7523" data-name="m967b55a752" class="st2" d="M664.92,241.5c1.51,0,2.96-.6,4.03-1.67s1.67-2.52,1.67-4.03-.6-2.96-1.67-4.03-2.52-1.67-4.03-1.67-2.96.6-4.03,1.67-1.67,2.52-1.67,4.03.6,2.96,1.67,4.03,2.52,1.67,4.03,1.67Z" />
+        </g>
+      </g>
+      <g id="PathCollection_5">
+        <g class="st18">
+          <path id="m967b55a7524" data-name="m967b55a752" class="st2" d="M166.32,556.5c1.51,0,2.96-.6,4.03-1.67s1.67-2.52,1.67-4.03-.6-2.96-1.67-4.03-2.52-1.67-4.03-1.67-2.96.6-4.03,1.67-1.67,2.52-1.67,4.03.6,2.96,1.67,4.03,2.52,1.67,4.03,1.67Z" />
+        </g>
+      </g>
+      <g id="PathCollection_6">
+        <g class="st22">
+          <path id="m967b55a7525" data-name="m967b55a752" class="st2" d="M664.92,556.5c1.51,0,2.96-.6,4.03-1.67s1.67-2.52,1.67-4.03-.6-2.96-1.67-4.03-2.52-1.67-4.03-1.67-2.96.6-4.03,1.67-1.67,2.52-1.67,4.03.6,2.96,1.67,4.03,2.52,1.67,4.03,1.67Z" />
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

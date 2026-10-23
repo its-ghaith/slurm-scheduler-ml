@@ -1,0 +1,4 @@
+PNG optional übersprungen: No module named 'cairosvg'
+matrix1 erstellt: Matrix_1_Qualitaetsprognose_und_Energiebezug.svg Textzeilen: (2, 2, 2, 3)
+PNG optional übersprungen: No module named 'cairosvg'
+matrix2 erstellt: Matrix_2_Modelllernen_und_probabilistische_Prognose.svg Textzeilen: (2, 2, 2, 2)

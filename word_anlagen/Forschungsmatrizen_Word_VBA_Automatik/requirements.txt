@@ -1,0 +1,2 @@
+# Optional: nur fuer die PNG-Vorschau; SVG-Erzeugung braucht keine Pakete.
+CairoSVG>=2.7
