@@ -1,0 +1,11 @@
+MLOps-Architektur zu Abschnitt 3.4
+
+MLOps_Architektur_3_4.graphml: In yEd bearbeitbare Originaldatei.
+MLOps_Architektur_3_4.svg: Aus yEd exportierte Vektorgrafik; Editor-Raster und interaktive Ereignishandler entfernt. Fuer Word geeignet.
+MLOps_Architektur_3_4.png: Hochaufloesende Vorschau aus der SVG-Datei.
+
+Die Darstellung zeigt logische Verantwortlichkeiten, keine zusaetzlichen physischen Rechner. Durchgezogene Pfeile kennzeichnen Steuerung/Ausfuehrung, gestrichelte Pfeile die Datenrichtung.
+
+Empfohlene Bildunterschrift: Konzeptionelle Architektur der MLOps-Experimentierumgebung. Quelle: Eigene Darstellung.
+
+Die Word-Datei wurde nicht veraendert.

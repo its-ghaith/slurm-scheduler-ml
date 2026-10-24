@@ -1,0 +1,681 @@
+{
+  "nodes": [
+    {
+      "id": "title",
+      "x": 40,
+      "y": 18,
+      "w": 1680,
+      "h": 54,
+      "label": "Konzeptionelle Architektur der MLOps-Experimentierumgebung",
+      "parent": null,
+      "fill": "#FFFFFF",
+      "border": "#18354B",
+      "size": 30,
+      "bold": true,
+      "group": false,
+      "note": true
+    },
+    {
+      "id": "subtitle",
+      "x": 40,
+      "y": 79,
+      "w": 1680,
+      "h": 32,
+      "label": "Auftragssteuerung, Trainingsausführung und Ergebnisdaten",
+      "parent": null,
+      "fill": "#FFFFFF",
+      "border": "#18354B",
+      "size": 19,
+      "bold": false,
+      "group": false,
+      "note": true
+    },
+    {
+      "id": "onprem",
+      "x": 280,
+      "y": 140,
+      "w": 1440,
+      "h": 990,
+      "label": "On-Premise-Umgebung",
+      "parent": null,
+      "fill": "#FAFBFC",
+      "border": "#A3AFB7",
+      "size": 23,
+      "bold": true,
+      "group": true,
+      "note": false
+    },
+    {
+      "id": "kubernetes",
+      "x": 305,
+      "y": 195,
+      "w": 1390,
+      "h": 775,
+      "label": "Kubernetes · Betrieb der containerisierten Dienste und Worker",
+      "parent": "onprem",
+      "fill": "#F2F5F8",
+      "border": "#7891A4",
+      "size": 22,
+      "bold": true,
+      "group": true,
+      "note": false
+    },
+    {
+      "id": "local",
+      "x": 35,
+      "y": 270,
+      "w": 220,
+      "h": 104,
+      "label": "Lokaler Rechner\nProgrammstand und\nVersuchskonfiguration",
+      "parent": null,
+      "fill": "#FFFFFF",
+      "border": "#18354B",
+      "size": 21,
+      "bold": false,
+      "group": false,
+      "note": false
+    },
+    {
+      "id": "orchestrator",
+      "x": 355,
+      "y": 275,
+      "w": 260,
+      "h": 100,
+      "label": "Versuchssteuerung\nAufträge und Status",
+      "parent": "kubernetes",
+      "fill": "#FFFFFF",
+      "border": "#18354B",
+      "size": 22,
+      "bold": false,
+      "group": false,
+      "note": false
+    },
+    {
+      "id": "slurm",
+      "x": 710,
+      "y": 275,
+      "w": 340,
+      "h": 100,
+      "label": "SLURM-Jobplanung\nRessourcen und Warteschlange",
+      "parent": "kubernetes",
+      "fill": "#FFFFFF",
+      "border": "#18354B",
+      "size": 21,
+      "bold": false,
+      "group": false,
+      "note": false
+    },
+    {
+      "id": "worker",
+      "x": 640,
+      "y": 430,
+      "w": 500,
+      "h": 495,
+      "label": "SLURM-Worker · bereitgestellte Ressourcen",
+      "parent": "kubernetes",
+      "fill": "#E7EFF4",
+      "border": "#7891A4",
+      "size": 20,
+      "bold": true,
+      "group": true,
+      "note": false
+    },
+    {
+      "id": "job",
+      "x": 660,
+      "y": 478,
+      "w": 460,
+      "h": 425,
+      "label": "Temporärer Trainingsjob",
+      "parent": "worker",
+      "fill": "#FFFFFF",
+      "border": "#7891A4",
+      "size": 21,
+      "bold": true,
+      "group": true,
+      "note": false
+    },
+    {
+      "id": "training",
+      "x": 765,
+      "y": 540,
+      "w": 320,
+      "h": 76,
+      "label": "Training und Validierung",
+      "parent": "job",
+      "fill": "#FFFFFF",
+      "border": "#18354B",
+      "size": 22,
+      "bold": false,
+      "group": false,
+      "note": false
+    },
+    {
+      "id": "observation",
+      "x": 765,
+      "y": 675,
+      "w": 320,
+      "h": 78,
+      "label": "Beobachtung und Messung\nQualität · Energie · Zeit",
+      "parent": "job",
+      "fill": "#F0F8F6",
+      "border": "#16756C",
+      "size": 21,
+      "bold": false,
+      "group": false,
+      "note": false
+    },
+    {
+      "id": "controller",
+      "x": 765,
+      "y": 815,
+      "w": 320,
+      "h": 64,
+      "label": "Early-Stopping-Controller",
+      "parent": "job",
+      "fill": "#F0F8F6",
+      "border": "#16756C",
+      "size": 21,
+      "bold": false,
+      "group": false,
+      "note": false
+    },
+    {
+      "id": "mlflow",
+      "x": 1250,
+      "y": 275,
+      "w": 350,
+      "h": 100,
+      "label": "MLflow\nRun-Daten und Modellartefakte",
+      "parent": "kubernetes",
+      "fill": "#FFFFFF",
+      "border": "#18354B",
+      "size": 22,
+      "bold": false,
+      "group": false,
+      "note": false
+    },
+    {
+      "id": "handoff",
+      "x": 1220,
+      "y": 525,
+      "w": 390,
+      "h": 100,
+      "label": "Monitoring-Übergabe\nExporter / Pushgateway",
+      "parent": "kubernetes",
+      "fill": "#FFFFFF",
+      "border": "#18354B",
+      "size": 23,
+      "bold": false,
+      "group": false,
+      "note": false
+    },
+    {
+      "id": "prometheus",
+      "x": 1250,
+      "y": 710,
+      "w": 350,
+      "h": 80,
+      "label": "Prometheus\nMonitoring-Zeitreihen",
+      "parent": "kubernetes",
+      "fill": "#FFFFFF",
+      "border": "#18354B",
+      "size": 22,
+      "bold": false,
+      "group": false,
+      "note": false
+    },
+    {
+      "id": "grafana",
+      "x": 1250,
+      "y": 855,
+      "w": 350,
+      "h": 80,
+      "label": "Grafana\nAbfragen und Visualisierung",
+      "parent": "kubernetes",
+      "fill": "#FFFFFF",
+      "border": "#18354B",
+      "size": 22,
+      "bold": false,
+      "group": false,
+      "note": false
+    },
+    {
+      "id": "storage",
+      "x": 355,
+      "y": 1000,
+      "w": 1255,
+      "h": 100,
+      "label": "Persistente Datenhaltung und Archivierung\nProgrammstände · Konfigurationen · Messaufzeichnungen · Controllerentscheidungen\nRun-Daten · Modellartefakte · Monitoring-Zeitreihen · Auswertungen",
+      "parent": "onprem",
+      "fill": "#F0F8F6",
+      "border": "#16756C",
+      "size": 21,
+      "bold": false,
+      "group": false,
+      "note": false
+    },
+    {
+      "id": "ids",
+      "x": 40,
+      "y": 1145,
+      "w": 1680,
+      "h": 30,
+      "label": "Zuordnung: Versuchskennung · SLURM-Job-ID · MLflow-Run-ID; bei Live-Shadow zusätzlich Controllerkennung.",
+      "parent": null,
+      "fill": "#FFFFFF",
+      "border": "#18354B",
+      "size": 19,
+      "bold": false,
+      "group": false,
+      "note": true
+    },
+    {
+      "id": "shadow",
+      "x": 40,
+      "y": 1180,
+      "w": 1680,
+      "h": 30,
+      "label": "Live-Shadow: Stop-Empfehlung wird dokumentiert; das Referenztraining wird fortgesetzt.",
+      "parent": null,
+      "fill": "#FFFFFF",
+      "border": "#18354B",
+      "size": 19,
+      "bold": false,
+      "group": false,
+      "note": true
+    },
+    {
+      "id": "legend",
+      "x": 40,
+      "y": 1218,
+      "w": 1680,
+      "h": 30,
+      "label": "Durchgezogen: Steuerung / Ausführung    |    Gestrichelt: Datenfluss (Pfeilrichtung = Datenrichtung)    |    Logische Gruppierung",
+      "parent": null,
+      "fill": "#FFFFFF",
+      "border": "#18354B",
+      "size": 18,
+      "bold": false,
+      "group": false,
+      "note": true
+    },
+    {
+      "id": "source",
+      "x": 40,
+      "y": 1250,
+      "w": 1680,
+      "h": 28,
+      "label": "Quelle: Eigene Darstellung der in Abschnitt 3.4 beschriebenen Architektur.",
+      "parent": null,
+      "fill": "#FFFFFF",
+      "border": "#18354B",
+      "size": 18,
+      "bold": false,
+      "group": false,
+      "note": true
+    }
+  ],
+  "edges": [
+    {
+      "id": "submit",
+      "source": "local",
+      "target": "orchestrator",
+      "points": [
+        [
+          255,
+          325
+        ],
+        [
+          355,
+          325
+        ]
+      ],
+      "label": "Übergabe",
+      "labelbox": [
+        258,
+        278,
+        94,
+        30
+      ],
+      "data": false
+    },
+    {
+      "id": "queue",
+      "source": "orchestrator",
+      "target": "slurm",
+      "points": [
+        [
+          615,
+          325
+        ],
+        [
+          710,
+          325
+        ]
+      ],
+      "label": "reicht ein",
+      "labelbox": [
+        619,
+        278,
+        87,
+        30
+      ],
+      "data": false
+    },
+    {
+      "id": "run",
+      "source": "slurm",
+      "target": "worker",
+      "points": [
+        [
+          880,
+          375
+        ],
+        [
+          880,
+          430
+        ]
+      ],
+      "label": "startet Job",
+      "labelbox": [
+        887,
+        391,
+        120,
+        30
+      ],
+      "data": false
+    },
+    {
+      "id": "observe",
+      "source": "training",
+      "target": "observation",
+      "points": [
+        [
+          925,
+          616
+        ],
+        [
+          925,
+          675
+        ]
+      ],
+      "label": "erfasst",
+      "labelbox": [
+        937,
+        628,
+        94,
+        30
+      ],
+      "data": true
+    },
+    {
+      "id": "input",
+      "source": "observation",
+      "target": "controller",
+      "points": [
+        [
+          925,
+          753
+        ],
+        [
+          925,
+          815
+        ]
+      ],
+      "label": "aktuelle Beobachtungen",
+      "labelbox": [
+        770,
+        774,
+        307,
+        28
+      ],
+      "data": true
+    },
+    {
+      "id": "feedback",
+      "source": "controller",
+      "target": "training",
+      "points": [
+        [
+          765,
+          847
+        ],
+        [
+          704,
+          847
+        ],
+        [
+          704,
+          578
+        ],
+        [
+          765,
+          578
+        ]
+      ],
+      "label": "Fortsetzen /\nStop-Empfehlung",
+      "labelbox": [
+        665,
+        624,
+        94,
+        48
+      ],
+      "data": false
+    },
+    {
+      "id": "track",
+      "source": "job",
+      "target": "mlflow",
+      "points": [
+        [
+          1120,
+          555
+        ],
+        [
+          1175,
+          555
+        ],
+        [
+          1175,
+          325
+        ],
+        [
+          1250,
+          325
+        ]
+      ],
+      "label": "Konfiguration, Qualität\nund Artefakte",
+      "labelbox": [
+        1190,
+        395,
+        300,
+        52
+      ],
+      "data": true
+    },
+    {
+      "id": "publish",
+      "source": "job",
+      "target": "handoff",
+      "points": [
+        [
+          1120,
+          605
+        ],
+        [
+          1160,
+          605
+        ],
+        [
+          1160,
+          575
+        ],
+        [
+          1220,
+          575
+        ]
+      ],
+      "label": "Messwerte und\nJobergebnisse",
+      "labelbox": [
+        1155,
+        646,
+        240,
+        48
+      ],
+      "data": true
+    },
+    {
+      "id": "scrape",
+      "source": "handoff",
+      "target": "prometheus",
+      "points": [
+        [
+          1425,
+          625
+        ],
+        [
+          1425,
+          710
+        ]
+      ],
+      "label": "Abruf durch Prometheus",
+      "labelbox": [
+        1437,
+        657,
+        248,
+        30
+      ],
+      "data": true
+    },
+    {
+      "id": "query",
+      "source": "prometheus",
+      "target": "grafana",
+      "points": [
+        [
+          1425,
+          790
+        ],
+        [
+          1425,
+          855
+        ]
+      ],
+      "label": "Abfragen durch Grafana",
+      "labelbox": [
+        1437,
+        808,
+        248,
+        30
+      ],
+      "data": true
+    },
+    {
+      "id": "raw",
+      "source": "job",
+      "target": "storage",
+      "points": [
+        [
+          925,
+          903
+        ],
+        [
+          925,
+          1000
+        ]
+      ],
+      "label": "Rohdaten und Entscheidungen",
+      "labelbox": [
+        940,
+        945,
+        325,
+        30
+      ],
+      "data": true
+    },
+    {
+      "id": "manifest",
+      "source": "orchestrator",
+      "target": "storage",
+      "points": [
+        [
+          485,
+          375
+        ],
+        [
+          485,
+          1000
+        ]
+      ],
+      "label": "Programmstand und\nVersuchskonfiguration",
+      "labelbox": [
+        365,
+        640,
+        240,
+        54
+      ],
+      "data": true
+    },
+    {
+      "id": "persist_ml",
+      "source": "mlflow",
+      "target": "storage",
+      "points": [
+        [
+          1600,
+          325
+        ],
+        [
+          1665,
+          325
+        ],
+        [
+          1665,
+          980
+        ],
+        [
+          1500,
+          980
+        ],
+        [
+          1500,
+          1000
+        ]
+      ],
+      "label": "",
+      "labelbox": null,
+      "data": true
+    },
+    {
+      "id": "persist_prom",
+      "source": "prometheus",
+      "target": "storage",
+      "points": [
+        [
+          1600,
+          750
+        ],
+        [
+          1640,
+          750
+        ],
+        [
+          1640,
+          950
+        ],
+        [
+          1545,
+          950
+        ],
+        [
+          1545,
+          1000
+        ]
+      ],
+      "label": "",
+      "labelbox": null,
+      "data": true
+    }
+  ]
+}
