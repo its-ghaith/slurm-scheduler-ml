@@ -1,0 +1,113 @@
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1290" viewBox="0 0 1800 1290" role="img" aria-labelledby="title description">
+  <title id="title">Technische Bereitstellung der MLOps- und Messumgebung</title>
+  <desc id="description">Deploymentansicht des Namespace mlops-energy. benchmark-orchestrator, slurmctld und slurmd sind auf malea-srv01 festgelegt. MLflow, Pushgateway, Prometheus und Grafana werden ohne festen nodeSelector eingeplant; Prometheus schließt acds-cpu-01 aus. Der Trainingsprozess mit Controller liegt im slurmd-Container, der Node Exporter in einem weiteren Container desselben Pods. Persistente Volumes werden über S1 bis S4 zugeordnet.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#173449" />
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1800" height="1290" rx="0" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="1.7" />
+  <text x="40" y="58" font-family="Arial, Helvetica, sans-serif" font-size="37" font-weight="700" fill="#173449" text-anchor="start">Technische Bereitstellung der MLOps- und Messumgebung</text>
+  <text x="40" y="97" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="400" fill="#4E6576" text-anchor="start">Deploymentansicht · Knoten, Pods, Service-Endpunkte und Speicherzuordnung</text>
+  <rect x="270" y="135" width="1490" height="1085" rx="16" fill="#FFFFFF" stroke="#ADBDC8" stroke-width="2" />
+  <text x="300" y="176" font-family="Arial, Helvetica, sans-serif" font-size="27" font-weight="700" fill="#173449" text-anchor="start">Kubernetes-Cluster  /  Namespace mlops-energy</text>
+  <text x="300" y="207" font-family="Arial, Helvetica, sans-serif" font-size="20" font-weight="400" fill="#4E6576" text-anchor="start">Verwaltung über Rancher · Bereitstellung über kubectl</text>
+  <rect x="300" y="230" width="760" height="710" rx="12" fill="#F2F6FA" stroke="#ADBDC8" stroke-width="1.7" />
+  <text x="325" y="270" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="700" fill="#173449" text-anchor="start">Knoten: malea-srv01</text>
+  <text x="325" y="302" font-family="Arial, Helvetica, sans-serif" font-size="20" font-weight="400" fill="#4E6576" text-anchor="start">Feste Platzierung über nodeSelector</text>
+  <rect x="1080" y="230" width="650" height="710" rx="12" fill="#F0F7F5" stroke="#ADBDC8" stroke-width="1.7" stroke-dasharray="7 5" />
+  <text x="1105" y="270" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="700" fill="#173449" text-anchor="start">Weitere Dienst-Pods</text>
+  <text x="1105" y="302" font-family="Arial, Helvetica, sans-serif" font-size="19" font-weight="400" fill="#4E6576" text-anchor="start">Knotenwahl durch Kubernetes gemäß Platzierungsregeln</text>
+  <rect x="32" y="335" width="205" height="150" rx="12" fill="#FFFFFF" stroke="#ADBDC8" stroke-width="1.7" />
+  <text x="52" y="371" font-family="Arial, Helvetica, sans-serif" font-size="25" font-weight="700" fill="#173449" text-anchor="start">Arbeitsplatz</text>
+  <text x="52" y="406" font-family="Arial, Helvetica, sans-serif" font-size="20" font-weight="400" fill="#4E6576" text-anchor="start">CLI / Skripte</text>
+  <text x="52" y="440" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="400" fill="#4E6576" text-anchor="start">Code + Konfiguration</text>
+  <polyline points="237,395 325,395" fill="none" stroke="#173449" stroke-width="2.3" stroke-linejoin="round" marker-end="url(#arrow)" />
+  <text x="280" y="377" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="400" fill="#4E6576" text-anchor="middle">kubectl</text>
+  <rect x="325" y="335" width="360" height="150" rx="12" fill="#FFFFFF" stroke="#ADBDC8" stroke-width="1.7" />
+  <text x="345" y="362" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="700" fill="#4E6576" text-anchor="start">Pod</text>
+  <text x="345" y="395" font-family="Arial, Helvetica, sans-serif" font-size="25" font-weight="700" fill="#173449" text-anchor="start">benchmark-orchestrator</text>
+  <text x="345" y="425" font-family="Arial, Helvetica, sans-serif" font-size="19" font-weight="400" fill="#4E6576" text-anchor="start">Serverseitige Versuchssteuerung</text>
+  <text x="345" y="460" font-family="Arial, Helvetica, sans-serif" font-size="19" font-weight="400" fill="#087F80" text-anchor="start">S1 RW · S2 RO · S4 RW</text>
+  <rect x="745" y="335" width="290" height="150" rx="12" fill="#FFFFFF" stroke="#ADBDC8" stroke-width="1.7" />
+  <text x="765" y="362" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="700" fill="#4E6576" text-anchor="start">Pod</text>
+  <text x="765" y="395" font-family="Arial, Helvetica, sans-serif" font-size="25" font-weight="700" fill="#173449" text-anchor="start">slurmctld</text>
+  <text x="765" y="427" font-family="Arial, Helvetica, sans-serif" font-size="19" font-weight="400" fill="#4E6576" text-anchor="start">Service: slurmctld:6817</text>
+  <text x="765" y="458" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="400" fill="#4E6576" text-anchor="start">Spool: emptyDir</text>
+  <polyline points="685,398 745,398" fill="none" stroke="#173449" stroke-width="2.3" stroke-linejoin="round" marker-end="url(#arrow)" />
+  <text x="715" y="380" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="400" fill="#4E6576" text-anchor="middle">sbatch</text>
+  <polyline points="890,485 890,520 650,520 650,555" fill="none" stroke="#173449" stroke-width="2.3" stroke-linejoin="round" marker-end="url(#arrow)" />
+  <text x="765" y="510" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="400" fill="#4E6576" text-anchor="middle">slurmd:6818</text>
+  <rect x="325" y="555" width="710" height="350" rx="12" fill="#FFFFFF" stroke="#ADBDC8" stroke-width="2" />
+  <text x="347" y="588" font-family="Arial, Helvetica, sans-serif" font-size="25" font-weight="700" fill="#173449" text-anchor="start">Pod: slurmd</text>
+  <rect x="347" y="613" width="450" height="228" rx="9" fill="#F2F6FA" stroke="#ADBDC8" stroke-width="1.7" />
+  <text x="367" y="641" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="700" fill="#173449" text-anchor="start">Container: slurmd</text>
+  <text x="367" y="667" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="400" fill="#4E6576" text-anchor="start">GPU-Anforderung: nvidia.com/gpu = 1</text>
+  <rect x="369" y="686" width="406" height="130" rx="8" fill="#FFFFFF" stroke="#B8C9D3" stroke-width="1.7" />
+  <text x="389" y="716" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="700" fill="#173449" text-anchor="start">Trainingsjob · Python-Prozess</text>
+  <text x="389" y="747" font-family="Arial, Helvetica, sans-serif" font-size="19" font-weight="400" fill="#4E6576" text-anchor="start">Training und Validierung</text>
+  <rect x="389" y="768" width="365" height="31" rx="7" fill="#F0F7F5" stroke="#A4CFC7" stroke-width="1" />
+  <text x="571.5" y="789" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="700" fill="#087F80" text-anchor="middle">ES-Controller als Python-Modul</text>
+  <rect x="820" y="613" width="190" height="228" rx="9" fill="#FFFFFF" stroke="#ADBDC8" stroke-width="1.7" />
+  <text x="838" y="641" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="700" fill="#4E6576" text-anchor="start">Container</text>
+  <text x="838" y="674" font-family="Arial, Helvetica, sans-serif" font-size="20" font-weight="700" fill="#173449" text-anchor="start">Node Exporter</text>
+  <text x="838" y="707" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="400" fill="#4E6576" text-anchor="start">Textfile Collector</text>
+  <text x="838" y="738" font-family="Arial, Helvetica, sans-serif" font-size="19" font-weight="400" fill="#4E6576" text-anchor="start">Port 9100</text>
+  <rect x="838" y="768" width="154" height="31" rx="7" fill="#F0F7F5" stroke="#A4CFC7" stroke-width="1" />
+  <text x="915.0" y="789" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="700" fill="#087F80" text-anchor="middle">S3 RO</text>
+  <text x="347" y="874" font-family="Arial, Helvetica, sans-serif" font-size="19" font-weight="400" fill="#087F80" text-anchor="start">slurmd: S1 RW · S2 RW · S3 RW</text>
+  <text x="347" y="927" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="400" fill="#4E6576" text-anchor="start">Service des Exporters: slurmd-node-exporter:9100</text>
+  <rect x="1105" y="330" width="600" height="135" rx="12" fill="#FFFFFF" stroke="#ADBDC8" stroke-width="1.7" />
+  <text x="1125" y="364" font-family="Arial, Helvetica, sans-serif" font-size="25" font-weight="700" fill="#173449" text-anchor="start">Pod: MLflow</text>
+  <text x="1685" y="364" font-family="Arial, Helvetica, sans-serif" font-size="19" font-weight="400" fill="#4E6576" text-anchor="end">mlflow:5000</text>
+  <text x="1125" y="398" font-family="Arial, Helvetica, sans-serif" font-size="19" font-weight="400" fill="#087F80" text-anchor="start">mlflow-backend-pvc  →  /mlflow</text>
+  <text x="1125" y="429" font-family="Arial, Helvetica, sans-serif" font-size="19" font-weight="400" fill="#087F80" text-anchor="start">mlflow-artifacts-pvc  →  /mlruns</text>
+  <rect x="1105" y="482" width="600" height="105" rx="12" fill="#FFFFFF" stroke="#ADBDC8" stroke-width="1.7" />
+  <text x="1125" y="516" font-family="Arial, Helvetica, sans-serif" font-size="25" font-weight="700" fill="#173449" text-anchor="start">Pod: Pushgateway</text>
+  <text x="1685" y="516" font-family="Arial, Helvetica, sans-serif" font-size="19" font-weight="400" fill="#4E6576" text-anchor="end">pushgateway:9091</text>
+  <text x="1125" y="554" font-family="Arial, Helvetica, sans-serif" font-size="19" font-weight="400" fill="#087F80" text-anchor="start">pushgateway-data-pvc  →  /data</text>
+  <rect x="1105" y="604" width="600" height="135" rx="12" fill="#FFFFFF" stroke="#ADBDC8" stroke-width="1.7" />
+  <text x="1125" y="638" font-family="Arial, Helvetica, sans-serif" font-size="25" font-weight="700" fill="#173449" text-anchor="start">Pod: Prometheus</text>
+  <text x="1685" y="638" font-family="Arial, Helvetica, sans-serif" font-size="19" font-weight="400" fill="#4E6576" text-anchor="end">prometheus:9090</text>
+  <text x="1125" y="672" font-family="Arial, Helvetica, sans-serif" font-size="19" font-weight="400" fill="#087F80" text-anchor="start">prometheus-data-pvc  →  /prometheus</text>
+  <text x="1125" y="706" font-family="Arial, Helvetica, sans-serif" font-size="19" font-weight="400" fill="#4E6576" text-anchor="start">Node-Affinity: Knoten ≠ acds-cpu-01</text>
+  <rect x="1105" y="756" width="600" height="150" rx="12" fill="#FFFFFF" stroke="#ADBDC8" stroke-width="1.7" />
+  <text x="1125" y="790" font-family="Arial, Helvetica, sans-serif" font-size="25" font-weight="700" fill="#173449" text-anchor="start">Pod: Grafana</text>
+  <text x="1685" y="790" font-family="Arial, Helvetica, sans-serif" font-size="19" font-weight="400" fill="#4E6576" text-anchor="end">grafana:3000</text>
+  <text x="1125" y="824" font-family="Arial, Helvetica, sans-serif" font-size="19" font-weight="400" fill="#087F80" text-anchor="start">ConfigMaps: Datenquelle und Dashboards</text>
+  <text x="1125" y="855" font-family="Arial, Helvetica, sans-serif" font-size="19" font-weight="400" fill="#4E6576" text-anchor="start">emptyDir: /var/lib/grafana</text>
+  <text x="1125" y="884" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="400" fill="#4E6576" text-anchor="start">Laufzeitdaten temporär; Provisioning aus Konfiguration</text>
+  <text x="325" y="987" font-family="Arial, Helvetica, sans-serif" font-size="20" font-weight="700" fill="#4E6576" text-anchor="start">PERSISTENTE SPEICHER DER AUSFÜHRUNGSKOMPONENTEN</text>
+  <rect x="325" y="1010" width="330" height="151" rx="9" fill="#FFFFFF" stroke="#9EC3BC" stroke-width="1.7" />
+  <rect x="341" y="1024" width="44" height="31" rx="7" fill="#F0F7F5" stroke="#A4CFC7" stroke-width="1" />
+  <text x="363.0" y="1045" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="700" fill="#087F80" text-anchor="middle">S1</text>
+  <text x="398" y="1047" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="700" fill="#173449" text-anchor="start">Arbeitsbereich</text>
+  <text x="341" y="1080" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="400" fill="#087F80" text-anchor="start">slurmd-workspace-cache-pvc</text>
+  <text x="341" y="1111" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="400" fill="#173449" text-anchor="start">/workspace-cache</text>
+  <text x="341" y="1142" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="400" fill="#4E6576" text-anchor="start">Programmstand, Daten, Ergebnisse</text>
+  <rect x="675" y="1010" width="330" height="151" rx="9" fill="#FFFFFF" stroke="#9EC3BC" stroke-width="1.7" />
+  <rect x="691" y="1024" width="44" height="31" rx="7" fill="#F0F7F5" stroke="#A4CFC7" stroke-width="1" />
+  <text x="713.0" y="1045" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="700" fill="#087F80" text-anchor="middle">S2</text>
+  <text x="748" y="1047" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="700" fill="#173449" text-anchor="start">Jobprotokolle</text>
+  <text x="691" y="1080" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="400" fill="#087F80" text-anchor="start">slurm-logs-pvc</text>
+  <text x="691" y="1111" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="400" fill="#173449" text-anchor="start">/workspace/logs</text>
+  <text x="691" y="1142" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="400" fill="#4E6576" text-anchor="start">SLURM-Ausgaben und Fehlerlogs</text>
+  <rect x="1025" y="1010" width="330" height="151" rx="9" fill="#FFFFFF" stroke="#9EC3BC" stroke-width="1.7" />
+  <rect x="1041" y="1024" width="44" height="31" rx="7" fill="#F0F7F5" stroke="#A4CFC7" stroke-width="1" />
+  <text x="1063.0" y="1045" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="700" fill="#087F80" text-anchor="middle">S3</text>
+  <text x="1098" y="1047" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="700" fill="#173449" text-anchor="start">Messdateien</text>
+  <text x="1041" y="1080" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="400" fill="#087F80" text-anchor="start">slurm-energy-metrics-pvc</text>
+  <text x="1041" y="1111" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="400" fill="#173449" text-anchor="start">/workspace/energy_metrics</text>
+  <text x="1041" y="1142" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="400" fill="#4E6576" text-anchor="start">Rohwerte, Zusammenfassungen, .prom</text>
+  <rect x="1375" y="1010" width="330" height="151" rx="9" fill="#FFFFFF" stroke="#9EC3BC" stroke-width="1.7" />
+  <rect x="1391" y="1024" width="44" height="31" rx="7" fill="#F0F7F5" stroke="#A4CFC7" stroke-width="1" />
+  <text x="1413.0" y="1045" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="700" fill="#087F80" text-anchor="middle">S4</text>
+  <text x="1448" y="1047" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="700" fill="#173449" text-anchor="start">Ergebnisarchiv</text>
+  <text x="1391" y="1080" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="400" fill="#087F80" text-anchor="start">thesis-results-archive-pvc</text>
+  <text x="1391" y="1111" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="400" fill="#173449" text-anchor="start">/thesis-archive</text>
+  <text x="1391" y="1142" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="400" fill="#4E6576" text-anchor="start">Gesicherte Experimentstände</text>
+  <text x="325" y="1196" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="400" fill="#4E6576" text-anchor="start">PVC = PersistentVolumeClaim    RW = lesend / schreibend    RO = nur lesend    emptyDir = temporärer Pod-Speicher</text>
+  <polyline points="40,1240 1760,1240" fill="none" stroke="#ADBDC8" stroke-width="1" stroke-linejoin="round" />
+  <text x="40" y="1271" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="400" fill="#4E6576" text-anchor="start">Eigene Darstellung gemäß Deploymentmanifest · Auszug: Trainings- und Messumgebung · Knotenwahl gemäß Konfiguration</text>
+</svg>

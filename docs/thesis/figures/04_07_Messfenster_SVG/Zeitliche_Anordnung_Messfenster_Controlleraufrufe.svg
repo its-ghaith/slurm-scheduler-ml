@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 2000 863.7">
+  <!-- Generator: Adobe Illustrator 29.8.2, SVG Export Plug-In . SVG Version: 2.1.1 Build 3)  -->
+  <defs>
+    <style>
+      .st0 {
+        font-size: 38px;
+      }
+
+      .st0, .st1, .st2, .st3, .st4, .st5, .st6, .st7, .st8, .st9, .st10, .st11, .st12, .st13, .st14, .st15, .st16, .st17, .st18, .st19, .st20, .st21 {
+        isolation: isolate;
+      }
+
+      .st0, .st1, .st2, .st3, .st4, .st5, .st6, .st7, .st8, .st9, .st13, .st15, .st16, .st17, .st20, .st21 {
+        font-family: Arial-BoldMT, Arial;
+        font-weight: 700;
+      }
+
+      .st0, .st1, .st2, .st3, .st5, .st6, .st8, .st9, .st13, .st14, .st15, .st17, .st20, .st21 {
+        fill: #173449;
+      }
+
+      .st1, .st7 {
+        font-size: 20px;
+      }
+
+      .st22 {
+        stroke: #000;
+      }
+
+      .st22, .st23 {
+        fill: none;
+      }
+
+      .st24, .st4, .st10 {
+        fill: #087f80;
+      }
+
+      .st2 {
+        font-size: 12.4px;
+      }
+
+      .st25, .st12, .st19 {
+        fill: #4e6576;
+      }
+
+      .st3 {
+        font-size: 11.4px;
+      }
+
+      .st4, .st16 {
+        font-size: 10.8px;
+      }
+
+      .st26 {
+        fill: #efeaf7;
+        stroke: #b2a4ce;
+      }
+
+      .st26, .st27, .st28, .st29, .st30, .st31, .st32 {
+        stroke-width: 1.6px;
+      }
+
+      .st5 {
+        font-size: 24px;
+      }
+
+      .st27 {
+        fill: #eff9f8;
+        stroke: #a0c8c5;
+      }
+
+      .st33, .st29 {
+        fill: #fff;
+      }
+
+      .st6 {
+        font-size: 17.9px;
+      }
+
+      .st34 {
+        fill: #dde5ea;
+      }
+
+      .st7, .st18 {
+        fill: #66588d;
+      }
+
+      .st28 {
+        fill: #f9e8cd;
+        stroke: #bc852d;
+      }
+
+      .st35 {
+        fill: #bc852d;
+      }
+
+      .st8, .st10, .st14, .st18 {
+        font-size: 19px;
+      }
+
+      .st9 {
+        font-size: 25px;
+      }
+
+      .st36 {
+        fill: #adbdc8;
+      }
+
+      .st10, .st12, .st14, .st18, .st19 {
+        font-family: ArialMT, Arial;
+      }
+
+      .st29, .st23, .st31 {
+        stroke: #adbdc8;
+      }
+
+      .st12, .st20 {
+        font-size: 18px;
+      }
+
+      .st13 {
+        font-size: 26px;
+      }
+
+      .st30 {
+        fill: #e2f2ec;
+        stroke: #62a18b;
+      }
+
+      .st15 {
+        font-size: 11.9px;
+      }
+
+      .st16 {
+        fill: #815711;
+      }
+
+      .st37 {
+        fill: #ddd;
+      }
+
+      .st17 {
+        font-size: 23px;
+      }
+
+      .st19 {
+        font-size: 32px;
+      }
+
+      .st31 {
+        fill: #f5f8fa;
+      }
+
+      .st32 {
+        fill: #eaf0f8;
+        stroke: #9db0c8;
+      }
+
+      .st21 {
+        font-size: 22px;
+      }
+    </style>
+  </defs>
+  <rect class="st33" y="1" width="2001.7" height="862"/>
+  <rect class="st37" x="26.3" y="86.1" width="283" height="758.3" rx="18.1" ry="18.1"/>
+  <text class="st0" transform="translate(42 59)"><tspan x="0" y="0">Zeitliche Anordnung der Messfenster und Controlleraufrufe</tspan></text>
+  <text class="st21" transform="translate(330 116.9)"><tspan x="0" y="0">start()</tspan></text>
+  <text class="st1" transform="translate(600 153.1)"><tspan x="0" y="0">begin_phase(&quot;training&quot;)</tspan></text>
+  <text class="st21" transform="translate(1573.4 152.3)"><tspan x="0" y="0">finalize()</tspan></text>
+  <text class="st21" transform="translate(1919 116.9)"><tspan x="0" y="0">close()</tspan></text>
+  <g id="expanded-line-1">
+    <path class="st25" d="M330,200.1h1631.5v-1.7H330v1.7Z"/>
+    <path class="st25" d="M1961.5,193.3l11.9,5.9-11.9,5.9v-11.9Z"/>
+  </g>
+  <text class="st12" transform="translate(1953 226.2)"><tspan x="0" y="0">Zeit</tspan></text>
+  <g id="expanded-line-2">
+    <path class="st34" d="M329.2,106v4.3h1.5v-4.3h-1.5ZM329.2,114.6v4.3h1.5v-4.3h-1.5ZM329.2,123.1v4.3h1.5v-4.3h-1.5ZM329.2,131.7v4.3h1.5v-4.3h-1.5ZM329.2,140.3v4.3h1.5v-4.3h-1.5ZM329.2,148.8v4.3h1.5v-4.3h-1.5ZM329.2,157.4v4.3h1.5v-4.3h-1.5ZM329.2,166v4.3h1.5v-4.3h-1.5ZM329.2,174.6v4.3h1.5v-4.3h-1.5ZM329.2,183.1v4.3h1.5v-4.3h-1.5ZM329.2,191.7v4.3h1.5v-4.3h-1.5ZM329.2,200.3v4.3h1.5v-4.3h-1.5ZM329.2,208.8v4.3h1.5v-4.3h-1.5ZM329.2,217.4v4.3h1.5v-4.3h-1.5ZM329.2,226v4.3h1.5v-4.3h-1.5ZM329.2,234.6v4.3h1.5v-4.3h-1.5ZM329.2,243.1v4.3h1.5v-4.3h-1.5ZM329.2,268.8v4.3h1.5v-4.3h-1.5ZM329.2,277.4v4.3h1.5v-4.3h-1.5ZM329.2,286v4.3h1.5v-4.3h-1.5ZM329.2,294.5v4.3h1.5v-4.3h-1.5ZM329.2,303.1v4.3h1.5v-4.3h-1.5ZM329.2,311.7v4.3h1.5v-4.3h-1.5ZM329.2,320.3v4.3h1.5v-4.3h-1.5ZM329.2,328.8v4.3h1.5v-4.3h-1.5ZM329.2,337.4v4.3h1.5v-4.3h-1.5ZM329.2,346v4.3h1.5v-4.3h-1.5ZM329.2,354.5v4.3h1.5v-4.3h-1.5ZM329.2,363.1v4.3h1.5v-4.3h-1.5ZM329.2,371.7v4.3h1.5v-4.3h-1.5ZM329.2,380.3v4.3h1.5v-4.3h-1.5ZM329.2,388.8v4.3h1.5v-4.3h-1.5ZM329.2,397.4v4.3h1.5v-4.3h-1.5ZM329.2,406v4.3h1.5v-4.3h-1.5ZM329.2,414.5v4.3h1.5v-4.3h-1.5ZM329.2,423.1v4.3h1.5v-4.3h-1.5ZM329.2,431.7v4.3h1.5v-4.3h-1.5ZM329.2,440.3v4.3h1.5v-4.3h-1.5ZM329.2,448.8v4.3h1.5v-4.3h-1.5ZM329.2,457.4v4.3h1.5v-4.3h-1.5ZM329.2,466v4.3h1.5v-4.3h-1.5ZM329.2,474.5v4.3h1.5v-4.3h-1.5ZM329.2,483.1v4.3h1.5v-4.3h-1.5ZM329.2,491.7v4.3h1.5v-4.3h-1.5ZM329.2,500.3v4.3h1.5v-4.3h-1.5ZM329.2,508.8v4.3h1.5v-4.3h-1.5ZM329.2,517.4v4.3h1.5v-4.3h-1.5ZM329.2,526v4.3h1.5v-4.3h-1.5ZM329.2,534.5v4.3h1.5v-4.3h-1.5ZM329.2,543.1v4.3h1.5v-4.3h-1.5ZM329.2,551.7v4.3h1.5v-4.3h-1.5ZM329.2,560.3v4.3h1.5v-4.3h-1.5ZM329.2,568.8v4.3h1.5v-4.3h-1.5ZM329.2,577.4v4.3h1.5v-4.3h-1.5ZM329.2,586v4.3h1.5v-4.3h-1.5ZM329.2,594.5v4.3h1.5v-4.3h-1.5ZM329.2,603.1v4.3h1.5v-4.3h-1.5ZM329.2,611.7v3.4h1.5v-3.4h-1.5Z"/>
+    <rect class="st34" x="329.2" y="251.7" width="1.5" height="4.3"/>
+    <rect class="st34" x="329.2" y="260.3" width="1.5" height="4.3"/>
+  </g>
+  <g id="expanded-line-21" data-name="expanded-line-2">
+    <path class="st34" d="M599,106v4.3h1.5v-4.3h-1.5ZM599,114.6v4.3h1.5v-4.3h-1.5ZM599,123.1v4.3h1.5v-4.3h-1.5ZM599,131.7v4.3h1.5v-4.3h-1.5ZM599,140.3v4.3h1.5v-4.3h-1.5ZM599,148.8v4.3h1.5v-4.3h-1.5ZM599,157.4v4.3h1.5v-4.3h-1.5ZM599,166v4.3h1.5v-4.3h-1.5ZM599,174.6v4.3h1.5v-4.3h-1.5ZM599,183.1v4.3h1.5v-4.3h-1.5ZM599,191.7v4.3h1.5v-4.3h-1.5ZM599,200.3v4.3h1.5v-4.3h-1.5ZM599,208.8v4.3h1.5v-4.3h-1.5ZM599,217.4v4.3h1.5v-4.3h-1.5ZM599,226v4.3h1.5v-4.3h-1.5ZM599,234.6v4.3h1.5v-4.3h-1.5ZM599,243.1v4.3h1.5v-4.3h-1.5ZM599,268.8v4.3h1.5v-4.3h-1.5ZM599,277.4v4.3h1.5v-4.3h-1.5ZM599,286v4.3h1.5v-4.3h-1.5ZM599,294.5v4.3h1.5v-4.3h-1.5ZM599,303.1v4.3h1.5v-4.3h-1.5ZM599,311.7v4.3h1.5v-4.3h-1.5ZM599,320.3v4.3h1.5v-4.3h-1.5ZM599,328.8v4.3h1.5v-4.3h-1.5ZM599,337.4v4.3h1.5v-4.3h-1.5ZM599,346v4.3h1.5v-4.3h-1.5ZM599,354.5v4.3h1.5v-4.3h-1.5ZM599,363.1v4.3h1.5v-4.3h-1.5ZM599,371.7v4.3h1.5v-4.3h-1.5ZM599,380.3v4.3h1.5v-4.3h-1.5ZM599,388.8v4.3h1.5v-4.3h-1.5ZM599,397.4v4.3h1.5v-4.3h-1.5ZM599,406v4.3h1.5v-4.3h-1.5ZM599,414.5v4.3h1.5v-4.3h-1.5ZM599,423.1v4.3h1.5v-4.3h-1.5ZM599,431.7v4.3h1.5v-4.3h-1.5ZM599,440.3v4.3h1.5v-4.3h-1.5ZM599,448.8v4.3h1.5v-4.3h-1.5ZM599,457.4v4.3h1.5v-4.3h-1.5ZM599,466v4.3h1.5v-4.3h-1.5ZM599,474.5v4.3h1.5v-4.3h-1.5ZM599,483.1v4.3h1.5v-4.3h-1.5ZM599,491.7v4.3h1.5v-4.3h-1.5ZM599,500.3v4.3h1.5v-4.3h-1.5ZM599,508.8v4.3h1.5v-4.3h-1.5ZM599,517.4v4.3h1.5v-4.3h-1.5ZM599,526v4.3h1.5v-4.3h-1.5ZM599,534.5v4.3h1.5v-4.3h-1.5ZM599,543.1v4.3h1.5v-4.3h-1.5ZM599,551.7v4.3h1.5v-4.3h-1.5ZM599,560.3v4.3h1.5v-4.3h-1.5ZM599,568.8v4.3h1.5v-4.3h-1.5ZM599,577.4v4.3h1.5v-4.3h-1.5ZM599,586v4.3h1.5v-4.3h-1.5ZM599,594.5v4.3h1.5v-4.3h-1.5ZM599,603.1v4.3h1.5v-4.3h-1.5ZM599,611.7v3.4h1.5v-3.4h-1.5Z"/>
+    <rect class="st34" x="599" y="251.7" width="1.5" height="4.3"/>
+    <rect class="st34" x="599" y="260.3" width="1.5" height="4.3"/>
+  </g>
+  <g id="expanded-line-22" data-name="expanded-line-2">
+    <path class="st34" d="M979,106v4.3h1.5v-4.3h-1.5ZM979,114.6v4.3h1.5v-4.3h-1.5ZM979,123.1v4.3h1.5v-4.3h-1.5ZM979,131.7v4.3h1.5v-4.3h-1.5ZM979,140.3v4.3h1.5v-4.3h-1.5ZM979,148.8v4.3h1.5v-4.3h-1.5ZM979,157.4v4.3h1.5v-4.3h-1.5ZM979,166v4.3h1.5v-4.3h-1.5ZM979,174.6v4.3h1.5v-4.3h-1.5ZM979,183.1v4.3h1.5v-4.3h-1.5ZM979,191.7v4.3h1.5v-4.3h-1.5ZM979,200.3v4.3h1.5v-4.3h-1.5ZM979,208.8v4.3h1.5v-4.3h-1.5ZM979,217.4v4.3h1.5v-4.3h-1.5ZM979,226v4.3h1.5v-4.3h-1.5ZM979,234.6v4.3h1.5v-4.3h-1.5ZM979,243.1v4.3h1.5v-4.3h-1.5ZM979,268.8v4.3h1.5v-4.3h-1.5ZM979,277.4v4.3h1.5v-4.3h-1.5ZM979,286v4.3h1.5v-4.3h-1.5ZM979,294.5v4.3h1.5v-4.3h-1.5ZM979,303.1v4.3h1.5v-4.3h-1.5ZM979,311.7v4.3h1.5v-4.3h-1.5ZM979,320.3v4.3h1.5v-4.3h-1.5ZM979,328.8v4.3h1.5v-4.3h-1.5ZM979,337.4v4.3h1.5v-4.3h-1.5ZM979,346v4.3h1.5v-4.3h-1.5ZM979,354.5v4.3h1.5v-4.3h-1.5ZM979,363.1v4.3h1.5v-4.3h-1.5ZM979,371.7v4.3h1.5v-4.3h-1.5ZM979,380.3v4.3h1.5v-4.3h-1.5ZM979,388.8v4.3h1.5v-4.3h-1.5ZM979,397.4v4.3h1.5v-4.3h-1.5ZM979,406v4.3h1.5v-4.3h-1.5ZM979,414.5v4.3h1.5v-4.3h-1.5ZM979,423.1v4.3h1.5v-4.3h-1.5ZM979,431.7v4.3h1.5v-4.3h-1.5ZM979,440.3v4.3h1.5v-4.3h-1.5ZM979,448.8v4.3h1.5v-4.3h-1.5ZM979,457.4v4.3h1.5v-4.3h-1.5ZM979,466v4.3h1.5v-4.3h-1.5ZM979,474.5v4.3h1.5v-4.3h-1.5ZM979,483.1v4.3h1.5v-4.3h-1.5ZM979,491.7v4.3h1.5v-4.3h-1.5ZM979,500.3v4.3h1.5v-4.3h-1.5ZM979,508.8v4.3h1.5v-4.3h-1.5ZM979,517.4v4.3h1.5v-4.3h-1.5ZM979,526v4.3h1.5v-4.3h-1.5ZM979,534.5v4.3h1.5v-4.3h-1.5ZM979,543.1v4.3h1.5v-4.3h-1.5ZM979,551.7v4.3h1.5v-4.3h-1.5ZM979,560.3v4.3h1.5v-4.3h-1.5ZM979,568.8v4.3h1.5v-4.3h-1.5ZM979,577.4v4.3h1.5v-4.3h-1.5ZM979,586v4.3h1.5v-4.3h-1.5ZM979,594.5v4.3h1.5v-4.3h-1.5ZM979,603.1v4.3h1.5v-4.3h-1.5ZM979,611.7v3.4h1.5v-3.4h-1.5Z"/>
+    <rect class="st34" x="979" y="251.7" width="1.5" height="4.3"/>
+    <rect class="st34" x="979" y="260.3" width="1.5" height="4.3"/>
+  </g>
+  <g id="expanded-line-23" data-name="expanded-line-2">
+    <path class="st34" d="M1073.5,106v4.3h1.5v-4.3h-1.5ZM1073.5,114.6v4.3h1.5v-4.3h-1.5ZM1073.5,123.1v4.3h1.5v-4.3h-1.5ZM1073.5,131.7v4.3h1.5v-4.3h-1.5ZM1073.5,140.3v4.3h1.5v-4.3h-1.5ZM1073.5,148.8v4.3h1.5v-4.3h-1.5ZM1073.5,157.4v4.3h1.5v-4.3h-1.5ZM1073.5,166v4.3h1.5v-4.3h-1.5ZM1073.5,174.6v4.3h1.5v-4.3h-1.5ZM1073.5,183.1v4.3h1.5v-4.3h-1.5ZM1073.5,191.7v4.3h1.5v-4.3h-1.5ZM1073.5,200.3v4.3h1.5v-4.3h-1.5ZM1073.5,208.8v4.3h1.5v-4.3h-1.5ZM1073.5,217.4v4.3h1.5v-4.3h-1.5ZM1073.5,226v4.3h1.5v-4.3h-1.5ZM1073.5,234.6v4.3h1.5v-4.3h-1.5ZM1073.5,243.1v4.3h1.5v-4.3h-1.5ZM1073.5,268.8v4.3h1.5v-4.3h-1.5ZM1073.5,277.4v4.3h1.5v-4.3h-1.5ZM1073.5,286v4.3h1.5v-4.3h-1.5ZM1073.5,294.5v4.3h1.5v-4.3h-1.5ZM1073.5,303.1v4.3h1.5v-4.3h-1.5ZM1073.5,311.7v4.3h1.5v-4.3h-1.5ZM1073.5,320.3v4.3h1.5v-4.3h-1.5ZM1073.5,328.8v4.3h1.5v-4.3h-1.5ZM1073.5,337.4v4.3h1.5v-4.3h-1.5ZM1073.5,346v4.3h1.5v-4.3h-1.5ZM1073.5,354.5v4.3h1.5v-4.3h-1.5ZM1073.5,363.1v4.3h1.5v-4.3h-1.5ZM1073.5,371.7v4.3h1.5v-4.3h-1.5ZM1073.5,380.3v4.3h1.5v-4.3h-1.5ZM1073.5,388.8v4.3h1.5v-4.3h-1.5ZM1073.5,397.4v4.3h1.5v-4.3h-1.5ZM1073.5,406v4.3h1.5v-4.3h-1.5ZM1073.5,414.5v4.3h1.5v-4.3h-1.5ZM1073.5,423.1v4.3h1.5v-4.3h-1.5ZM1073.5,431.7v4.3h1.5v-4.3h-1.5ZM1073.5,440.3v4.3h1.5v-4.3h-1.5ZM1073.5,448.8v4.3h1.5v-4.3h-1.5ZM1073.5,457.4v4.3h1.5v-4.3h-1.5ZM1073.5,466v4.3h1.5v-4.3h-1.5ZM1073.5,474.5v4.3h1.5v-4.3h-1.5ZM1073.5,483.1v4.3h1.5v-4.3h-1.5ZM1073.5,491.7v4.3h1.5v-4.3h-1.5ZM1073.5,500.3v4.3h1.5v-4.3h-1.5ZM1073.5,508.8v4.3h1.5v-4.3h-1.5ZM1073.5,517.4v4.3h1.5v-4.3h-1.5ZM1073.5,526v4.3h1.5v-4.3h-1.5ZM1073.5,534.5v4.3h1.5v-4.3h-1.5ZM1073.5,543.1v4.3h1.5v-4.3h-1.5ZM1073.5,551.7v4.3h1.5v-4.3h-1.5ZM1073.5,560.3v4.3h1.5v-4.3h-1.5ZM1073.5,568.8v4.3h1.5v-4.3h-1.5ZM1073.5,577.4v4.3h1.5v-4.3h-1.5ZM1073.5,586v4.3h1.5v-4.3h-1.5ZM1073.5,594.5v4.3h1.5v-4.3h-1.5ZM1073.5,603.1v4.3h1.5v-4.3h-1.5ZM1073.5,611.7v3.4h1.5v-3.4h-1.5Z"/>
+    <rect class="st34" x="1073.5" y="251.7" width="1.5" height="4.3"/>
+    <rect class="st34" x="1073.5" y="260.3" width="1.5" height="4.3"/>
+  </g>
+  <g id="expanded-line-24" data-name="expanded-line-2">
+    <path class="st34" d="M1271.8,106v4.3h1.5v-4.3h-1.5ZM1271.8,114.6v4.3h1.5v-4.3h-1.5ZM1271.8,123.1v4.3h1.5v-4.3h-1.5ZM1271.8,131.7v4.3h1.5v-4.3h-1.5ZM1271.8,140.3v4.3h1.5v-4.3h-1.5ZM1271.8,148.8v4.3h1.5v-4.3h-1.5ZM1271.8,157.4v4.3h1.5v-4.3h-1.5ZM1271.8,166v4.3h1.5v-4.3h-1.5ZM1271.8,174.6v4.3h1.5v-4.3h-1.5ZM1271.8,183.1v4.3h1.5v-4.3h-1.5ZM1271.8,191.7v4.3h1.5v-4.3h-1.5ZM1271.8,200.3v4.3h1.5v-4.3h-1.5ZM1271.8,208.8v4.3h1.5v-4.3h-1.5ZM1271.8,217.4v4.3h1.5v-4.3h-1.5ZM1271.8,226v4.3h1.5v-4.3h-1.5ZM1271.8,234.6v4.3h1.5v-4.3h-1.5ZM1271.8,243.1v4.3h1.5v-4.3h-1.5ZM1271.8,268.8v4.3h1.5v-4.3h-1.5ZM1271.8,277.4v4.3h1.5v-4.3h-1.5ZM1271.8,286v4.3h1.5v-4.3h-1.5ZM1271.8,294.5v4.3h1.5v-4.3h-1.5ZM1271.8,303.1v4.3h1.5v-4.3h-1.5ZM1271.8,311.7v4.3h1.5v-4.3h-1.5ZM1271.8,320.3v4.3h1.5v-4.3h-1.5ZM1271.8,328.8v4.3h1.5v-4.3h-1.5ZM1271.8,337.4v4.3h1.5v-4.3h-1.5ZM1271.8,346v4.3h1.5v-4.3h-1.5ZM1271.8,354.5v4.3h1.5v-4.3h-1.5ZM1271.8,363.1v4.3h1.5v-4.3h-1.5ZM1271.8,371.7v4.3h1.5v-4.3h-1.5ZM1271.8,380.3v4.3h1.5v-4.3h-1.5ZM1271.8,388.8v4.3h1.5v-4.3h-1.5ZM1271.8,397.4v4.3h1.5v-4.3h-1.5ZM1271.8,406v4.3h1.5v-4.3h-1.5ZM1271.8,414.5v4.3h1.5v-4.3h-1.5ZM1271.8,423.1v4.3h1.5v-4.3h-1.5ZM1271.8,431.7v4.3h1.5v-4.3h-1.5ZM1271.8,440.3v4.3h1.5v-4.3h-1.5ZM1271.8,448.8v4.3h1.5v-4.3h-1.5ZM1271.8,457.4v4.3h1.5v-4.3h-1.5ZM1271.8,466v4.3h1.5v-4.3h-1.5ZM1271.8,474.5v4.3h1.5v-4.3h-1.5ZM1271.8,483.1v4.3h1.5v-4.3h-1.5ZM1271.8,491.7v4.3h1.5v-4.3h-1.5ZM1271.8,500.3v4.3h1.5v-4.3h-1.5ZM1271.8,508.8v4.3h1.5v-4.3h-1.5ZM1271.8,517.4v4.3h1.5v-4.3h-1.5ZM1271.8,526v4.3h1.5v-4.3h-1.5ZM1271.8,534.5v4.3h1.5v-4.3h-1.5ZM1271.8,543.1v4.3h1.5v-4.3h-1.5ZM1271.8,551.7v4.3h1.5v-4.3h-1.5ZM1271.8,560.3v4.3h1.5v-4.3h-1.5ZM1271.8,568.8v4.3h1.5v-4.3h-1.5ZM1271.8,577.4v4.3h1.5v-4.3h-1.5ZM1271.8,586v4.3h1.5v-4.3h-1.5ZM1271.8,594.5v4.3h1.5v-4.3h-1.5ZM1271.8,603.1v4.3h1.5v-4.3h-1.5ZM1271.8,611.7v3.4h1.5v-3.4h-1.5Z"/>
+    <rect class="st34" x="1271.8" y="251.7" width="1.5" height="4.3"/>
+    <rect class="st34" x="1271.8" y="260.3" width="1.5" height="4.3"/>
+  </g>
+  <g id="expanded-line-25" data-name="expanded-line-2">
+    <path class="st34" d="M1567.8,106v4.3h1.5v-4.3h-1.5ZM1567.8,114.6v4.3h1.5v-4.3h-1.5ZM1567.8,123.1v4.3h1.5v-4.3h-1.5ZM1567.8,131.7v4.3h1.5v-4.3h-1.5ZM1567.8,140.3v4.3h1.5v-4.3h-1.5ZM1567.8,148.8v4.3h1.5v-4.3h-1.5ZM1567.8,157.4v4.3h1.5v-4.3h-1.5ZM1567.8,166v4.3h1.5v-4.3h-1.5ZM1567.8,174.6v4.3h1.5v-4.3h-1.5ZM1567.8,183.1v4.3h1.5v-4.3h-1.5ZM1567.8,191.7v4.3h1.5v-4.3h-1.5ZM1567.8,200.3v4.3h1.5v-4.3h-1.5ZM1567.8,208.8v4.3h1.5v-4.3h-1.5ZM1567.8,217.4v4.3h1.5v-4.3h-1.5ZM1567.8,226v4.3h1.5v-4.3h-1.5ZM1567.8,234.6v4.3h1.5v-4.3h-1.5ZM1567.8,243.1v4.3h1.5v-4.3h-1.5ZM1567.8,268.8v4.3h1.5v-4.3h-1.5ZM1567.8,277.4v4.3h1.5v-4.3h-1.5ZM1567.8,286v4.3h1.5v-4.3h-1.5ZM1567.8,294.5v4.3h1.5v-4.3h-1.5ZM1567.8,303.1v4.3h1.5v-4.3h-1.5ZM1567.8,311.7v4.3h1.5v-4.3h-1.5ZM1567.8,320.3v4.3h1.5v-4.3h-1.5ZM1567.8,328.8v4.3h1.5v-4.3h-1.5ZM1567.8,337.4v4.3h1.5v-4.3h-1.5ZM1567.8,346v4.3h1.5v-4.3h-1.5ZM1567.8,354.5v4.3h1.5v-4.3h-1.5ZM1567.8,363.1v4.3h1.5v-4.3h-1.5ZM1567.8,371.7v4.3h1.5v-4.3h-1.5ZM1567.8,380.3v4.3h1.5v-4.3h-1.5ZM1567.8,388.8v4.3h1.5v-4.3h-1.5ZM1567.8,397.4v4.3h1.5v-4.3h-1.5ZM1567.8,406v4.3h1.5v-4.3h-1.5ZM1567.8,414.5v4.3h1.5v-4.3h-1.5ZM1567.8,423.1v4.3h1.5v-4.3h-1.5ZM1567.8,431.7v4.3h1.5v-4.3h-1.5ZM1567.8,440.3v4.3h1.5v-4.3h-1.5ZM1567.8,448.8v4.3h1.5v-4.3h-1.5ZM1567.8,457.4v4.3h1.5v-4.3h-1.5ZM1567.8,466v4.3h1.5v-4.3h-1.5ZM1567.8,474.5v4.3h1.5v-4.3h-1.5ZM1567.8,483.1v4.3h1.5v-4.3h-1.5ZM1567.8,491.7v4.3h1.5v-4.3h-1.5ZM1567.8,500.3v4.3h1.5v-4.3h-1.5ZM1567.8,508.8v4.3h1.5v-4.3h-1.5ZM1567.8,517.4v4.3h1.5v-4.3h-1.5ZM1567.8,526v4.3h1.5v-4.3h-1.5ZM1567.8,534.5v4.3h1.5v-4.3h-1.5ZM1567.8,543.1v4.3h1.5v-4.3h-1.5ZM1567.8,551.7v4.3h1.5v-4.3h-1.5ZM1567.8,560.3v4.3h1.5v-4.3h-1.5ZM1567.8,568.8v4.3h1.5v-4.3h-1.5ZM1567.8,577.4v4.3h1.5v-4.3h-1.5ZM1567.8,586v4.3h1.5v-4.3h-1.5ZM1567.8,594.5v4.3h1.5v-4.3h-1.5ZM1567.8,603.1v4.3h1.5v-4.3h-1.5ZM1567.8,611.7v3.4h1.5v-3.4h-1.5Z"/>
+    <rect class="st34" x="1567.8" y="251.7" width="1.5" height="4.3"/>
+    <rect class="st34" x="1567.8" y="260.3" width="1.5" height="4.3"/>
+  </g>
+  <g id="expanded-line-26" data-name="expanded-line-2">
+    <path class="st34" d="M1919.2,106v4.3h1.5v-4.3h-1.5ZM1919.2,114.6v4.3h1.5v-4.3h-1.5ZM1919.2,123.1v4.3h1.5v-4.3h-1.5ZM1919.2,131.7v4.3h1.5v-4.3h-1.5ZM1919.2,140.3v4.3h1.5v-4.3h-1.5ZM1919.2,148.8v4.3h1.5v-4.3h-1.5ZM1919.2,157.4v4.3h1.5v-4.3h-1.5ZM1919.2,166v4.3h1.5v-4.3h-1.5ZM1919.2,174.6v4.3h1.5v-4.3h-1.5ZM1919.2,183.1v4.3h1.5v-4.3h-1.5ZM1919.2,191.7v4.3h1.5v-4.3h-1.5ZM1919.2,200.3v4.3h1.5v-4.3h-1.5ZM1919.2,208.8v4.3h1.5v-4.3h-1.5ZM1919.2,217.4v4.3h1.5v-4.3h-1.5ZM1919.2,226v4.3h1.5v-4.3h-1.5ZM1919.2,234.6v4.3h1.5v-4.3h-1.5ZM1919.2,243.1v4.3h1.5v-4.3h-1.5ZM1919.2,268.8v4.3h1.5v-4.3h-1.5ZM1919.2,277.4v4.3h1.5v-4.3h-1.5ZM1919.2,286v4.3h1.5v-4.3h-1.5ZM1919.2,294.5v4.3h1.5v-4.3h-1.5ZM1919.2,303.1v4.3h1.5v-4.3h-1.5ZM1919.2,311.7v4.3h1.5v-4.3h-1.5ZM1919.2,320.3v4.3h1.5v-4.3h-1.5ZM1919.2,328.8v4.3h1.5v-4.3h-1.5ZM1919.2,337.4v4.3h1.5v-4.3h-1.5ZM1919.2,346v4.3h1.5v-4.3h-1.5ZM1919.2,354.5v4.3h1.5v-4.3h-1.5ZM1919.2,363.1v4.3h1.5v-4.3h-1.5ZM1919.2,371.7v4.3h1.5v-4.3h-1.5ZM1919.2,380.3v4.3h1.5v-4.3h-1.5ZM1919.2,388.8v4.3h1.5v-4.3h-1.5ZM1919.2,397.4v4.3h1.5v-4.3h-1.5ZM1919.2,406v4.3h1.5v-4.3h-1.5ZM1919.2,414.5v4.3h1.5v-4.3h-1.5ZM1919.2,423.1v4.3h1.5v-4.3h-1.5ZM1919.2,431.7v4.3h1.5v-4.3h-1.5ZM1919.2,440.3v4.3h1.5v-4.3h-1.5ZM1919.2,448.8v4.3h1.5v-4.3h-1.5ZM1919.2,457.4v4.3h1.5v-4.3h-1.5ZM1919.2,466v4.3h1.5v-4.3h-1.5ZM1919.2,474.5v4.3h1.5v-4.3h-1.5ZM1919.2,483.1v4.3h1.5v-4.3h-1.5ZM1919.2,491.7v4.3h1.5v-4.3h-1.5ZM1919.2,500.3v4.3h1.5v-4.3h-1.5ZM1919.2,508.8v4.3h1.5v-4.3h-1.5ZM1919.2,517.4v4.3h1.5v-4.3h-1.5ZM1919.2,526v4.3h1.5v-4.3h-1.5ZM1919.2,534.5v4.3h1.5v-4.3h-1.5ZM1919.2,543.1v4.3h1.5v-4.3h-1.5ZM1919.2,551.7v4.3h1.5v-4.3h-1.5ZM1919.2,560.3v4.3h1.5v-4.3h-1.5ZM1919.2,568.8v4.3h1.5v-4.3h-1.5ZM1919.2,577.4v4.3h1.5v-4.3h-1.5ZM1919.2,586v4.3h1.5v-4.3h-1.5ZM1919.2,594.5v4.3h1.5v-4.3h-1.5ZM1919.2,603.1v4.3h1.5v-4.3h-1.5ZM1919.2,611.7v3.4h1.5v-3.4h-1.5Z"/>
+    <rect class="st34" x="1919.2" y="251.7" width="1.5" height="4.3"/>
+    <rect class="st34" x="1919.2" y="260.3" width="1.5" height="4.3"/>
+  </g>
+  <text class="st5" transform="translate(42 262.2)"><tspan x="0" y="0">Phasen</tspan></text>
+  <text class="st8" transform="translate(42 117.7)"><tspan x="0" y="0">Jobmethoden</tspan></text>
+  <text class="st8" transform="translate(42 153.1)"><tspan x="0" y="0">Phasenmethoden</tspan></text>
+  <text class="st8" transform="translate(42 190.4)"><tspan x="0" y="0">Epochenmethoden</tspan></text>
+  <text class="st12" transform="translate(42 291.2)"><tspan x="0" y="0">Grenzen im Trainingsprogramm</tspan></text>
+  <rect class="st32" x="330" y="232.2" width="270" height="76" rx="9" ry="9"/>
+  <text class="st17" transform="translate(384.4 261.2)"><tspan x="0" y="0">Vorbereitung +</tspan></text>
+  <text class="st17" transform="translate(390.2 289.2)"><tspan x="0" y="0">Initialisierung</tspan></text>
+  <rect class="st32" x="603" y="232.2" width="964" height="76" rx="9" ry="9"/>
+  <text class="st13" transform="translate(1034.4 276.2)"><tspan x="0" y="0">Training</tspan></text>
+  <rect class="st32" x="1570" y="232.2" width="350" height="76" rx="9" ry="9"/>
+  <text class="st17" transform="translate(1663.5 261.2)"><tspan x="0" y="0">Finalisierung +</tspan></text>
+  <text class="st17" transform="translate(1686.8 289.2)"><tspan x="0" y="0">Evaluation</tspan></text>
+  <text class="st5" transform="translate(42 405.1)"><tspan x="0" y="0">Epochenfenster</tspan></text>
+  <text class="st12" transform="translate(42 434.1)"><tspan x="0" y="0">Training + Validierung</tspan></text>
+  <text class="st5" transform="translate(42 578.6)"><tspan x="0" y="0">Controlleraufrufe</tspan></text>
+  <text class="st12" transform="translate(42 607.6)"><tspan x="0" y="0">CPU-Aufwand separat erfasst</tspan></text>
+  <rect class="st30" x="599.8" y="443.6" width="243.7" height="64" rx="10.5" ry="10.5"/>
+  <text class="st5" transform="translate(665.1 483.6)"><tspan x="0" y="0">Epoche 1</tspan></text>
+  <rect class="st30" x="1276.5" y="443.6" width="180" height="64" rx="9" ry="9"/>
+  <text class="st5" transform="translate(1313.1 483.6)"><tspan x="0" y="0">Epoche k</tspan></text>
+  <rect class="st28" x="978.8" y="549.6" width="98.2" height="59" rx="10.7" ry="10.7"/>
+  <g class="st11">
+    <text class="st9" transform="translate(1013.2 587.6)"><tspan x="0" y="0">C</tspan></text>
+    <text class="st20" transform="translate(1031.2 593.9)"><tspan x="0" y="0">1</tspan></text>
+  </g>
+  <rect class="st28" x="1476.5" y="549.6" width="70" height="59" rx="9" ry="9"/>
+  <g class="st11">
+    <text class="st9" transform="translate(1497.4 587.6)"><tspan x="0" y="0">C</tspan></text>
+    <text class="st20" transform="translate(1515.5 593.9)"><tspan x="0" y="0">k</tspan></text>
+  </g>
+  <text class="st19" transform="translate(1225.4 485.6)"><tspan x="0" y="0">…</tspan></text>
+  <text class="st19" transform="translate(1225.4 587.6)"><tspan x="0" y="0">…</tspan></text>
+  <text class="st19" transform="translate(1225.4 379)"><tspan x="0" y="0">…</tspan></text>
+  <text class="st5" transform="translate(42 681.4)"><tspan x="0" y="0">GPU-Erfassung</tspan></text>
+  <text class="st12" transform="translate(42 710.4)"><tspan x="0" y="0">nvidia-smi → CSV-Datei</tspan></text>
+  <rect class="st27" x="330" y="657.4" width="1590" height="68" rx="9" ry="9"/>
+  <g id="expanded-line-13">
+    <path class="st24" d="M345,694.1h1560v-1.4H345v1.4Z"/>
+  </g>
+  <circle class="st24" cx="350" cy="693.4" r="4.3"/>
+  <circle class="st24" cx="390" cy="693.4" r="4.3"/>
+  <circle class="st24" cx="433" cy="693.4" r="4.3"/>
+  <circle class="st24" cx="471" cy="693.4" r="4.3"/>
+  <circle class="st24" cx="515" cy="693.4" r="4.3"/>
+  <circle class="st24" cx="556" cy="693.4" r="4.3"/>
+  <circle class="st24" cx="593" cy="693.4" r="4.3"/>
+  <circle class="st24" cx="635" cy="693.4" r="4.3"/>
+  <circle class="st24" cx="674" cy="693.4" r="4.3"/>
+  <circle class="st24" cx="714" cy="693.4" r="4.3"/>
+  <circle class="st24" cx="757" cy="693.4" r="4.3"/>
+  <circle class="st24" cx="795" cy="693.4" r="4.3"/>
+  <circle class="st24" cx="839" cy="693.4" r="4.3"/>
+  <circle class="st24" cx="880" cy="693.4" r="4.3"/>
+  <circle class="st24" cx="917" cy="693.4" r="4.3"/>
+  <circle class="st24" cx="959" cy="693.4" r="4.3"/>
+  <circle class="st24" cx="998" cy="693.4" r="4.3"/>
+  <circle class="st24" cx="1038" cy="693.4" r="4.3"/>
+  <circle class="st24" cx="1081" cy="693.4" r="4.3"/>
+  <circle class="st24" cx="1119" cy="693.4" r="4.3"/>
+  <circle class="st24" cx="1163" cy="693.4" r="4.3"/>
+  <circle class="st24" cx="1204" cy="693.4" r="4.3"/>
+  <circle class="st24" cx="1241" cy="693.4" r="4.3"/>
+  <circle class="st24" cx="1283" cy="693.4" r="4.3"/>
+  <circle class="st24" cx="1322" cy="693.4" r="4.3"/>
+  <circle class="st24" cx="1362" cy="693.4" r="4.3"/>
+  <circle class="st24" cx="1405" cy="693.4" r="4.3"/>
+  <circle class="st24" cx="1443" cy="693.4" r="4.3"/>
+  <circle class="st24" cx="1487" cy="693.4" r="4.3"/>
+  <circle class="st24" cx="1528" cy="693.4" r="4.3"/>
+  <circle class="st24" cx="1565" cy="693.4" r="4.3"/>
+  <circle class="st24" cx="1607" cy="693.4" r="4.3"/>
+  <circle class="st24" cx="1646" cy="693.4" r="4.3"/>
+  <circle class="st24" cx="1686" cy="693.4" r="4.3"/>
+  <circle class="st24" cx="1729" cy="693.4" r="4.3"/>
+  <circle class="st24" cx="1767" cy="693.4" r="4.3"/>
+  <circle class="st24" cx="1811" cy="693.4" r="4.3"/>
+  <circle class="st24" cx="1852" cy="693.4" r="4.3"/>
+  <circle class="st24" cx="1889" cy="693.4" r="4.3"/>
+  <text class="st10" transform="translate(350 679.4)"><tspan x="0" y="0">Fortlaufende Abfragen während aller Phasen und Zwischenzeiten</tspan></text>
+  <text class="st12" transform="translate(350 716)"><tspan x="0" y="0">0,5s Wartezeit zwischen Aufrufen; für die Integration zählen die gespeicherten Zeitabstände.</tspan></text>
+  <text class="st5" transform="translate(42 769.6)"><tspan x="0" y="0">CodeCarbon</tspan></text>
+  <text class="st12" transform="translate(42 798.6)"><tspan x="0" y="0">Job- und Phasentracker</tspan></text>
+  <rect class="st26" x="330" y="745.6" width="1590" height="35" rx="7" ry="7"/>
+  <text class="st7" transform="translate(1073.9 769.6)"><tspan x="0" y="0">Jobtracker</tspan></text>
+  <rect class="st26" x="330" y="793.6" width="270" height="40" rx="7" ry="7"/>
+  <text class="st18" transform="translate(374 820.6)"><tspan x="0" y="0">Tracker: Vorbereitung</tspan></text>
+  <rect class="st26" x="603" y="793.6" width="964" height="40" rx="7" ry="7"/>
+  <text class="st18" transform="translate(1014.1 820.6)"><tspan x="0" y="0">Tracker: Training</tspan></text>
+  <rect class="st26" x="1570" y="793.6" width="350" height="40" rx="7" ry="7"/>
+  <text class="st18" transform="translate(1654 820.6)"><tspan x="0" y="0">Tracker: Finalisierung</tspan></text>
+  <rect class="st31" x="601.2" y="324.7" width="613.8" height="109.6" rx="4.7" ry="4.7"/>
+  <text class="st2" transform="translate(608.8 345.8)"><tspan x="0" y="0">DETAIL: ENDE EINER EPOCHE</tspan></text>
+  <text class="st1" transform="translate(603.8 186.2)"><tspan x="0" y="0">start_epoch()</tspan></text>
+  <text class="st6" transform="translate(848 187)"><tspan x="0" y="0">finish_epoch()</tspan></text>
+  <text class="st1" transform="translate(1283 186.2)"><tspan x="0" y="0">start_epoch()</tspan></text>
+  <rect class="st30" x="606.2" y="356.4" width="237.9" height="44.3" rx="4.9" ry="4.9"/>
+  <text class="st15" transform="translate(667.8 373.2)"><tspan x="0" y="0">Training + Validierung</tspan></text>
+  <text class="st15" transform="translate(645.1 388.8)"><tspan x="0" y="0">und zugehörige Arbeitsschritte</tspan></text>
+  <rect class="st29" x="857.6" y="356.4" width="108.1" height="44.3" rx="4.9" ry="4.9"/>
+  <text class="st3" transform="translate(890.2 373.2)"><tspan x="0" y="0">Energie-</tspan></text>
+  <text class="st3" transform="translate(880.1 388.8)"><tspan x="0" y="0">aufbereitung</tspan></text>
+  <rect class="st28" x="979.2" y="356.4" width="97.3" height="44.3" rx="4.9" ry="4.9"/>
+  <text class="st3" transform="translate(1000.7 373.2)"><tspan x="0" y="0">Controller</tspan></text>
+  <text class="st3" transform="translate(1001.3 388.8)"><tspan x="0" y="0">evaluate()</tspan></text>
+  <rect class="st29" x="1090" y="356.4" width="97.3" height="44.3" rx="4.9" ry="4.9"/>
+  <text class="st3" transform="translate(1118.5 381.8)"><tspan x="0" y="0">Logging</tspan></text>
+  <g id="expanded-line-18">
+    <path class="st25" d="M844,379h13.5v-.8h-13.5v.8Z"/>
+    <path class="st25" d="M852.8,375.9l5.3,2.6-5.3,2.6v-5.3Z"/>
+  </g>
+  <g id="expanded-line-19">
+    <path class="st25" d="M965.7,379h13.5v-.8h-13.5v.8Z"/>
+    <path class="st25" d="M974.4,375.9l5.3,2.6-5.3,2.6v-5.3Z"/>
+  </g>
+  <g id="expanded-line-20">
+    <path class="st25" d="M1076.5,379h13.5v-.8h-13.5v.8Z"/>
+    <path class="st25" d="M1085.2,375.9l5.3,2.6-5.3,2.6v-5.3Z"/>
+  </g>
+  <g id="uuid-dd3ae750-2d41-42de-b045-19e1a19c4bb1" data-name="expanded-line-21">
+    <path class="st25" d="M1187.3,379h13.5v-.8h-13.5v.8Z"/>
+    <path class="st25" d="M1196.1,375.9l5.3,2.6-5.3,2.6v-5.3Z"/>
+  </g>
+  <g id="uuid-8d6fbbd6-930a-4227-a771-342a516bc67e" data-name="expanded-line-22">
+    <path class="st24" d="M605.6,408.9v4.9h1.1v-4.9h-1.1ZM606.6,414.3h237.7v-1.1h-237.7v1.1ZM844.6,413.7v-4.9h-1.1v4.9h1.1ZM606.7,413.7c0-.3-.2-.5-.5-.5s-.5.2-.5.5.2.5.5.5.5-.2.5-.5ZM844.6,413.7c0-.3-.2-.5-.5-.5s-.5.2-.5.5.2.5.5.5.5-.2.5-.5Z"/>
+  </g>
+  <text class="st4" transform="translate(683.1 428.3)"><tspan x="0" y="0">Epochenenergie</tspan></text>
+  <g id="uuid-d9a29fa6-2dfe-4ace-be66-08778289069b" data-name="expanded-line-23">
+    <path class="st35" d="M978.7,408.9v4.9h1.1v-4.9h-1.1ZM979.2,414.3h97.3v-1.1h-97.3v1.1ZM1077,413.7v-4.9h-1.1v4.9h1.1ZM979.7,413.7c0-.3-.2-.5-.5-.5s-.5.2-.5.5.2.5.5.5.5-.2.5-.5ZM1077,413.7c0-.3-.2-.5-.5-.5s-.5.2-.5.5.2.5.5.5.5-.2.5-.5Z"/>
+  </g>
+  <text class="st16" transform="translate(991.8 428.3)"><tspan x="0" y="0">CPU-Aufwand</tspan></text>
+  <g id="uuid-77bb3a1b-9013-4b07-8f4f-7f7821b78e8b" data-name="expanded-line-24">
+    <path class="st36" d="M42,2130.3h1878v-1.2H42v1.2Z"/>
+  </g>
+  <text class="st14" transform="translate(42 2161.7)"><tspan x="0" y="0">Die Balken kennzeichnen überlappende Zeitfenster unterschiedlicher Granularität; sie stellen keine zusätzlichen Energiebeiträge dar.</tspan></text>
+  <text class="st12" transform="translate(42 2192.7)"><tspan x="0" y="0">Trackergrenzen sind schematisch ausgerichtet; die tatsächlichen Start- und Stoppzeitpunkte können durch die Aufrufe leicht abweichen.</tspan></text>
+  <text class="st12" transform="translate(42 2223.7)"><tspan x="0" y="0">Eigene Darstellung gemäß EpochTelemetry und LiveShadowSuiteController · Kapitel 4.7</tspan></text>
+  <line class="st23" x1="44.1" y1="318.7" x2="1982.8" y2="318.7"/>
+  <line class="st23" x1="42.2" y1="130" x2="1980.8" y2="130"/>
+  <line class="st23" x1="44.1" y1="164.3" x2="1982.8" y2="164.3"/>
+  <line class="st23" x1="44.1" y1="514.6" x2="1982.8" y2="514.6"/>
+  <line class="st23" x1="44.1" y1="730" x2="1982.8" y2="730"/>
+  <line class="st23" x1="44.1" y1="615.1" x2="1982.8" y2="615.1"/>
+  <g>
+    <path class="st22" d="M842.5,475.6h174.4c6.1,0,11,4.9,11,11v57"/>
+    <polygon points="1024.2 540.8 1027.9 542.4 1031.6 540.8 1027.9 549.6 1024.2 540.8"/>
+  </g>
+  <g>
+    <path class="st22" d="M1456.5,475.6h42.1c7.1,0,12.9,5.8,12.9,12.9v55.1"/>
+    <polygon points="1507.8 540.8 1511.5 542.4 1515.2 540.8 1511.5 549.6 1507.8 540.8"/>
+  </g>
+</svg>
